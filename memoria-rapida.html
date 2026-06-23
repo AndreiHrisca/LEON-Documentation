@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memoria rápida · Distribuidora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:820px;margin:0 auto}
+  
+  .back{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:13px;font-weight:500;color:var(--teal);
+    text-decoration:none;margin-bottom:24px;
+    transition:gap .2s ease;
+  }
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{
+    font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--blue);margin:0 0 14px;
+  }
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 32px}
+
+  .chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--blue-tint);color:var(--blue)}
+  .chip svg{width:26px;height:26px}
+
+  .section{margin:40px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+  .section p{font-size:15px;line-height:1.7;color:var(--muted);margin:0}
+  
+  .list-item{margin:12px 0;padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.6}
+  .list-item:last-child{border-bottom:none}
+  .list-item strong{color:var(--ink)}
+
+  .stack{
+    display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;
+  }
+  .badge{
+    display:inline-block;
+    padding:4px 10px;
+    background:var(--blue-tint);
+    border:1px solid var(--line);
+    border-radius:6px;
+    font-size:12px;
+    font-weight:500;
+    color:var(--blue);
+    font-family:var(--mono);
+  }
+
+  .foot{font-size:13px;color:var(--muted);margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
+
+  @media (max-width:720px){
+    body{padding:32px 14px}
+    h1{font-size:28px}
+    .section{padding:16px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="arquitectura.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Volver a la arquitectura
+  </a>
+
+  <p class="eyebrow">Memoria rápida</p>
+  <h1>Caché en memoria</h1>
+  <p class="sub">Redis mantiene en memoria los datos de alta rotación y baja criticidad —carrito de compra, sesiones y la cola de tareas—, con latencias de microsegundos. No requiere persistencia garantizada: la fuente de verdad reside en PostgreSQL.</p>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 4 14h6l-1 7 9-11h-6l1-7Z"/></svg></div>
+
+  <div class="section">
+    <h2>¿Qué es?</h2>
+    <p>Redis es un almacén de pares clave-valor en memoria. Opera íntegramente en RAM, lo que le confiere latencias de microsegundos, idóneo para estados efímeros. Ante una caída se pierde ese estado temporal, pero la operación continúa, ya que la información persistente reside en PostgreSQL.</p>
+  </div>
+
+  <div class="section">
+    <h2>Funciones principales</h2>
+    <div class="list-item"><strong>Carrito de compra:</strong> HSET cart:{cliente_id} producto_id cantidad. Lectura instantánea mientras el cliente navega.</div>
+    <div class="list-item"><strong>Sesiones:</strong> SETEX session:{token} 3600 {usuario_id}. Expiración automática a la hora.</div>
+    <div class="list-item"><strong>Cola de tareas:</strong> LPUSH tasks {task_json}. Celery consume de esta cola para emitir comprobantes y enviar notificaciones.</div>
+    <div class="list-item"><strong>Caché de catálogo:</strong> SET producto:{id} {json} EX 1800. Durante 30 minutos se reutiliza sin consultar PostgreSQL.</div>
+    <div class="list-item"><strong>Limitación de tasa:</strong> INCR request_count:{ip}. Recuento de peticiones por IP para mitigar el abuso automatizado.</div>
+    <div class="list-item"><strong>Bloqueos distribuidos:</strong> SET lock:{recurso} "acquired" NX EX 10. Previene condiciones de carrera en operaciones concurrentes.</div>
+  </div>
+
+  <div class="section">
+    <h2>Limitaciones y restricciones</h2>
+    <div class="list-item"><strong>Capacidad en RAM:</strong> Todo el conjunto reside en memoria; si excede la RAM disponible, el servicio se degrada o falla.</div>
+    <div class="list-item"><strong>Volatilidad:</strong> Sin persistencia garantizada; ante una caída se pierde el estado en memoria (mitigable con snapshots o AOF).</div>
+    <div class="list-item"><strong>Transaccionalidad limitada:</strong> No ofrece garantías ACID completas ni rollback condicional como PostgreSQL.</div>
+    <div class="list-item"><strong>Retraso de replicación:</strong> Si una réplica no recibe el cambio antes de una caída del primario, puede perder datos.</div>
+    <div class="list-item"><strong>Expiración de claves:</strong> Omitir el TTL (EX) deja las claves de forma indefinida; exige disciplina en el código.</div>
+  </div>
+
+  <div class="section">
+    <h2>Propósito del componente</h2>
+    <p>Almacenar estado temporal con latencia mínima, aliviar la carga de PostgreSQL (las consultas en memoria son órdenes de magnitud más rápidas), absorber picos de tráfico sin degradar el servicio y habilitar el procesamiento asíncrono mediante colas de tareas.</p>
+  </div>
+
+  <div class="section">
+    <h2>Stack tecnológico recomendado</h2>
+    <div class="stack">
+      <span class="badge">Redis 7+</span>
+      <span class="badge">django-redis</span>
+      <span class="badge">Celery</span>
+      <span class="badge">RQ (alternativa)</span>
+      <span class="badge">Redis Sentinel (HA)</span>
+      <span class="badge">Redis Cluster (scaling)</span>
+    </div>
+    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> Redis es el estándar de facto para caché. django-redis se integra de forma transparente con Django. Celery es el estándar para tareas asíncronas. Redis Sentinel aporta alta disponibilidad y Redis Cluster habilita el escalado horizontal cuando el volumen supera la RAM de un nodo.</p>
+  </div>
+
+  <div class="section">
+    <h2>Información técnica adicional</h2>
+    <div class="list-item"><strong>Persistencia:</strong> AOF (append-only file) registra cada operación; RDB (snapshots) vuelca el estado completo. Configurable según la tolerancia a pérdida.</div>
+    <div class="list-item"><strong>Replicación:</strong> Esquema primario-réplica; las lecturas se reparten entre réplicas y las escrituras van al primario y se propagan.</div>
+    <div class="list-item"><strong>Políticas de evicción:</strong> Al llenarse la memoria, Redis descarta claves según la política configurada (LRU, LFU, aleatoria).</div>
+    <div class="list-item"><strong>Pipelining:</strong> Agrupa múltiples comandos en una sola petición, reduciendo la latencia de red de forma notable.</div>
+    <div class="list-item"><strong>Pub/Sub:</strong> Suscripción a canales para notificaciones en tiempo real; adecuado para WebSockets.</div>
+  </div>
+
+  <div class="section">
+    <h2>Métricas importantes</h2>
+    <div class="list-item"><strong>Uso de memoria:</strong> Alertar al superar el 80% de la capacidad; acción: ampliar RAM o ajustar la evicción.</div>
+    <div class="list-item"><strong>Evicciones:</strong> Un valor mayor que cero indica memoria saturada forzando descartes; acción: ampliar RAM.</div>
+    <div class="list-item"><strong>Latencia:</strong> P99 < 1 ms. Por encima de 10 ms, indica sobrecarga.</div>
+    <div class="list-item"><strong>Retraso de replicación:</strong> El offset debe permanecer sincronizado; un retraso sostenido pone datos en riesgo.</div>
+    <div class="list-item"><strong>Tasa de aciertos:</strong> Porcentaje de peticiones servidas desde Redis; objetivo superior al 80%.</div>
+  </div>
+
+  <p class="foot">
+    Redis es determinante para el rendimiento, pero no es un almacén permanente: la información crítica debe residir siempre en PostgreSQL. Tratado como caché, su pérdida supone un inconveniente temporal, no una contingencia grave.
+  </p>
+</div></body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Libro de reclamaciones · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3; --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --slate:#51606F;
+    --teal-tint:#E1F2F0; --amber-tint:#F7EEE1; --slate-tint:#EEF1F5; --blue-tint:#E7F0FC;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{font-family:var(--sans);color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2));min-height:100vh;-webkit-font-smoothing:antialiased;padding:48px 24px 56px}
+  .wrap{max-width:780px;margin:0 auto}
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+  .back:hover{gap:10px} .back svg{width:16px;height:16px}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--slate);margin:0 0 14px}
+  h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.15}
+  .sub{font-size:15.5px;color:var(--muted);max-width:68ch;line-height:1.6;margin:0 0 14px}
+  .meta{font-size:12.5px;color:var(--muted);font-family:var(--mono);margin:0 0 22px}
+  .modelo{display:flex;gap:12px;align-items:flex-start;margin:0 0 28px;padding:14px 16px;background:var(--amber-tint);border:1px solid #EAD8C2;border-radius:12px;font-size:13.5px;line-height:1.5;color:var(--ink)}
+  .modelo svg{width:18px;height:18px;color:var(--amber);flex:none;margin-top:1px}
+  .doc{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:8px 28px 24px;box-shadow:0 1px 2px rgba(24,34,46,.04),0 8px 24px rgba(24,34,46,.05)}
+  .doc h2{font-size:17px;font-weight:700;letter-spacing:-.01em;margin:28px 0 8px;padding-top:18px;border-top:1px solid var(--line)}
+  .doc h2:first-of-type{border-top:none;padding-top:8px}
+  .doc p{font-size:14.5px;line-height:1.7;color:#33414F;margin:8px 0}
+  .doc ul{margin:8px 0;padding-left:20px} .doc li{font-size:14.5px;line-height:1.7;color:#33414F;margin:5px 0}
+  .doc strong{color:var(--ink)}
+  .ph{background:var(--slate-tint);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-family:var(--mono);font-size:12.5px;color:var(--slate)}
+  .defs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  .defs div{padding:14px 16px;border:1px solid var(--line);border-radius:12px;font-size:14px;line-height:1.55;color:#33414F}
+  .defs .t{font-weight:700;color:var(--ink);display:block;margin-bottom:4px}
+  .defs .reclamo{background:var(--blue-tint);border-color:#C9DCF5}
+  .defs .queja{background:var(--amber-tint);border-color:#EAD8C2}
+  .cta{display:inline-flex;align-items:center;gap:8px;margin:8px 0 4px;padding:11px 18px;background:var(--slate);color:#fff;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none}
+  .cta:hover{opacity:.92}
+  .related{margin:28px 0 0}
+  .related h4{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 12px}
+  .related .links{display:flex;flex-wrap:wrap;gap:10px}
+  .related a{font-size:13px;font-weight:500;color:var(--slate);text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:8px 12px;transition:.15s}
+  .related a:hover{border-color:var(--slate);color:var(--ink)}
+  .related a.actual{background:var(--slate-tint);border-color:var(--slate);color:var(--ink);font-weight:600}
+  .foot{font-size:12.5px;color:var(--muted);margin-top:30px;line-height:1.7}
+  @media (max-width:640px){ body{padding:32px 16px} h1{font-size:25px} .doc{padding:4px 18px 18px} .defs{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Volver al índice
+  </a>
+
+  <p class="eyebrow">Legal</p>
+  <h1>Libro de reclamaciones</h1>
+  <p class="sub">Conforme al Código de Protección y Defensa del Consumidor (Ley N° 29571), Importadora León pone a disposición de sus clientes un Libro de Reclamaciones para registrar reclamos y quejas.</p>
+  <p class="meta">Última actualización: junio de 2026</p>
+
+  <div class="modelo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+    <span><strong>Documento modelo.</strong> Implementa el formulario del Libro de Reclamaciones virtual (hoja de reclamación con sus campos obligatorios) y enlázalo en el botón de abajo. En el local físico debe existir, además, el Libro en formato físico y el aviso visible. Revísalo con un abogado.</span>
+  </div>
+
+  <div class="doc">
+    <h2>1. ¿Qué es y para qué sirve?</h2>
+    <p>El Libro de Reclamaciones es un registro, físico o virtual, donde el consumidor puede dejar constancia de un reclamo o una queja relacionados con un producto o servicio. Su existencia es obligatoria para todo proveedor que atiende a consumidores en el Perú, y debe estar a disposición tanto en el establecimiento como en el sitio web.</p>
+
+    <h2>2. Diferencia entre reclamo y queja</h2>
+    <div class="defs">
+      <div class="reclamo"><span class="t">Reclamo</span> Disconformidad relacionada con el producto o servicio adquirido (por ejemplo, un producto defectuoso o una entrega incorrecta).</div>
+      <div class="queja"><span class="t">Queja</span> Malestar respecto a la atención al cliente, no vinculado directamente al producto o servicio (por ejemplo, el trato recibido).</div>
+    </div>
+    <p>El reclamo no constituye una denuncia ante el Indecopi ni impide acudir a otras vías de solución de controversias.</p>
+
+    <h2>3. Cómo presentar tu reclamo o queja</h2>
+    <p>Completa la hoja de reclamación virtual con tus datos y el detalle del caso. Recibirás una copia y un número de registro en tu correo.</p>
+    <p><a href="#" class="cta"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg> Abrir hoja de reclamación virtual</a></p>
+    <p style="font-size:13px;color:var(--muted)">Enlace pendiente de implementación: <span class="ph">[URL del formulario del Libro de Reclamaciones]</span>.</p>
+
+    <h2>4. Datos que se solicitan</h2>
+    <ul>
+      <li>Identificación del consumidor: nombres y apellidos, documento de identidad, domicilio, teléfono y correo.</li>
+      <li>Identificación del bien o servicio: producto o pedido, monto y número de comprobante.</li>
+      <li>Detalle del reclamo o queja y el pedido concreto del consumidor.</li>
+    </ul>
+
+    <h2>5. Plazo de respuesta</h2>
+    <p>Importadora León dará respuesta al reclamo en un plazo no mayor de <strong>quince (15) días hábiles</strong>, prorrogable por una sola vez y de forma justificada, sin exceder el plazo máximo previsto por la normativa de protección al consumidor. La respuesta se enviará al correo o medio de contacto indicado.</p>
+
+    <h2>6. Otras vías</h2>
+    <p>Si no estás conforme con la respuesta, puedes acudir al <strong>Indecopi</strong> a través de sus canales de atención al ciudadano. Consulta también nuestros <a href="legal-terminos.html" style="color:var(--slate);font-weight:600">Términos y condiciones</a>.</p>
+  </div>
+
+  <div class="related">
+    <h4>Documentos legales</h4>
+    <div class="links">
+      <a href="legal-aviso.html">Aviso legal</a>
+      <a href="legal-terminos.html">Términos y condiciones</a>
+      <a href="legal-privacidad.html">Política de privacidad</a>
+      <a href="legal-cookies.html">Política de cookies</a>
+      <a href="legal-libro-reclamaciones.html" class="actual">Libro de reclamaciones</a>
+    </div>
+  </div>
+
+  <p class="foot">© 2026 Importadora León. Todos los derechos reservados.</p>
+</div>
+</body>
+</html>

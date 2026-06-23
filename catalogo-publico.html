@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo Público · Distribuidora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:820px;margin:0 auto}
+  
+  .back{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:13px;font-weight:500;color:var(--teal);
+    text-decoration:none;margin-bottom:24px;
+    transition:gap .2s ease;
+  }
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{
+    font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--indigo);margin:0 0 14px;
+  }
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 32px}
+
+  .chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--indigo-tint);color:var(--indigo)}
+  .chip svg{width:26px;height:26px}
+
+  .section{margin:40px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+  .section p{font-size:15px;line-height:1.7;color:var(--muted);margin:0}
+  
+  .list-item{margin:12px 0;padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.6}
+  .list-item:last-child{border-bottom:none}
+  .list-item strong{color:var(--ink)}
+
+  .stack{
+    display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;
+  }
+  .badge{
+    display:inline-block;
+    padding:4px 10px;
+    background:var(--blue-tint);
+    border:1px solid var(--line);
+    border-radius:6px;
+    font-size:12px;
+    font-weight:500;
+    color:var(--blue);
+    font-family:var(--mono);
+  }
+
+  .foot{font-size:13px;color:var(--muted);margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
+
+  @media (max-width:720px){
+    body{padding:32px 14px}
+    h1{font-size:28px}
+    .section{padding:16px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="arquitectura.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Volver a la arquitectura
+  </a>
+
+  <p class="eyebrow">Catálogo público</p>
+  <h1>Tienda web pública</h1>
+  <p class="sub">El escaparate principal donde los clientes descubren productos, exploran categorías y realizan sus compras. Constituye la interfaz pública del negocio.</p>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.6 2.6 2.6 15.4 0 18"/><path d="M12 3c-2.6 2.6-2.6 15.4 0 18"/></svg></div>
+
+  <div class="section">
+    <h2>¿Qué es?</h2>
+    <p>Es la aplicación web pública accesible por cualquier persona. Funciona como una tienda virtual donde se presentan los productos disponibles, se filtran por categorías, se visualizan detalles, y se completan las compras. Todo con una experiencia fluida, rápida y optimizada para dispositivos móviles y de escritorio.</p>
+  </div>
+
+  <div class="section">
+    <h2>Funciones principales</h2>
+    <div class="list-item"><strong>Exploración de productos:</strong> Navegación intuitiva por categorías, búsqueda avanzada, filtros por precio, disponibilidad y atributos.</div>
+    <div class="list-item"><strong>Fichas de producto:</strong> Galerías de imágenes, descripciones detalladas, especificaciones técnicas, valoraciones y stock disponible.</div>
+    <div class="list-item"><strong>Carrito de compra:</strong> Agregar/eliminar productos, modificar cantidades, aplicar descuentos y ver resumen de compra.</div>
+    <div class="list-item"><strong>Proceso de pago:</strong> Selección de dirección de envío, método de pago, resumen final y confirmación del pedido.</div>
+    <div class="list-item"><strong>Historial de compras:</strong> Los clientes autenticados consultan sus pedidos anteriores y su estado, y pueden repetirlos.</div>
+    <div class="list-item"><strong>Notificaciones:</strong> Confirmación de compra, estado del envío, ofertas y novedades por correo electrónico.</div>
+  </div>
+
+  <div class="section">
+    <h2>Limitaciones y restricciones</h2>
+    <div class="list-item"><strong>Información en tiempo real:</strong> Los precios y el stock se sincronizan con el backend cada pocos segundos, por lo que puede haber pequeños desfases.</div>
+    <div class="list-item"><strong>Métodos de pago:</strong> Solo acepta tarjetas de crédito/débito integradas con el proveedor. No hay billeteras digitales por ahora.</div>
+    <div class="list-item"><strong>Gestión de devoluciones:</strong> El proceso es manual: los clientes contactan por correo electrónico o teléfono, sin formulario automatizado en la web.</div>
+    <div class="list-item"><strong>Personalización:</strong> No hay recomendaciones basadas en IA ni historial de compra (en versión actual).</div>
+    <div class="list-item"><strong>Disponibilidad regional:</strong> Solo funciona en Perú. Envíos internacionales no soportados.</div>
+  </div>
+
+  <div class="section">
+    <h2>Propósito del componente</h2>
+    <p>Convertir visitantes en compradores, generar ingresos directos, recopilar datos sobre las preferencias de los clientes y representar la imagen pública del negocio. Debe ser rápida, segura y coherente con la identidad de la marca.</p>
+  </div>
+
+  <div class="section">
+    <h2>Stack tecnológico recomendado</h2>
+    <div class="stack">
+      <span class="badge">React 18</span>
+      <span class="badge">TypeScript</span>
+      <span class="badge">Vite</span>
+      <span class="badge">TailwindCSS</span>
+      <span class="badge">SWR/React Query</span>
+      <span class="badge">Zustand</span>
+      <span class="badge">Pasarela de pagos</span>
+    </div>
+    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> React renderiza con eficiencia los cambios dinámicos (carrito, filtros). TypeScript previene errores en el manejo de datos sensibles. Vite ofrece compilación muy rápida en desarrollo. TailwindCSS facilita componentes consistentes sin CSS a mano. SWR mantiene los datos sincronizados con el backend. Zustand gestiona el estado global (usuario, carrito) con una huella mínima.</p>
+  </div>
+
+  <div class="section">
+    <h2>Información técnica adicional</h2>
+    <div class="list-item"><strong>Renderizado:</strong> La mayoría es SPA (Single Page App) para transiciones suaves. La página inicial se pre-renderiza en servidor para SEO.</div>
+    <div class="list-item"><strong>Rendimiento:</strong> Los datos se cachean localmente (localStorage para el carrito temporal) y las imágenes de producto se optimizan y se sirven desde una CDN.</div>
+    <div class="list-item"><strong>Seguridad:</strong> Se comunica con El motor usando HTTPS. Tokens JWT válidos solo 15 minutos. El carrito se sincroniza en tiempo real con Redis.</div>
+    <div class="list-item"><strong>Escalabilidad:</strong> Se distribuye en múltiples servidores con nginx como balanceador. El caché se maneja centralizadamente en Redis.</div>
+    <div class="list-item"><strong>Accesibilidad:</strong> Cumple WCAG 2.1 nivel AA. Navegación por teclado, colores accesibles, textos descriptivos en imágenes.</div>
+  </div>
+
+  <div class="section">
+    <h2>Métricas importantes</h2>
+    <div class="list-item"><strong>Tiempo de carga:</strong> Objetivo inferior a 2 segundos en red móvil 4G.</div>
+    <div class="list-item"><strong>Tasa de conversión:</strong> Porcentaje de visitantes que completan una compra; objetivo superior al 2%.</div>
+    <div class="list-item"><strong>Abandono de carrito:</strong> Porcentaje que añade producto pero no compra; objetivo inferior al 70%.</div>
+    <div class="list-item"><strong>Disponibilidad:</strong> 99,9% (máximo de 31 min de caída al mes).</div>
+    <div class="list-item"><strong>Errores 404:</strong> Productos no encontrados; objetivo inferior al 1% de las peticiones.</div>
+  </div>
+
+  <p class="foot">
+    El catálogo público es el primer contacto del cliente con la marca: cada milisegundo de velocidad y cada detalle visual cuentan. Diseño y frontend deben trabajar en estrecha coordinación con marketing para optimizar la conversión de forma continua.
+  </p>
+</div>
+</body>
+</html>

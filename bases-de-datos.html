@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modelo de datos · Distribuidora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:960px;margin:0 auto}
+
+  .back{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:13px;font-weight:500;color:var(--teal);
+    text-decoration:none;margin-bottom:24px;transition:gap .2s ease;
+  }
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{
+    font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--blue);margin:0 0 14px;
+  }
+  h1{font-size:32px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:72ch;line-height:1.6;margin:0 0 8px}
+
+  /* ---- relationship map ---- */
+  .map{
+    margin:28px 0 8px;padding:18px 14px 8px;
+    background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    box-shadow:0 1px 2px rgba(24,34,46,.04),0 8px 24px rgba(24,34,46,.05);
+    overflow-x:auto;
+  }
+  .map svg{display:block;min-width:680px;width:100%;height:auto}
+  .map-cap{font-size:12.5px;color:var(--muted);margin:6px 4px 2px;display:flex;align-items:center;gap:8px}
+  .map-cap svg{width:15px;height:15px;color:var(--teal);flex:none;min-width:0}
+
+  /* ---- domains ---- */
+  .domain{margin:44px 0 0}
+  .domain-head{display:flex;align-items:center;gap:10px;margin:0 2px 16px;padding-bottom:10px;border-bottom:2px solid var(--line)}
+  .domain-head i{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .domain-head h2{font-size:20px;font-weight:700;margin:0;letter-spacing:-.01em}
+  .domain-head .note{font-size:13px;color:var(--muted);margin-left:auto}
+
+  .ent{
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;margin-bottom:18px;
+    box-shadow:0 1px 2px rgba(24,34,46,.04),0 6px 18px rgba(24,34,46,.04);
+    border-top:3px solid var(--c);
+  }
+  .ent-h{padding:15px 20px 13px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 12px}
+  .ent-h .name{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--ink)}
+  .ent-h .why{font-size:13px;color:var(--muted);line-height:1.45;flex:1 1 240px;min-width:0}
+  .ent-h .later{
+    font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--muted);background:#F4F6F9;border:1px solid var(--line);
+    border-radius:5px;padding:2px 8px;white-space:nowrap;
+  }
+
+  table.ftable{width:100%;border-collapse:collapse;font-size:13.5px}
+  .ftable thead th{
+    text-align:left;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--muted);padding:10px 20px;background:#FAFBFC;border-bottom:1px solid var(--line);
+  }
+  .ftable td{padding:11px 20px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
+  .ftable tr:last-child td{border-bottom:none}
+  .ftable th.c-campo,.ftable td.campo{width:30%}
+  .ftable th.c-ej,.ftable td.ej{width:26%}
+  .ftable th.c-desc,.ftable td.desc{width:44%}
+
+  .campo .f{font-family:var(--mono);font-size:13px;color:var(--ink);font-weight:500}
+  .campo .badges{margin-top:5px;display:flex;gap:5px;flex-wrap:wrap}
+  .k{font-family:var(--mono);font-size:9.5px;font-weight:600;border-radius:4px;padding:1px 6px;letter-spacing:.03em}
+  .k.pk{background:var(--amber-tint);color:var(--amber)}
+  .k.fk{background:var(--blue-tint);color:var(--blue)}
+  .ej .v{
+    display:inline-block;font-family:var(--mono);font-size:12px;color:var(--ink);
+    background:#F4F6F9;border:1px solid var(--line);border-radius:6px;padding:2px 8px;line-height:1.5;
+  }
+  .ej .v.dim{color:var(--muted)}
+  .desc{color:var(--muted)}
+  .desc .ref{color:var(--blue);font-family:var(--mono);font-size:12px}
+
+  .legend{display:flex;flex-wrap:wrap;gap:16px 22px;margin:28px 2px 0}
+  .legend span{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted)}
+
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.75}
+
+  @media (max-width:640px){
+    body{padding:32px 14px}
+    h1{font-size:25px}
+    .domain-head .note{display:none}
+    .ftable thead{display:none}
+    .ftable,.ftable tbody,.ftable tr,.ftable td{display:block;width:100%}
+    .ftable tr{padding:12px 18px;border-bottom:1px solid var(--line)}
+    .ftable tr:last-child{border-bottom:none}
+    .ftable td{padding:3px 0;border:none;width:100%}
+    .ftable td.campo .f{font-size:14px}
+    .ftable td.ej{margin-top:4px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="arquitectura.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Volver a la arquitectura
+  </a>
+
+  <p class="eyebrow">Modelo de datos · <span style="color:var(--teal)">documento oficial</span></p>
+  <h1>Las tablas del negocio</h1>
+  <p style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--teal);background:var(--teal-tint);border:1px solid #CFE6E2;border-radius:8px;padding:6px 12px;margin:0 0 16px">
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    Modelo vigente y canónico. Cualquier otra página que muestre tablas se subordina a esta.
+  </p>
+  <p class="sub">Cómo se traduce la operación —importar, almacenar, vender y facturar— a tablas. El producto es el concepto comercial; la <strong>variante</strong> (con su código SKU) es lo que de verdad se compra, se vende y se cuenta en el almacén. El stock no se escribe a mano: se calcula sumando los movimientos.</p>
+
+  <div class="map">
+    <svg viewBox="0 0 1020 300" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M1 1 L9 5 L1 9" fill="none" stroke="context-stroke" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <path d="M340 78 C 220 120, 170 140, 130 176" fill="none" stroke="#5B63E6" stroke-width="1.5" stroke-dasharray="4 6" opacity=".5"/>
+      <path d="M420 78 C 540 120, 600 140, 640 176" fill="none" stroke="#5B63E6" stroke-width="1.5" stroke-dasharray="4 6" opacity=".5"/>
+      <path d="M380 90 L 380 176" fill="none" stroke="#5B63E6" stroke-width="1.6" marker-end="url(#ar)"/>
+      <path d="M640 90 L 640 176" fill="none" stroke="#CF8138" stroke-width="1.6" marker-end="url(#ar)"/>
+      <path d="M204 210 L 296 210" fill="none" stroke="#647183" stroke-width="1.6" marker-end="url(#ar)"/>
+      <path d="M556 210 L 464 210" fill="none" stroke="#647183" stroke-width="1.6" marker-end="url(#ar)"/>
+      <path d="M724 210 L 816 210" fill="none" stroke="#647183" stroke-width="1.6" marker-end="url(#ar)"/>
+      <text x="250" y="201" font-family="Inter,sans-serif" font-size="11" fill="#647183" text-anchor="middle">entradas</text>
+      <text x="510" y="201" font-family="Inter,sans-serif" font-size="11" fill="#647183" text-anchor="middle">salidas</text>
+      <text x="770" y="201" font-family="Inter,sans-serif" font-size="11" fill="#647183" text-anchor="middle">cobro</text>
+      <g>
+        <rect x="300" y="30" width="160" height="60" rx="13" fill="#FFFFFF" stroke="#D7D9F6"/>
+        <rect x="300" y="30" width="160" height="3" rx="1.5" fill="#5B63E6"/>
+        <text x="380" y="58" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#18222E" text-anchor="middle">Catálogo</text>
+        <text x="380" y="76" font-family="Inter,sans-serif" font-size="11" fill="#647183" text-anchor="middle">producto · variante</text>
+      </g>
+      <g>
+        <rect x="560" y="30" width="160" height="60" rx="13" fill="#FFFFFF" stroke="#EAD8C2"/>
+        <rect x="560" y="30" width="160" height="3" rx="1.5" fill="#CF8138"/>
+        <text x="640" y="58" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#18222E" text-anchor="middle">Precios</text>
+        <text x="640" y="76" font-family="Inter,sans-serif" font-size="11" fill="#647183" text-anchor="middle">por tipo de cliente</text>
+      </g>
+      <g>
+        <rect x="40" y="180" width="160" height="60" rx="13" fill="#FFFFFF" stroke="#EAD8C2"/>
+        <rect x="40" y="180" width="160" height="3" rx="1.5" fill="#CF8138"/>
+        <text x="120" y="208" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#18222E" text-anchor="middle">Compras</text>
+        <text x="120" y="226" font-family="Inter,sans-serif" font-size="11" fill="#647183" text-anchor="middle">importación</text>
+      </g>
+      <g>
+        <rect x="300" y="180" width="160" height="60" rx="13" fill="#FFFFFF" stroke="#CFE6E2"/>
+        <rect x="300" y="180" width="160" height="3" rx="1.5" fill="#0E9488"/>
+        <text x="380" y="208" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#18222E" text-anchor="middle">Inventario</text>
+        <text x="380" y="226" font-family="Inter,sans-serif" font-size="11" fill="#647183" text-anchor="middle">movimientos</text>
+      </g>
+      <g>
+        <rect x="560" y="180" width="160" height="60" rx="13" fill="#FFFFFF" stroke="#C9DCF5"/>
+        <rect x="560" y="180" width="160" height="3" rx="1.5" fill="#2E73D9"/>
+        <text x="640" y="208" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#18222E" text-anchor="middle">Ventas</text>
+        <text x="640" y="226" font-family="Inter,sans-serif" font-size="11" fill="#647183" text-anchor="middle">pedidos</text>
+      </g>
+      <g>
+        <rect x="820" y="180" width="160" height="60" rx="13" fill="#FFFFFF" stroke="#CFE6E2"/>
+        <rect x="820" y="180" width="160" height="3" rx="1.5" fill="#0E9488"/>
+        <text x="900" y="208" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#18222E" text-anchor="middle">Facturación</text>
+        <text x="900" y="226" font-family="Inter,sans-serif" font-size="11" fill="#647183" text-anchor="middle">comprobantes · pagos</text>
+      </g>
+    </svg>
+    <p class="map-cap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+      El catálogo alimenta todo (línea punteada). La compra suma stock, la venta lo resta y genera el cobro. El <strong>equipo</strong> es transversal y se omite aquí.
+    </p>
+  </div>
+
+  <!-- ===================== CATÁLOGO ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--indigo)"></i><h2>Catálogo</h2><span class="note">qué vendemos</span></div>
+
+    <div class="ent" style="--c:var(--indigo)">
+      <div class="ent-h"><span class="name">producto</span><span class="why">El concepto comercial. No tiene código SKU ni stock propio; es la "idea" del producto.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">1</span></td><td class="desc">Número interno que el sistema asigna solo. Sirve para no confundir productos con el mismo nombre.</td></tr>
+        <tr><td class="campo"><span class="f">nombre</span></td><td class="ej"><span class="v">Audífonos inalámbricos</span></td><td class="desc">El nombre del producto tal como lo conoce el cliente.</td></tr>
+        <tr><td class="campo"><span class="f">descripcion</span></td><td class="ej"><span class="v">Bluetooth 5.0, 20 h batería</span></td><td class="desc">Texto que explica el producto en el catálogo.</td></tr>
+        <tr><td class="campo"><span class="f">marca</span></td><td class="ej"><span class="v">Sonely</span></td><td class="desc">La marca, si la tiene.</td></tr>
+        <tr><td class="campo"><span class="f">categoria_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">4</span></td><td class="desc">A qué categoría pertenece. Apunta a <span class="ref">categoria</span>.</td></tr>
+        <tr><td class="campo"><span class="f">activo</span></td><td class="ej"><span class="v">Sí</span></td><td class="desc">Si se muestra o no en la tienda.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--indigo)">
+      <div class="ent-h"><span class="name">variante</span><span class="why">El código SKU real. Es lo que se compra, se vende y se cuenta en el almacén.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">12</span></td><td class="desc">Número interno de esta versión exacta del producto.</td></tr>
+        <tr><td class="campo"><span class="f">producto_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">1</span></td><td class="desc">De qué producto es esta versión. Apunta a <span class="ref">producto</span>.</td></tr>
+        <tr><td class="campo"><span class="f">sku</span></td><td class="ej"><span class="v">AUD-NEG-001</span></td><td class="desc">Código único de esta versión. Es lo que se rotula y se cuenta físicamente.</td></tr>
+        <tr><td class="campo"><span class="f">codigo_barras</span></td><td class="ej"><span class="v">7751234567890</span></td><td class="desc">El código de barras para escanear, si lo trae.</td></tr>
+        <tr><td class="campo"><span class="f">atributos</span></td><td class="ej"><span class="v">Color: negro</span></td><td class="desc">Lo que diferencia esta versión de otras del mismo producto (color, talla, medida).</td></tr>
+        <tr><td class="campo"><span class="f">activo</span></td><td class="ej"><span class="v">Sí</span></td><td class="desc">Si esta versión sigue a la venta.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--indigo)">
+      <div class="ent-h"><span class="name">categoria</span><span class="why">Cómo se agrupan los productos en el catálogo.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">4</span></td><td class="desc">Número interno de la categoría.</td></tr>
+        <tr><td class="campo"><span class="f">nombre</span></td><td class="ej"><span class="v">Audio</span></td><td class="desc">Nombre visible de la categoría.</td></tr>
+        <tr><td class="campo"><span class="f">slug</span></td><td class="ej"><span class="v dim">audio</span></td><td class="desc">El nombre en formato de dirección web (sin tildes ni espacios).</td></tr>
+        <tr><td class="campo"><span class="f">padre_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">2</span></td><td class="desc">Si es una subcategoría, de cuál depende. Apunta a <span class="ref">categoria</span>.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--indigo)">
+      <div class="ent-h"><span class="name">imagen_producto</span><span class="why">Las fotos. El archivo en sí vive en el almacenamiento de archivos.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">30</span></td><td class="desc">Número interno de la imagen.</td></tr>
+        <tr><td class="campo"><span class="f">variante_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">12</span></td><td class="desc">De qué versión del producto es la foto. Apunta a <span class="ref">variante</span>.</td></tr>
+        <tr><td class="campo"><span class="f">url</span></td><td class="ej"><span class="v">/fotos/aud-neg.jpg</span></td><td class="desc">Dónde está guardada la foto.</td></tr>
+        <tr><td class="campo"><span class="f">orden</span></td><td class="ej"><span class="v dim">1</span></td><td class="desc">En qué posición aparece. La número 1 es la foto principal.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ===================== INVENTARIO ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--teal)"></i><h2>Inventario</h2><span class="note">cuánto tenemos</span></div>
+
+    <div class="ent" style="--c:var(--teal)">
+      <div class="ent-h"><span class="name">almacen</span><span class="why">Las zonas físicas donde se almacena la mercadería.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">1</span></td><td class="desc">Número interno de la zona.</td></tr>
+        <tr><td class="campo"><span class="f">nombre</span></td><td class="ej"><span class="v">Casa — Sala</span></td><td class="desc">Nombre de la zona o estante.</td></tr>
+        <tr><td class="campo"><span class="f">tipo</span></td><td class="ej"><span class="v">Zona</span></td><td class="desc">Si es una zona, un estante, una caja, etc.</td></tr>
+        <tr><td class="campo"><span class="f">direccion</span></td><td class="ej"><span class="v">Av. Primavera 123, Lima</span></td><td class="desc">Dónde queda físicamente.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--teal)">
+      <div class="ent-h"><span class="name">movimiento_inventario</span><span class="why">El cuaderno de entradas y salidas. El stock disponible se calcula sumando esta tabla, nunca se escribe a mano.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">500</span></td><td class="desc">Número interno del movimiento.</td></tr>
+        <tr><td class="campo"><span class="f">variante_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">12</span></td><td class="desc">Qué versión del producto se movió. Apunta a <span class="ref">variante</span>.</td></tr>
+        <tr><td class="campo"><span class="f">almacen_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">1</span></td><td class="desc">En qué zona ocurrió. Apunta a <span class="ref">almacen</span>.</td></tr>
+        <tr><td class="campo"><span class="f">tipo</span></td><td class="ej"><span class="v">Entrada</span></td><td class="desc">Si suma (entrada/compra), resta (salida/venta) o corrige (ajuste/merma).</td></tr>
+        <tr><td class="campo"><span class="f">cantidad</span></td><td class="ej"><span class="v">50</span></td><td class="desc">Cuántas unidades entran o salen.</td></tr>
+        <tr><td class="campo"><span class="f">referencia</span></td><td class="ej"><span class="v">Compra #8</span></td><td class="desc">De dónde viene el movimiento (una compra, una venta, un conteo).</td></tr>
+        <tr><td class="campo"><span class="f">fecha</span></td><td class="ej"><span class="v dim">15/06/2026</span></td><td class="desc">Cuándo ocurrió.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ===================== COMPRAS / IMPORTACIÓN ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--amber)"></i><h2>Compras / Importación</h2><span class="note">Parte de importación</span></div>
+
+    <div class="ent" style="--c:var(--amber)">
+      <div class="ent-h"><span class="name">proveedor</span><span class="why">El fabricante o mayorista que provee desde China. Equivale a la antigua tabla «Distribuidores».</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">3</span></td><td class="desc">Número interno del proveedor.</td></tr>
+        <tr><td class="campo"><span class="f">nombre</span></td><td class="ej"><span class="v">Shenzhen Sonely Co.</span></td><td class="desc">Nombre de la fábrica o proveedor.</td></tr>
+        <tr><td class="campo"><span class="f">pais</span></td><td class="ej"><span class="v">China</span></td><td class="desc">De dónde importamos.</td></tr>
+        <tr><td class="campo"><span class="f">contacto</span></td><td class="ej"><span class="v">WeChat · ventas@…</span></td><td class="desc">Cómo se les contacta.</td></tr>
+        <tr><td class="campo"><span class="f">moneda</span></td><td class="ej"><span class="v">USD</span></td><td class="desc">En qué moneda nos cobran.</td></tr>
+        <tr><td class="campo"><span class="f">condiciones</span></td><td class="ej"><span class="v">MOQ 100 uds</span></td><td class="desc">Cantidad mínima de compra y otras condiciones acordadas.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--amber)">
+      <div class="ent-h"><span class="name">orden_compra</span><span class="why">Un pedido que le hacemos a un proveedor.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">8</span></td><td class="desc">Número interno del pedido de compra.</td></tr>
+        <tr><td class="campo"><span class="f">proveedor_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">3</span></td><td class="desc">A quién le compramos. Apunta a <span class="ref">proveedor</span>.</td></tr>
+        <tr><td class="campo"><span class="f">fecha</span></td><td class="ej"><span class="v dim">01/05/2026</span></td><td class="desc">Cuándo se hizo el pedido.</td></tr>
+        <tr><td class="campo"><span class="f">estado</span></td><td class="ej"><span class="v">En tránsito</span></td><td class="desc">En qué punto va (pedido, producción, en tránsito, recibido).</td></tr>
+        <tr><td class="campo"><span class="f">moneda</span></td><td class="ej"><span class="v">USD</span></td><td class="desc">En qué moneda se pactó.</td></tr>
+        <tr><td class="campo"><span class="f">tipo_cambio</span></td><td class="ej"><span class="v">3.75</span></td><td class="desc">Cuántos soles vale 1 dólar ese día. Se guarda para calcular el costo real en soles.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--amber)">
+      <div class="ent-h"><span class="name">linea_orden_compra</span><span class="why">El detalle del pedido: qué se compró y a qué precio en origen.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">20</span></td><td class="desc">Número interno de la línea.</td></tr>
+        <tr><td class="campo"><span class="f">orden_compra_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">8</span></td><td class="desc">De qué pedido es. Apunta a <span class="ref">orden_compra</span>.</td></tr>
+        <tr><td class="campo"><span class="f">variante_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">12</span></td><td class="desc">Qué versión del producto. Apunta a <span class="ref">variante</span>.</td></tr>
+        <tr><td class="campo"><span class="f">cantidad</span></td><td class="ej"><span class="v">200</span></td><td class="desc">Cuántas unidades se pidieron.</td></tr>
+        <tr><td class="campo"><span class="f">precio_unitario</span></td><td class="ej"><span class="v">USD 4.50</span></td><td class="desc">Lo que cuesta cada unidad puesta en fábrica, antes de flete y aduanas.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--amber)">
+      <div class="ent-h"><span class="name">embarque</span><span class="why">El viaje físico de la mercadería hasta Perú.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">5</span></td><td class="desc">Número interno del embarque.</td></tr>
+        <tr><td class="campo"><span class="f">orden_compra_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">8</span></td><td class="desc">Qué pedido viaja. Apunta a <span class="ref">orden_compra</span>.</td></tr>
+        <tr><td class="campo"><span class="f">incoterm</span></td><td class="ej"><span class="v">FOB</span></td><td class="desc">Hasta qué punto del viaje paga el proveedor el transporte.</td></tr>
+        <tr><td class="campo"><span class="f">contenedor</span></td><td class="ej"><span class="v">MSC · ABC123</span></td><td class="desc">Naviera y número de contenedor.</td></tr>
+        <tr><td class="campo"><span class="f">fecha_salida</span></td><td class="ej"><span class="v dim">01/05/2026</span></td><td class="desc">Cuándo zarpó de origen.</td></tr>
+        <tr><td class="campo"><span class="f">fecha_llegada</span></td><td class="ej"><span class="v dim">10/06/2026</span></td><td class="desc">Cuándo llegó a puerto. Se guarda aparte para medir cuánto tardó el viaje.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--amber)">
+      <div class="ent-h"><span class="name">documento_aduanero</span><span class="why">Los papeles legales de la importación.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">9</span></td><td class="desc">Número interno del documento.</td></tr>
+        <tr><td class="campo"><span class="f">embarque_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">5</span></td><td class="desc">De qué embarque es. Apunta a <span class="ref">embarque</span>.</td></tr>
+        <tr><td class="campo"><span class="f">tipo</span></td><td class="ej"><span class="v">DUA</span></td><td class="desc">Qué documento es (DUA, factura comercial, packing list…).</td></tr>
+        <tr><td class="campo"><span class="f">numero</span></td><td class="ej"><span class="v dim">118-2026-001234</span></td><td class="desc">El número oficial del documento.</td></tr>
+        <tr><td class="campo"><span class="f">archivo</span></td><td class="ej"><span class="v">dua.pdf</span></td><td class="desc">El archivo escaneado.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--amber)">
+      <div class="ent-h"><span class="name">costo_importacion</span><span class="why">Flete, aduana y seguro. Se reparten entre las unidades para saber cuánto costó de verdad cada producto.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">14</span></td><td class="desc">Número interno del costo.</td></tr>
+        <tr><td class="campo"><span class="f">embarque_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">5</span></td><td class="desc">A qué embarque pertenece. Apunta a <span class="ref">embarque</span>.</td></tr>
+        <tr><td class="campo"><span class="f">tipo</span></td><td class="ej"><span class="v">Flete</span></td><td class="desc">Si es flete, aduana o seguro.</td></tr>
+        <tr><td class="campo"><span class="f">monto</span></td><td class="ej"><span class="v">USD 800</span></td><td class="desc">Cuánto se pagó por ese concepto.</td></tr>
+        <tr><td class="campo"><span class="f">moneda</span></td><td class="ej"><span class="v">USD</span></td><td class="desc">En qué moneda se pagó.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--amber)">
+      <div class="ent-h"><span class="name">muestra</span><span class="why">Las muestras para revisar calidad antes de importar en grande.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">2</span></td><td class="desc">Número interno de la muestra.</td></tr>
+        <tr><td class="campo"><span class="f">proveedor_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">3</span></td><td class="desc">Quién la envió. Apunta a <span class="ref">proveedor</span>.</td></tr>
+        <tr><td class="campo"><span class="f">descripcion</span></td><td class="ej"><span class="v">Audífonos v2</span></td><td class="desc">Qué muestra es.</td></tr>
+        <tr><td class="campo"><span class="f">link_origen</span></td><td class="ej"><span class="v dim">1688.com/…</span></td><td class="desc">El enlace del producto en 1688/Alibaba de donde salió la muestra.</td></tr>
+        <tr><td class="campo"><span class="f">costo</span></td><td class="ej"><span class="v">USD 12</span></td><td class="desc">Lo que costó la muestra más su envío.</td></tr>
+        <tr><td class="campo"><span class="f">estado</span></td><td class="ej"><span class="v">Aprobada</span></td><td class="desc">Si pasó la revisión de calidad o no.</td></tr>
+        <tr><td class="campo"><span class="f">fecha</span></td><td class="ej"><span class="v dim">10/04/2026</span></td><td class="desc">Cuándo se recibió.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ===================== VENTAS ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--blue)"></i><h2>Ventas</h2><span class="note">pedidos y clientes</span></div>
+
+    <div class="ent" style="--c:var(--blue)">
+      <div class="ent-h"><span class="name">cliente</span><span class="why">Quién nos compra. El documento decide si recibe boleta o factura.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">40</span></td><td class="desc">Número interno del cliente.</td></tr>
+        <tr><td class="campo"><span class="f">nombre</span></td><td class="ej"><span class="v">Librería San Marcos</span></td><td class="desc">Nombre de la persona o la empresa.</td></tr>
+        <tr><td class="campo"><span class="f">tipo</span></td><td class="ej"><span class="v">Empresa</span></td><td class="desc">Particular o empresa.</td></tr>
+        <tr><td class="campo"><span class="f">doc_tipo</span></td><td class="ej"><span class="v">RUC</span></td><td class="desc">Tipo de documento: DNI para personas, RUC para empresas.</td></tr>
+        <tr><td class="campo"><span class="f">doc_numero</span></td><td class="ej"><span class="v dim">20512345678</span></td><td class="desc">El número del documento. Es obligatorio para emitir el comprobante.</td></tr>
+        <tr><td class="campo"><span class="f">direccion_fiscal</span></td><td class="ej"><span class="v">Jr. Lampa 200, Lima</span></td><td class="desc">El domicilio que figura en el RUC. SUNAT lo exige en la factura.</td></tr>
+        <tr><td class="campo"><span class="f">email / telefono</span></td><td class="ej"><span class="v">ventas@… · 999…</span></td><td class="desc">Cómo se le contacta.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--blue)">
+      <div class="ent-h"><span class="name">cotizacion</span><span class="why">La propuesta de precio a un mayorista antes de que confirme la compra.</span><span class="later">Fase posterior</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">7</span></td><td class="desc">Número interno de la cotización.</td></tr>
+        <tr><td class="campo"><span class="f">cliente_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">40</span></td><td class="desc">A quién se le cotiza. Apunta a <span class="ref">cliente</span>.</td></tr>
+        <tr><td class="campo"><span class="f">fecha / validez</span></td><td class="ej"><span class="v">Vence en 15 días</span></td><td class="desc">Cuándo se hizo y hasta cuándo es válido el precio.</td></tr>
+        <tr><td class="campo"><span class="f">estado</span></td><td class="ej"><span class="v">Enviada</span></td><td class="desc">Si está enviada, aceptada o rechazada.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--blue)">
+      <div class="ent-h"><span class="name">pedido</span><span class="why">Una venta confirmada. Al confirmarse, descuenta el stock como salida.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">88</span></td><td class="desc">Número interno del pedido.</td></tr>
+        <tr><td class="campo"><span class="f">cliente_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">40</span></td><td class="desc">Quién compra. Apunta a <span class="ref">cliente</span>.</td></tr>
+        <tr><td class="campo"><span class="f">cotizacion_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">7</span></td><td class="desc">De qué cotización salió, si vino de una. Apunta a <span class="ref">cotizacion</span>.</td></tr>
+        <tr><td class="campo"><span class="f">direccion_envio_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">15</span></td><td class="desc">A qué dirección se entrega. Apunta a <span class="ref">direccion_envio</span>.</td></tr>
+        <tr><td class="campo"><span class="f">canal</span></td><td class="ej"><span class="v">WhatsApp</span></td><td class="desc">Por dónde llegó la venta (WhatsApp, Instagram, tienda, presencial).</td></tr>
+        <tr><td class="campo"><span class="f">fecha</span></td><td class="ej"><span class="v dim">16/06/2026</span></td><td class="desc">Cuándo se hizo el pedido.</td></tr>
+        <tr><td class="campo"><span class="f">estado</span></td><td class="ej"><span class="v">Pagado</span></td><td class="desc">En qué punto va (pendiente, pagado, enviado, entregado).</td></tr>
+        <tr><td class="campo"><span class="f">total</span></td><td class="ej"><span class="v">S/ 450</span></td><td class="desc">El monto total de la venta.</td></tr>
+        <tr><td class="campo"><span class="f">notas</span></td><td class="ej"><span class="v dim">Entregar después de las 3pm</span></td><td class="desc">Instrucciones especiales del cliente.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--blue)">
+      <div class="ent-h"><span class="name">linea_pedido</span><span class="why">El detalle de la venta: qué se llevó y a qué precio.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">120</span></td><td class="desc">Número interno de la línea.</td></tr>
+        <tr><td class="campo"><span class="f">pedido_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">88</span></td><td class="desc">De qué pedido es. Apunta a <span class="ref">pedido</span>.</td></tr>
+        <tr><td class="campo"><span class="f">variante_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">12</span></td><td class="desc">Qué versión del producto se vendió. Apunta a <span class="ref">variante</span>.</td></tr>
+        <tr><td class="campo"><span class="f">cantidad</span></td><td class="ej"><span class="v">3</span></td><td class="desc">Cuántas unidades.</td></tr>
+        <tr><td class="campo"><span class="f">precio_unitario</span></td><td class="ej"><span class="v">S/ 60</span></td><td class="desc">El precio al que se vendió en ese momento. Se guarda aunque el precio cambie después.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--blue)">
+      <div class="ent-h"><span class="name">direccion_envio</span><span class="why">Dónde se entrega el pedido.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">15</span></td><td class="desc">Número interno de la dirección.</td></tr>
+        <tr><td class="campo"><span class="f">cliente_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">40</span></td><td class="desc">De quién es. Apunta a <span class="ref">cliente</span>.</td></tr>
+        <tr><td class="campo"><span class="f">direccion / distrito</span></td><td class="ej"><span class="v">Av. Larco 500, Miraflores</span></td><td class="desc">La dirección de entrega.</td></tr>
+        <tr><td class="campo"><span class="f">referencia</span></td><td class="ej"><span class="v">Frente al parque</span></td><td class="desc">Una pista para ubicarla más fácil.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--blue)">
+      <div class="ent-h"><span class="name">envio_cliente</span><span class="why">El despacho del pedido y su seguimiento.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">22</span></td><td class="desc">Número interno del envío.</td></tr>
+        <tr><td class="campo"><span class="f">pedido_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">88</span></td><td class="desc">Qué pedido se envía. Apunta a <span class="ref">pedido</span>.</td></tr>
+        <tr><td class="campo"><span class="f">courier</span></td><td class="ej"><span class="v">Olva Courier</span></td><td class="desc">Con qué empresa se envía.</td></tr>
+        <tr><td class="campo"><span class="f">tracking</span></td><td class="ej"><span class="v dim">OLV-99812</span></td><td class="desc">El código para rastrear el paquete.</td></tr>
+        <tr><td class="campo"><span class="f">costo_envio</span></td><td class="ej"><span class="v">S/ 15</span></td><td class="desc">Lo que cuesta el despacho.</td></tr>
+        <tr><td class="campo"><span class="f">estado</span></td><td class="ej"><span class="v">Entregado</span></td><td class="desc">En qué punto va el envío.</td></tr>
+        <tr><td class="campo"><span class="f">fecha_estimada</span></td><td class="ej"><span class="v dim">18/06/2026</span></td><td class="desc">Cuándo se prometió entregar.</td></tr>
+        <tr><td class="campo"><span class="f">fecha_entrega</span></td><td class="ej"><span class="v dim">18/06/2026</span></td><td class="desc">Cuándo se entregó de verdad.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ===================== PRECIOS ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--amber)"></i><h2>Precios</h2><span class="note">no es un solo número</span></div>
+
+    <div class="ent" style="--c:var(--amber)">
+      <div class="ent-h"><span class="name">lista_precios</span><span class="why">Un mismo producto puede tener un precio para mayoristas y otro para el público.</span><span class="later">Fase posterior</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">1</span></td><td class="desc">Número interno de la lista.</td></tr>
+        <tr><td class="campo"><span class="f">nombre</span></td><td class="ej"><span class="v">Mayorista</span></td><td class="desc">Nombre de la lista de precios.</td></tr>
+        <tr><td class="campo"><span class="f">tipo_cliente</span></td><td class="ej"><span class="v">Empresa</span></td><td class="desc">A qué tipo de cliente se aplica.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--amber)">
+      <div class="ent-h"><span class="name">precio_variante</span><span class="why">El precio de cada versión del producto dentro de cada lista.</span><span class="later">Fase posterior</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">33</span></td><td class="desc">Número interno.</td></tr>
+        <tr><td class="campo"><span class="f">variante_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">12</span></td><td class="desc">Qué versión del producto. Apunta a <span class="ref">variante</span>.</td></tr>
+        <tr><td class="campo"><span class="f">lista_precios_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">1</span></td><td class="desc">A qué lista pertenece. Apunta a <span class="ref">lista_precios</span>.</td></tr>
+        <tr><td class="campo"><span class="f">precio</span></td><td class="ej"><span class="v">S/ 45</span></td><td class="desc">El precio de venta.</td></tr>
+        <tr><td class="campo"><span class="f">moneda</span></td><td class="ej"><span class="v">PEN</span></td><td class="desc">En qué moneda (soles).</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ===================== FACTURACIÓN Y PAGOS ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--teal)"></i><h2>Facturación y pagos</h2><span class="note">documentos legales</span></div>
+
+    <div class="ent" style="--c:var(--teal)">
+      <div class="ent-h"><span class="name">comprobante</span><span class="why">La boleta o factura legal. Se guarda de forma permanente en la base principal, nunca en la memoria rápida.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">60</span></td><td class="desc">Número interno del comprobante.</td></tr>
+        <tr><td class="campo"><span class="f">pedido_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">88</span></td><td class="desc">De qué venta es. Apunta a <span class="ref">pedido</span>.</td></tr>
+        <tr><td class="campo"><span class="f">tipo</span></td><td class="ej"><span class="v">Boleta</span></td><td class="desc">Factura para empresas, boleta para personas.</td></tr>
+        <tr><td class="campo"><span class="f">serie / correlativo</span></td><td class="ej"><span class="v dim">B001-000123</span></td><td class="desc">El número oficial que exige SUNAT.</td></tr>
+        <tr><td class="campo"><span class="f">fecha_emision</span></td><td class="ej"><span class="v dim">16/06/2026</span></td><td class="desc">La fecha legal del comprobante. Puede diferir de la del pedido.</td></tr>
+        <tr><td class="campo"><span class="f">igv</span></td><td class="ej"><span class="v">S/ 68.64</span></td><td class="desc">El impuesto (18%) que va desglosado en el documento.</td></tr>
+        <tr><td class="campo"><span class="f">total</span></td><td class="ej"><span class="v">S/ 450</span></td><td class="desc">El monto total con IGV incluido. Se congela tal como salió en el XML.</td></tr>
+        <tr><td class="campo"><span class="f">estado_sunat</span></td><td class="ej"><span class="v">Aceptado</span></td><td class="desc">Si SUNAT lo aceptó, lo rechazó o está pendiente.</td></tr>
+        <tr><td class="campo"><span class="f">xml / cdr</span></td><td class="ej"><span class="v">archivo legal</span></td><td class="desc">Los archivos oficiales que devuelve SUNAT.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--teal)">
+      <div class="ent-h"><span class="name">pago</span><span class="why">Cómo y cuánto pagó el cliente.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">70</span></td><td class="desc">Número interno del pago.</td></tr>
+        <tr><td class="campo"><span class="f">pedido_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">88</span></td><td class="desc">Qué pedido se pagó. Apunta a <span class="ref">pedido</span>.</td></tr>
+        <tr><td class="campo"><span class="f">metodo</span></td><td class="ej"><span class="v">Yape</span></td><td class="desc">Cómo pagó (Yape, Plin, tarjeta, PagoEfectivo…).</td></tr>
+        <tr><td class="campo"><span class="f">monto</span></td><td class="ej"><span class="v">S/ 450</span></td><td class="desc">Cuánto pagó.</td></tr>
+        <tr><td class="campo"><span class="f">estado</span></td><td class="ej"><span class="v">Confirmado</span></td><td class="desc">Si el pago se confirmó o no.</td></tr>
+        <tr><td class="campo"><span class="f">voucher_url</span></td><td class="ej"><span class="v">/vouchers/yape-70.jpg</span></td><td class="desc">La captura del Yape/Plin que envía el cliente como prueba.</td></tr>
+        <tr><td class="campo"><span class="f">referencia / fecha</span></td><td class="ej"><span class="v dim">Op. 00012 · 16/06</span></td><td class="desc">El código de operación y cuándo se pagó.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--teal)">
+      <div class="ent-h"><span class="name">nota_credito</span><span class="why">Cuando hay una devolución o anulación, SUNAT exige emitir una nota de crédito que referencia al comprobante original.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">12</span></td><td class="desc">Número interno de la nota de crédito.</td></tr>
+        <tr><td class="campo"><span class="f">comprobante_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">60</span></td><td class="desc">Qué boleta o factura corrige. Apunta a <span class="ref">comprobante</span>.</td></tr>
+        <tr><td class="campo"><span class="f">motivo</span></td><td class="ej"><span class="v">Devolución</span></td><td class="desc">Por qué se emite (devolución, anulación, descuento, error).</td></tr>
+        <tr><td class="campo"><span class="f">serie / correlativo</span></td><td class="ej"><span class="v dim">BC01-000045</span></td><td class="desc">El número oficial de la nota que exige SUNAT.</td></tr>
+        <tr><td class="campo"><span class="f">monto</span></td><td class="ej"><span class="v">S/ 150</span></td><td class="desc">Cuánto se devuelve o descuenta.</td></tr>
+        <tr><td class="campo"><span class="f">estado_sunat</span></td><td class="ej"><span class="v">Aceptado</span></td><td class="desc">Si SUNAT la aceptó, la rechazó o está pendiente.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ===================== EQUIPO ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--blue)"></i><h2>Equipo</h2><span class="note">quién opera</span></div>
+
+    <div class="ent" style="--c:var(--blue)">
+      <div class="ent-h"><span class="name">usuario</span><span class="why">El equipo interno, cada usuario con su rol. Sustituye a la antigua tabla «Personal / trabajadores».</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">1</span></td><td class="desc">Número interno del usuario.</td></tr>
+        <tr><td class="campo"><span class="f">nombre</span></td><td class="ej"><span class="v">Franitza León</span></td><td class="desc">Nombre de la persona.</td></tr>
+        <tr><td class="campo"><span class="f">email</span></td><td class="ej"><span class="v">franitza@…</span></td><td class="desc">Con qué correo entra al sistema.</td></tr>
+        <tr><td class="campo"><span class="f">rol</span></td><td class="ej"><span class="v">Abastecimiento</span></td><td class="desc">Qué puede hacer en el sistema (abastecimiento, ventas, marketing, sistemas, admin).</td></tr>
+        <tr><td class="campo"><span class="f">activo</span></td><td class="ej"><span class="v">Sí</span></td><td class="desc">Si su acceso está habilitado.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="k pk">PK</span> Llave primaria — el número que identifica cada fila</span>
+    <span><span class="k fk">FK</span> Llave foránea — apunta a otra tabla</span>
+    <span><span class="later" style="margin:0">Fase posterior</span> Difiérelo hasta que el volumen lo justifique</span>
+  </div>
+
+  <p class="foot">
+    Para el piloto (30–50 SKU) basta con catálogo, inventario, compras, cliente, pedido, comprobante y pago. Cotización y listas de precios pueden esperar. Tres ideas sostienen todo el modelo: el código SKU vive en la <strong>variante</strong>, el stock se <strong>calcula</strong> sumando los movimientos, y los comprobantes se guardan <strong>permanentemente</strong> en la base principal.
+  </p>
+</div>
+</body>
+</html>

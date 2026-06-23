@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Almacenamiento · Distribuidora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:820px;margin:0 auto}
+  
+  .back{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:13px;font-weight:500;color:var(--teal);
+    text-decoration:none;margin-bottom:24px;
+    transition:gap .2s ease;
+  }
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{
+    font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--blue);margin:0 0 14px;
+  }
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 32px}
+
+  .chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--blue-tint);color:var(--blue)}
+  .chip svg{width:26px;height:26px}
+
+  .section{margin:40px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+  .section p{font-size:15px;line-height:1.7;color:var(--muted);margin:0}
+  
+  .list-item{margin:12px 0;padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.6}
+  .list-item:last-child{border-bottom:none}
+  .list-item strong{color:var(--ink)}
+
+  .stack{
+    display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;
+  }
+  .badge{
+    display:inline-block;
+    padding:4px 10px;
+    background:var(--blue-tint);
+    border:1px solid var(--line);
+    border-radius:6px;
+    font-size:12px;
+    font-weight:500;
+    color:var(--blue);
+    font-family:var(--mono);
+  }
+
+  .foot{font-size:13px;color:var(--muted);margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
+
+  @media (max-width:720px){
+    body{padding:32px 14px}
+    h1{font-size:28px}
+    .section{padding:16px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="arquitectura.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Volver a la arquitectura
+  </a>
+
+  <p class="eyebrow">Almacenamiento</p>
+  <h1>Almacenamiento de archivos</h1>
+  <p class="sub">Almacenamiento de objetos para los ficheros del negocio: imágenes de producto, comprobantes en PDF, documentos y logotipos. Típicamente AWS S3, desacoplado del servidor principal para escalar de forma independiente.</p>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m20 16-5-5L6 20"/></svg></div>
+
+  <div class="section">
+    <h2>¿Qué es?</h2>
+    <p>Un servicio de almacenamiento de objetos en la nube (AWS S3 o equivalente). Custodia archivos estáticos —imágenes, PDF, documentos— fuera de la base de datos, dado su tamaño, y los expone mediante URLs. La base de datos guarda solo la referencia (la ruta), no el binario.</p>
+  </div>
+
+  <div class="section">
+    <h2>Funciones principales</h2>
+    <div class="list-item"><strong>Carga de imágenes:</strong> Se suben de 3 a 5 imágenes por producto y se generan automáticamente sus variantes (miniatura, media, original).</div>
+    <div class="list-item"><strong>Organización:</strong> Estructura por prefijos (productos/, comprobantes/, documentos/) con permisos diferenciados (privado o público).</div>
+    <div class="list-item"><strong>Distribución por CDN:</strong> Los archivos se sirven desde nodos de borde próximos al usuario, con caché global para minimizar la latencia.</div>
+    <div class="list-item"><strong>Comprobantes en PDF:</strong> El backend genera el PDF y lo deposita aquí; el cliente lo descarga mediante una URL estable.</div>
+    <div class="list-item"><strong>Respaldo:</strong> Replicación entre centros de datos y versionado para recuperar revisiones anteriores de un archivo.</div>
+    <div class="list-item"><strong>Depuración:</strong> Los archivos sin referencia se eliminan automáticamente transcurridos 30 días.</div>
+  </div>
+
+  <div class="section">
+    <h2>Limitaciones y restricciones</h2>
+    <div class="list-item"><strong>Coste de almacenamiento:</strong> S3 ronda los US$ 0,023 por GB/mes (1 TB ≈ US$ 23/mes); escala con el volumen acumulado.</div>
+    <div class="list-item"><strong>Coste de transferencia:</strong> La descarga (egress) tiene coste; la subida (ingress) es gratuita.</div>
+    <div class="list-item"><strong>Latencia:</strong> El primer byte tarda entre 50 y 200 ms, superior a la de un disco local.</div>
+    <div class="list-item"><strong>Configuración de permisos:</strong> CORS, políticas y permisos de bucket requieren configuración cuidadosa.</div>
+    <div class="list-item"><strong>Dependencia de terceros:</strong> AWS garantiza una durabilidad del 99,999999999%, a costa de delegar en un proveedor externo.</div>
+  </div>
+
+  <div class="section">
+    <h2>Propósito del componente</h2>
+    <p>Desacoplar los archivos pesados del servidor principal, escalar la capacidad sin saturar el disco, servir el contenido con baja latencia mediante una CDN global y delegar el mantenimiento de la infraestructura de almacenamiento en un servicio gestionado.</p>
+  </div>
+
+  <div class="section">
+    <h2>Stack tecnológico recomendado</h2>
+    <div class="stack">
+      <span class="badge">AWS S3</span>
+      <span class="badge">CloudFront (CDN)</span>
+      <span class="badge">boto3 (Python client)</span>
+      <span class="badge">Pillow (image processing)</span>
+      <span class="badge">IAM (permissions)</span>
+      <span class="badge">S3 versioning</span>
+    </div>
+    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> S3 es el estándar del sector. CloudFront distribuye los archivos globalmente. boto3 es el cliente oficial desde Python. Pillow procesa y optimiza las imágenes. IAM controla permisos de forma granular.</p>
+  </div>
+
+  <div class="section">
+    <h2>Información técnica adicional</h2>
+    <div class="list-item"><strong>URLs prefirmadas:</strong> Enlaces temporales con caducidad configurable, idóneos para la descarga de comprobantes privados.</div>
+    <div class="list-item"><strong>Carga multiparte:</strong> Los archivos grandes se dividen en fragmentos; si uno falla, se reintenta solo ese fragmento.</div>
+    <div class="list-item"><strong>Ciclo de vida del objeto:</strong> Traslado automático de archivos antiguos a un almacenamiento más económico (Glacier) según su antigüedad.</div>
+    <div class="list-item"><strong>Cifrado en reposo:</strong> Los archivos se almacenan cifrados y se descifran al descargarse, de forma transparente para el usuario.</div>
+    <div class="list-item"><strong>Registro de accesos:</strong> Trazabilidad de cada acceso para auditar quién descargó qué.</div>
+  </div>
+
+  <div class="section">
+    <h2>Métricas importantes</h2>
+    <div class="list-item"><strong>Coste total:</strong> Almacenamiento más transferencia de salida; presupuestar el crecimiento mensual.</div>
+    <div class="list-item"><strong>Tamaño medio del archivo:</strong> Con imágenes de ~2 MB y 10 000 productos, se parte de unos 20 GB.</div>
+    <div class="list-item"><strong>Latencia de CDN:</strong> P95 < 100 ms. Por encima de 500 ms, indica problema de caché o de distribución geográfica.</div>
+    <div class="list-item"><strong>Tasa de aciertos de CDN:</strong> Porcentaje de peticiones servidas desde caché; objetivo superior al 90%.</div>
+    <div class="list-item"><strong>Integridad:</strong> Sumas de verificación (checksums) para detectar corrupción de archivos.</div>
+  </div>
+
+  <p class="foot">
+    El almacenamiento en la nube escala de forma automática, pero su coste crece con el volumen. Conviene optimizar el tamaño de las imágenes y aplicar políticas de ciclo de vida y versionado para contener el gasto.
+  </p>
+</div></body>
+</html>

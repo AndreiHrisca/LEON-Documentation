@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Importadora Leon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:1080px;margin:0 auto}
+
+  .eyebrow{
+    font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--teal);margin:0 0 14px;
+  }
+  h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin:0 0 10px;line-height:1.1}
+  .sub{font-size:15.5px;color:var(--muted);max-width:60ch;line-height:1.6;margin:0}
+
+  .legend{display:flex;flex-wrap:wrap;gap:18px;margin:22px 0 8px}
+  .legend span{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+  .legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+
+  .stage{
+    position:relative;margin:18px 0 10px;padding:8px 0 6px;
+    background-image:radial-gradient(circle, rgba(24,34,46,.05) 1px, transparent 1px);
+    background-size:24px 24px;
+    min-width:660px;
+  }
+  .scroller{overflow-x:auto}
+
+  .wires{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .9s ease}
+  .wires.show{opacity:1}
+  .wire-base{fill:none;stroke-width:1.5;opacity:.22;stroke-linecap:round}
+  .wire-flow{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-dasharray:5 11;animation:flow 1.3s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-16}}
+  .pulse{opacity:.9}
+
+  .tier{position:relative;z-index:1;display:flex;justify-content:center;gap:34px}
+  .tier.front{margin-bottom:78px}
+  .tier.core{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-bottom:78px}
+  .tier.core .node{grid-column:2}
+  .tier.core .node.side{grid-column:3;justify-self:end}
+  .tier.data{flex-wrap:wrap;margin-bottom:74px}
+  .tier.workers{}
+
+  .node{
+    background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    padding:16px 18px;width:212px;
+    box-shadow:0 1px 2px rgba(24,34,46,.04),0 8px 24px rgba(24,34,46,.05);
+    opacity:0;animation:rise .55s ease forwards;
+    transition:transform .25s ease,box-shadow .25s ease;
+  }
+  .node:hover{transform:translateY(-3px);box-shadow:0 2px 4px rgba(24,34,46,.05),0 14px 34px rgba(24,34,46,.10)}
+  @keyframes rise{to{opacity:1}}
+  .node.sm{width:196px;padding:14px 16px}
+  .node.hero{width:236px;border-color:#D7E2DE;box-shadow:0 1px 2px rgba(14,148,136,.06),0 12px 30px rgba(14,148,136,.10)}
+
+  .chip{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+  .chip svg{width:21px;height:21px}
+  .node h3{font-size:15px;font-weight:600;margin:0 0 4px;letter-spacing:-.01em}
+  .node p{font-size:12.7px;color:var(--muted);margin:0;line-height:1.45}
+  .tag{display:inline-block;margin-top:10px;font-family:var(--mono);font-size:10.5px;color:var(--muted);
+    background:#F4F6F9;border:1px solid var(--line);border-radius:6px;padding:2px 7px;letter-spacing:.01em}
+
+  .c-indigo .chip{background:var(--indigo-tint);color:var(--indigo)}
+  .c-teal .chip{background:var(--teal-tint);color:var(--teal)}
+  .c-blue .chip{background:var(--blue-tint);color:var(--blue)}
+  .c-amber .chip{background:var(--amber-tint);color:var(--amber)}
+
+  .foot{font-size:12.5px;color:var(--muted);margin:14px 2px 0;display:flex;align-items:center;gap:8px}
+  .foot svg{width:15px;height:15px;color:var(--teal);flex:none}
+
+  @media (max-width:720px){
+    body{padding:32px 14px}
+    h1{font-size:24px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .wire-flow{animation:none}
+    .node{opacity:1;animation:none}
+    .wires{opacity:1;transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:20px">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+  <p class="eyebrow">Importadora León</p>
+  <h1>Arquitectura del ERP</h1>
+  <p class="sub">El "Enterprise Resource Planning" comprende: la tienda y el panel de gestión se apoyan en un único backend, que persiste y consulta la información en sus bases de datos e integra con los servicios externos.</p>
+
+  <div class="legend">
+    <span><i style="background:var(--indigo)"></i>Interfaces de usuario</span>
+    <span><i style="background:var(--teal)"></i>El motor</span>
+    <span><i style="background:var(--blue)"></i>Bases de datos</span>
+    <span><i style="background:var(--amber)"></i>Servicios externos</span>
+  </div>
+
+  <div class="scroller">
+  <div class="stage" id="stage">
+    <svg class="wires" id="wires" preserveAspectRatio="none">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M1 1 L9 5 L1 9" fill="none" stroke="context-stroke" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <g id="wireLayer"></g>
+    </svg>
+
+    <div class="tier front">
+      <a href="catalogo-publico.html" class="node c-indigo" id="web" style="animation-delay:.05s;text-decoration:none;color:inherit">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.6 2.6 2.6 15.4 0 18"/><path d="M12 3c-2.6 2.6-2.6 15.4 0 18"/></svg></div>
+        <h3>Catálogo público</h3>
+        <p>Donde los clientes consultan productos y compran.</p>
+        <span class="tag">web</span>
+      </a>
+      <a href="panel-gestion.html" class="node c-indigo" id="admin" style="animation-delay:.12s;text-decoration:none;color:inherit">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.6"/><rect x="14" y="3" width="7" height="5" rx="1.6"/><rect x="14" y="12" width="7" height="9" rx="1.6"/><rect x="3" y="16" width="7" height="5" rx="1.6"/></svg></div>
+        <h3>Panel de gestión</h3>
+        <p>Donde el equipo administra la operación del negocio.</p>
+        <span class="tag">interno</span>
+      </a>
+      <a href="panel-reportes.html" class="node c-indigo" id="reportes" style="animation-delay:.16s;text-decoration:none;color:inherit">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6" rx="1"/><rect x="12.5" y="7" width="3" height="10" rx="1"/><rect x="18" y="13" width="3" height="4" rx="1"/></svg></div>
+        <h3>Reportes y analítica</h3>
+        <p>Indicadores del negocio en gráficos.</p>
+        <span class="tag">dashboard</span>
+      </a>
+    </div>
+
+    <div class="tier core">
+      <a href="el-motor.html" class="node hero c-teal" id="api" style="animation-delay:.2s;text-decoration:none;color:inherit">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01"/><path d="M7 16.5h.01"/></svg></div>
+        <h3>El motor</h3>
+        <p>Aplica las reglas de negocio y coordina todas las piezas.</p>
+        <span class="tag">Django · API</span>
+      </a>
+      <a href="servicios-externos.html" class="node side c-amber" id="ext" style="animation-delay:.28s;text-decoration:none;color:inherit">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M7.8 7.7 10.6 16M16.2 7.7 13.4 16M8.4 6h7.2"/></svg></div>
+        <h3>Servicios externos</h3>
+        <p>SUNAT, pasarela de pagos y courier de envíos.</p>
+        <span class="tag">integraciones</span>
+      </a>
+    </div>
+
+    <div class="tier data">
+      <a href="base-principal.html" class="node sm c-blue" id="db" style="animation-delay:.34s;text-decoration:none;color:inherit">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></div>
+        <h3>Base principal</h3>
+        <p>El repositorio persistente del negocio; también resuelve la búsqueda.</p>
+        <span class="tag">PostgreSQL · pg_trgm</span>
+      </a>
+      <a href="memoria-rapida.html" class="node sm c-blue" id="redis" style="animation-delay:.4s;text-decoration:none;color:inherit">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 4 14h6l-1 7 9-11h-6l1-7Z"/></svg></div>
+        <h3>Memoria rápida</h3>
+        <p>El carrito de compra y la cola de tareas.</p>
+        <span class="tag">Redis</span>
+      </a>
+      <a href="almacenamiento.html" class="node sm c-blue" id="storage" style="animation-delay:.52s;text-decoration:none;color:inherit">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m20 16-5-5L6 20"/></svg></div>
+        <h3>Almacenamiento</h3>
+        <p>Imágenes de producto y documentos.</p>
+        <span class="tag">archivos</span>
+      </a>
+    </div>
+
+    <div class="tier workers">
+      <a href="tareas-automaticas.html" class="node sm c-blue" id="workers" style="animation-delay:.58s;text-decoration:none;color:inherit">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.4-5.9"/><path d="M20.5 3.5v4h-4"/></svg></div>
+        <h3>Tareas automáticas</h3>
+        <p>Emisión de comprobantes y avisos en segundo plano.</p>
+        <span class="tag">Celery</span>
+      </a>
+    </div>
+  </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var stage=document.getElementById('stage');
+  var svg=document.getElementById('wires');
+  var layer=document.getElementById('wireLayer');
+  var reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var GAP=7;
+  var COLORS={front:'#5B63E6',data:'#2E73D9',ext:'#CF8138'};
+  var conns=[
+    {from:'web',to:'api',tier:'front',both:true},
+    {from:'admin',to:'api',tier:'front',both:true},
+    {from:'reportes',to:'api',tier:'front',both:true},
+    {from:'api',to:'db',tier:'data',both:true},
+    {from:'api',to:'redis',tier:'data',both:true},
+    {from:'api',to:'storage',tier:'data',both:true},
+    {from:'api',to:'ext',tier:'ext',both:false},
+    {from:'redis',to:'workers',tier:'data',both:false}
+  ];
+
+  function rel(el,base){var r=el.getBoundingClientRect();return{x:r.left-base.left,y:r.top-base.top,w:r.width,h:r.height};}
+
+  function anchors(a,b){
+    var acx=a.x+a.w/2,acy=a.y+a.h/2,bcx=b.x+b.w/2,bcy=b.y+b.h/2;
+    var dx=bcx-acx,dy=bcy-acy,sx,sy,ex,ey,c1x,c1y,c2x,c2y,off;
+    if(Math.abs(dy)>=Math.abs(dx)){
+      var down=dy>0;
+      sx=acx;ex=bcx;
+      sy=down?a.y+a.h+GAP:a.y-GAP;
+      ey=down?b.y-GAP:b.y+b.h+GAP;
+      off=Math.max(40,Math.min(120,Math.abs(ey-sy)*0.45));
+      c1x=sx;c1y=sy+(down?off:-off);
+      c2x=ex;c2y=ey-(down?off:-off);
+    }else{
+      var right=dx>0;
+      sy=acy;ey=bcy;
+      sx=right?a.x+a.w+GAP:a.x-GAP;
+      ex=right?b.x-GAP:b.x+b.w+GAP;
+      off=Math.max(40,Math.min(120,Math.abs(ex-sx)*0.45));
+      c1x=sx+(right?off:-off);c1y=sy;
+      c2x=ex-(right?off:-off);c2y=ey;
+    }
+    return'M '+sx+' '+sy+' C '+c1x+' '+c1y+' '+c2x+' '+c2y+' '+ex+' '+ey;
+  }
+
+  function mk(tag,attrs){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);return e;}
+
+  function draw(){
+    layer.innerHTML='';
+    var base=stage.getBoundingClientRect();
+    svg.setAttribute('viewBox','0 0 '+base.width+' '+base.height);
+    conns.forEach(function(c,i){
+      var a=document.getElementById(c.from),b=document.getElementById(c.to);
+      if(!a||!b)return;
+      var d=anchors(rel(a,base),rel(b,base));
+      var col=COLORS[c.tier];
+      layer.appendChild(mk('path',{d:d,'class':'wire-base',stroke:col}));
+      var f=mk('path',{d:d,'class':'wire-flow',stroke:col,'marker-end':'url(#arrow)'});
+      if(c.both)f.setAttribute('marker-start','url(#arrow)');
+      layer.appendChild(f);
+      if(!reduce){
+        var dot=mk('circle',{r:'3.2','class':'pulse',fill:col,cx:'0',cy:'0'});
+        var am=mk('animateMotion',{dur:'3s',repeatCount:'indefinite',path:d,begin:(i*0.38)+'s'});
+        dot.appendChild(am);
+        layer.appendChild(dot);
+      }
+    });
+  }
+
+  function init(){draw();svg.classList.add('show');}
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(init);}else{window.addEventListener('load',init);}
+  window.addEventListener('load',function(){setTimeout(draw,50);});
+
+  var t;
+  window.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(draw,120);});
+  if(window.ResizeObserver){new ResizeObserver(function(){clearTimeout(t);t=setTimeout(draw,120);}).observe(stage);}
+})();
+</script>
+</body>
+</html>

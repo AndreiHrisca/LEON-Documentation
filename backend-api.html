@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La API del motor · Distribuidora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --rose:#C0436B;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --rose-tint:#FBE7EE;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:960px;margin:0 auto}
+
+  .back{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:13px;font-weight:500;color:var(--teal);
+    text-decoration:none;margin-bottom:24px;transition:gap .2s ease;
+  }
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin:0 0 14px}
+  h1{font-size:32px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:72ch;line-height:1.6;margin:0 0 8px}
+
+  .official{
+    display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;
+    color:var(--teal);background:var(--teal-tint);border:1px solid #CFE6E2;border-radius:8px;
+    padding:6px 12px;margin:0 0 16px;
+  }
+  .official svg{width:15px;height:15px}
+
+  /* conventions */
+  .conv{
+    margin:24px 0 8px;padding:20px 22px;
+    background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    box-shadow:0 1px 2px rgba(24,34,46,.04),0 8px 24px rgba(24,34,46,.05);
+  }
+  .conv h2{font-size:15px;font-weight:700;margin:0 0 14px;letter-spacing:-.01em}
+  .conv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px 22px}
+  .conv-grid div{font-size:13.5px;line-height:1.5;color:var(--muted)}
+  .conv-grid strong{display:block;color:var(--ink);font-size:13px;margin-bottom:2px}
+  .conv code{font-family:var(--mono);font-size:12px;color:var(--blue);background:#F4F6F9;border:1px solid var(--line);border-radius:5px;padding:1px 6px}
+
+  /* domains */
+  .domain{margin:44px 0 0}
+  .domain-head{display:flex;align-items:center;gap:10px;margin:0 2px 16px;padding-bottom:10px;border-bottom:2px solid var(--line)}
+  .domain-head i{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .domain-head h2{font-size:20px;font-weight:700;margin:0;letter-spacing:-.01em}
+  .domain-head .note{font-size:13px;color:var(--muted);margin-left:auto}
+
+  .ent{
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;margin-bottom:18px;
+    box-shadow:0 1px 2px rgba(24,34,46,.04),0 6px 18px rgba(24,34,46,.04);
+    border-top:3px solid var(--c);
+  }
+  .ent-h{padding:15px 20px 13px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 12px}
+  .ent-h .name{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--ink)}
+  .ent-h .why{font-size:13px;color:var(--muted);line-height:1.45;flex:1 1 240px;min-width:0}
+  .ent-h .later{
+    font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--muted);background:#F4F6F9;border:1px solid var(--line);
+    border-radius:5px;padding:2px 8px;white-space:nowrap;
+  }
+
+  table.ftable{width:100%;border-collapse:collapse;font-size:13.5px}
+  .ftable thead th{
+    text-align:left;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--muted);padding:10px 20px;background:#FAFBFC;border-bottom:1px solid var(--line);
+  }
+  .ftable td{padding:11px 20px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
+  .ftable tr:last-child td{border-bottom:none}
+  .ftable th.c-ep,.ftable td.ep{width:38%}
+  .ftable th.c-desc,.ftable td.desc{width:62%}
+
+  .ep .route{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-weight:500;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .m{font-family:var(--mono);font-size:9.5px;font-weight:700;border-radius:4px;padding:2px 6px;letter-spacing:.04em;flex:none}
+  .m.get{background:var(--blue-tint);color:var(--blue)}
+  .m.post{background:var(--teal-tint);color:var(--teal)}
+  .m.patch{background:var(--amber-tint);color:var(--amber)}
+  .m.del{background:var(--rose-tint);color:var(--rose)}
+  .ep .note{margin-top:5px;font-size:11.5px;color:var(--muted);font-family:var(--mono)}
+  .desc{color:var(--muted)}
+  .desc .ref{color:var(--blue);font-family:var(--mono);font-size:12px}
+  .desc .rule{color:var(--teal);font-weight:600}
+
+  .legend{display:flex;flex-wrap:wrap;gap:14px 20px;margin:28px 2px 0}
+  .legend span{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted)}
+
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.75}
+  .foot a{color:var(--teal);font-weight:600;text-decoration:none}
+
+  @media (max-width:640px){
+    body{padding:32px 14px}
+    h1{font-size:25px}
+    .domain-head .note{display:none}
+    .ftable thead{display:none}
+    .ftable,.ftable tbody,.ftable tr,.ftable td{display:block;width:100%}
+    .ftable tr{padding:12px 18px;border-bottom:1px solid var(--line)}
+    .ftable tr:last-child{border-bottom:none}
+    .ftable td{padding:3px 0;border:none;width:100%}
+    .ftable td.desc{margin-top:4px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="el-motor.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Volver a El motor
+  </a>
+
+  <p class="eyebrow">Backend · <span style="color:var(--teal)">documento oficial</span></p>
+  <h1>La API del motor</h1>
+  <p class="official">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    Contrato vigente de la API. Refleja el modelo de <a href="bases-de-datos.html" style="color:var(--teal)">Las tablas del negocio</a>.
+  </p>
+  <p class="sub">El motor (Django + Django REST Framework) expone una API REST en JSON. La tienda y el panel son clientes ligeros: solo solicitan y presentan; todas las reglas —descontar stock, calcular el costo en soles, emitir a SUNAT— residen aquí. Cada recurso de la API corresponde a una tabla del modelo.</p>
+
+  <div class="conv">
+    <h2>Convenciones</h2>
+    <div class="conv-grid">
+      <div><strong>Base</strong> Todo cuelga de <code>/api/v1/</code>. La versión en la ruta permite evolucionar sin romper a la tienda.</div>
+      <div><strong>Formato</strong> Entra y sale <code>JSON</code>. Fechas en ISO 8601, montos como número.</div>
+      <div><strong>Autenticación</strong> Token <code>JWT</code> en la cabecera <code>Authorization: Bearer …</code>. El catálogo público es de solo lectura sin token.</div>
+      <div><strong>Listados</strong> Paginados (<code>?page=</code>), con <code>?buscar=</code> y filtros (<code>?categoria=</code>, <code>?estado=</code>).</div>
+      <div><strong>Permisos</strong> Según el <span class="ref">rol</span> del usuario (abastecimiento, ventas, marketing, sistemas, admin).</div>
+      <div><strong>Errores</strong> Códigos HTTP estándar: <code>200/201</code> bien, <code>400</code> datos inválidos, <code>401/403</code> sin permiso, <code>409</code> conflicto (p. ej. sin stock).</div>
+    </div>
+  </div>
+
+  <!-- ===================== AUTENTICACIÓN ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--blue)"></i><h2>Autenticación</h2><span class="note">quién entra</span></div>
+    <div class="ent" style="--c:var(--blue)">
+      <div class="ent-h"><span class="name">/auth</span><span class="why">Acceso del equipo al panel. La tienda pública no necesita login para mirar el catálogo.</span></div>
+      <table class="ftable"><thead><tr><th class="c-ep">Endpoint</th><th class="c-desc">Qué hace y reglas</th></tr></thead><tbody>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /auth/login</div><div class="note">{ email, password } → { token }</div></td><td class="desc">Valida credenciales y devuelve un token JWT con el rol dentro.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /auth/refresh</div></td><td class="desc">Renueva el token antes de que caduque, sin volver a pedir contraseña.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /auth/logout</div></td><td class="desc">Invalida el token actual.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /auth/yo</div></td><td class="desc">Devuelve el usuario en sesión y su rol. Apunta a <span class="ref">usuario</span>.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ===================== CATÁLOGO ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--indigo)"></i><h2>Catálogo</h2><span class="note">qué vendemos</span></div>
+    <div class="ent" style="--c:var(--indigo)">
+      <div class="ent-h"><span class="name">/productos · /variantes · /categorias</span><span class="why">Lectura pública para la tienda; escritura solo para abastecimiento/admin.</span></div>
+      <table class="ftable"><thead><tr><th class="c-ep">Endpoint</th><th class="c-desc">Qué hace y reglas</th></tr></thead><tbody>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /productos</div><div class="note">?buscar=&amp;categoria=&amp;page=</div></td><td class="desc">Lista productos activos con sus variantes. Usa <span class="rule">pg_trgm</span> de Postgres para el <span class="ref">buscar</span>. Apunta a <span class="ref">producto</span>.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /productos/{id}</div></td><td class="desc">Detalle del producto con sus variantes, imágenes y stock de cada una.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /productos</div></td><td class="desc">Crea un producto. <span class="rule">Solo abastecimiento/admin.</span></td></tr>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /variantes/{id}</div></td><td class="desc">La versión real (el SKU). Es lo que se compra, vende y cuenta. Apunta a <span class="ref">variante</span>.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m patch">PATCH</span> /variantes/{id}</div></td><td class="desc">Edita SKU, código de barras, atributos o si sigue activa.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /categorias</div></td><td class="desc">Árbol de categorías (con <span class="ref">padre_id</span>). Apunta a <span class="ref">categoria</span>.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ===================== INVENTARIO ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--teal)"></i><h2>Inventario</h2><span class="note">cuánto tenemos</span></div>
+    <div class="ent" style="--c:var(--teal)">
+      <div class="ent-h"><span class="name">/inventario</span><span class="why">El stock no se escribe: se calcula sumando movimientos. La API nunca expone un campo para "fijar" stock.</span></div>
+      <table class="ftable"><thead><tr><th class="c-ep">Endpoint</th><th class="c-desc">Qué hace y reglas</th></tr></thead><tbody>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /variantes/{id}/stock</div></td><td class="desc">Devuelve el stock disponible <span class="rule">calculado</span> sumando <span class="ref">movimiento_inventario</span>, por almacén. Nunca es un valor escrito a mano.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /movimientos</div><div class="note">?variante=&amp;almacen=&amp;tipo=</div></td><td class="desc">El historial de entradas y salidas. Auditable: de dónde salió cada unidad.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /movimientos</div></td><td class="desc">Registra un ajuste o merma a mano. Las compras y ventas generan su movimiento <span class="rule">automáticamente</span>, no por aquí.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /almacenes</div></td><td class="desc">Las zonas físicas. Apunta a <span class="ref">almacen</span>.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ===================== COMPRAS / IMPORTACIÓN ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--amber)"></i><h2>Compras / Importación</h2><span class="note">la parte de abastecimiento</span></div>
+    <div class="ent" style="--c:var(--amber)">
+      <div class="ent-h"><span class="name">/compras</span><span class="why">El flujo desde China: proveedor → orden → embarque → recepción. Al recibir, suma stock.</span></div>
+      <table class="ftable"><thead><tr><th class="c-ep">Endpoint</th><th class="c-desc">Qué hace y reglas</th></tr></thead><tbody>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /proveedores</div></td><td class="desc">Fábricas y mayoristas. Apunta a <span class="ref">proveedor</span>.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /ordenes-compra</div></td><td class="desc">Crea un pedido a un proveedor con sus líneas. Guarda <span class="ref">tipo_cambio</span> para calcular el costo real en soles.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m patch">PATCH</span> /ordenes-compra/{id}</div></td><td class="desc">Avanza el estado (pedido → producción → en tránsito → recibido).</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /ordenes-compra/{id}/recibir</div></td><td class="desc"><span class="rule">Genera las entradas de stock</span> de las variantes recibidas, en un solo paso atómico.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /embarques/{id}/costo-real</div></td><td class="desc">Reparte flete, aduana y seguro (<span class="ref">costo_importacion</span>) entre las unidades para saber cuánto costó de verdad cada una.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /muestras</div></td><td class="desc">Control de calidad previo. Apunta a <span class="ref">muestra</span>.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ===================== VENTAS ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--blue)"></i><h2>Ventas</h2><span class="note">pedidos y clientes</span></div>
+    <div class="ent" style="--c:var(--blue)">
+      <div class="ent-h"><span class="name">/clientes · /pedidos</span><span class="why">Confirmar un pedido descuenta stock y deja el cobro pendiente. El precio se congela en la línea.</span></div>
+      <table class="ftable"><thead><tr><th class="c-ep">Endpoint</th><th class="c-desc">Qué hace y reglas</th></tr></thead><tbody>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /clientes</div></td><td class="desc">Personas y empresas. El <span class="ref">doc_tipo</span> (DNI/RUC) decide boleta o factura. Apunta a <span class="ref">cliente</span>.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /pedidos</div></td><td class="desc">Crea una venta con sus líneas. <span class="rule">Verifica stock</span> antes de confirmar; si falta, responde <code>409</code>.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /pedidos/{id}/confirmar</div></td><td class="desc"><span class="rule">Descuenta el stock</span> como salida y deja el pedido listo para cobro y comprobante. Todo en una transacción.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /pedidos/{id}</div></td><td class="desc">Detalle con líneas, envío, pagos y comprobante asociado. Apunta a <span class="ref">pedido</span>.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /cotizaciones</div> <span class="later">Fase posterior</span></td><td class="desc">Propuesta de precio a un mayorista antes de confirmar. Apunta a <span class="ref">cotizacion</span>.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /envios</div></td><td class="desc">Registra el despacho (courier, tracking, costo). Apunta a <span class="ref">envio_cliente</span>.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ===================== FACTURACIÓN Y PAGOS ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--teal)"></i><h2>Facturación y pagos</h2><span class="note">documentos legales</span></div>
+    <div class="ent" style="--c:var(--teal)">
+      <div class="ent-h"><span class="name">/comprobantes · /pagos</span><span class="why">Emitir a SUNAT es asíncrono: la API encola la tarea y el estado se actualiza cuando SUNAT responde.</span></div>
+      <table class="ftable"><thead><tr><th class="c-ep">Endpoint</th><th class="c-desc">Qué hace y reglas</th></tr></thead><tbody>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /comprobantes</div></td><td class="desc">Emite boleta o factura de un pedido. <span class="rule">Encola</span> el envío a SUNAT (Celery); responde <code>202</code> con estado <em>pendiente</em>. Apunta a <span class="ref">comprobante</span>.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /comprobantes/{id}</div></td><td class="desc">Estado SUNAT (aceptado/rechazado/pendiente) y enlaces al XML y CDR.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /notas-credito</div></td><td class="desc">Devolución o anulación que referencia al comprobante original. Apunta a <span class="ref">nota_credito</span>.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /pagos</div></td><td class="desc">Registra el cobro (Yape, Plin, tarjeta, transferencia) con su voucher. Apunta a <span class="ref">pago</span>.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /pagos/{id}/confirmar</div></td><td class="desc">Marca el pago confirmado y, si cubre el total, pasa el pedido a <em>pagado</em>.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ===================== TAREAS Y REPORTES ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--blue)"></i><h2>Tareas y reportes</h2><span class="note">en segundo plano</span></div>
+    <div class="ent" style="--c:var(--blue)">
+      <div class="ent-h"><span class="name">/reportes · tareas</span><span class="why">Lo pesado no bloquea la respuesta: se hace con Celery sobre la memoria rápida (Redis).</span></div>
+      <table class="ftable"><thead><tr><th class="c-ep">Endpoint</th><th class="c-desc">Qué hace y reglas</th></tr></thead><tbody>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /reportes/ventas</div><div class="note">?desde=&amp;hasta=</div></td><td class="desc">Ventas agregadas por día/mes. Resultado cacheado en Redis.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /reportes/stock-bajo</div></td><td class="desc">Variantes por debajo del mínimo, para reponer.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /salud</div></td><td class="desc">Health check: responde que el motor y la base están vivos.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /tareas (interno)</div></td><td class="desc">No es un endpoint público: emisión a SUNAT, envío de avisos y recálculos corren como tareas de Celery encoladas en Redis.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="m get">GET</span> leer</span>
+    <span><span class="m post">POST</span> crear / acción</span>
+    <span><span class="m patch">PATCH</span> editar</span>
+    <span><span class="m del">DELETE</span> borrar</span>
+    <span><span class="later" style="margin:0">Fase posterior</span> diferido hasta que el volumen lo justifique</span>
+  </div>
+
+  <p class="foot">
+    Tres reglas atraviesan toda la API: el <strong>stock se calcula</strong> (nunca se fija por endpoint), <strong>confirmar pedido y emitir comprobante son transacciones</strong> que no dejan estados a medias, y <strong>lo lento (SUNAT, avisos) es asíncrono</strong> vía Celery. El detalle de cada tabla está en <a href="bases-de-datos.html">Las tablas del negocio</a>; el panorama de componentes, en <a href="el-motor.html">El motor</a>.
+  </p>
+</div>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentación · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+    padding:56px 24px 48px;
+  }
+  .wrap{max-width:1000px;margin:0 auto}
+
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin:0 0 14px}
+  h1{font-size:34px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:66ch;line-height:1.6;margin:0 0 8px}
+
+  .hero{
+    display:block;margin:30px 0 8px;padding:22px 24px;text-decoration:none;color:inherit;
+    background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:14px;
+    box-shadow:0 1px 2px rgba(24,34,46,.04),0 8px 24px rgba(24,34,46,.05);
+    transition:transform .2s ease,box-shadow .2s ease;
+  }
+  .hero:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(24,34,46,.05),0 14px 34px rgba(24,34,46,.10)}
+  .hero h2{font-size:18px;font-weight:700;margin:0 0 4px;display:flex;align-items:center;gap:9px}
+  .hero p{font-size:14px;color:var(--muted);margin:0;line-height:1.5}
+  .hero .arrow{margin-left:auto;color:var(--teal)}
+
+  .sec{margin:40px 0 0}
+  .sec-h{display:flex;align-items:center;gap:10px;margin:0 2px 16px;padding-bottom:10px;border-bottom:2px solid var(--line)}
+  .sec-h i{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .sec-h h2{font-size:17px;font-weight:700;margin:0;letter-spacing:-.01em}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+  .card{
+    display:flex;flex-direction:column;gap:6px;padding:16px 18px;text-decoration:none;color:inherit;
+    background:var(--surface);border:1px solid var(--line);border-radius:13px;border-top:3px solid var(--c,var(--line));
+    box-shadow:0 1px 2px rgba(24,34,46,.04),0 6px 18px rgba(24,34,46,.04);
+    transition:transform .2s ease,box-shadow .2s ease;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:0 2px 4px rgba(24,34,46,.05),0 14px 34px rgba(24,34,46,.10)}
+  .card .t{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card .d{font-size:13px;color:var(--muted);line-height:1.5}
+  .card .file{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:auto;padding-top:4px}
+
+  .badge{font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:5px;padding:2px 7px;white-space:nowrap}
+  .badge.of{background:var(--teal-tint);color:var(--teal)}
+  .badge.v1{background:var(--amber-tint);color:var(--amber)}
+  .badge.fn{background:var(--blue-tint);color:var(--blue)}
+
+  .c-indigo{--c:var(--indigo)} .c-teal{--c:var(--teal)} .c-blue{--c:var(--blue)} .c-amber{--c:var(--amber)} .c-slate{--c:#51606F}
+
+  .foot{font-size:13px;color:var(--muted);margin-top:44px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+
+  @media (max-width:640px){ body{padding:36px 16px} h1{font-size:27px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Importadora León · Documentación técnica</p>
+  <h1>Documentación del sistema</h1>
+  <p class="sub">Mapa completo del proyecto: arquitectura, modelo de datos, API del backend, interfaces de usuario y cada componente que lo compone. Se recomienda comenzar por la arquitectura general y descender al detalle desde ahí.</p>
+
+  <a href="arquitectura.html" class="hero">
+    <h2>Arquitectura del ERP<span class="arrow">→</span></h2>
+    <p>Diagrama vivo del conjunto: la tienda y el panel de gestión sobre el backend, sus bases de datos y los servicios externos con los que integra. El punto de entrada a la documentación.</p>
+  </a>
+
+  <!-- MODELO DE DATOS -->
+  <div class="sec">
+    <div class="sec-h"><i style="background:var(--teal)"></i><h2>Modelo de datos</h2></div>
+    <div class="grid">
+      <a href="bases-de-datos.html" class="card c-teal">
+        <div class="t">Esquema de datos <span class="badge of">Oficial</span></div>
+        <div class="d">El modelo canónico del negocio, tabla por tabla y campo por campo. La fuente de verdad del esquema.</div>
+        <div class="file">bases-de-datos.html</div>
+      </a>
+      <a href="connect-tables-db.html" class="card c-amber">
+        <div class="t">Relaciones entre tablas <span class="badge v1">Partida v1</span></div>
+        <div class="d">Esquema inicial y tablas puente. Se conserva como referencia del punto de partida del diseño.</div>
+        <div class="file">connect-tables-db.html</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- BACKEND -->
+  <div class="sec">
+    <div class="sec-h"><i style="background:var(--teal)"></i><h2>Backend</h2></div>
+    <div class="grid">
+      <a href="backend-api.html" class="card c-teal">
+        <div class="t">API del backend <span class="badge of">Oficial</span></div>
+        <div class="d">El contrato REST documentado endpoint por endpoint y agrupado por dominio: catálogo, inventario, compras, ventas y facturación.</div>
+        <div class="file">backend-api.html</div>
+      </a>
+      <a href="el-motor.html" class="card c-teal">
+        <div class="t">Visión general del backend</div>
+        <div class="d">Qué es el backend (Django + DRF), de qué se encarga y su stack tecnológico. La perspectiva de componente.</div>
+        <div class="file">el-motor.html</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- DATOS Y ALMACENAMIENTO -->
+  <div class="sec">
+    <div class="sec-h"><i style="background:var(--blue)"></i><h2>Datos y almacenamiento</h2></div>
+    <div class="grid">
+      <a href="base-principal.html" class="card c-blue">
+        <div class="t">Base de datos principal</div>
+        <div class="d">PostgreSQL: el repositorio persistente del negocio. También resuelve las consultas de búsqueda.</div>
+        <div class="file">base-principal.html</div>
+      </a>
+      <a href="memoria-rapida.html" class="card c-blue">
+        <div class="t">Caché en memoria</div>
+        <div class="d">Redis: gestiona el carrito de compra y la cola de tareas en segundo plano.</div>
+        <div class="file">memoria-rapida.html</div>
+      </a>
+      <a href="almacenamiento.html" class="card c-blue">
+        <div class="t">Almacenamiento de archivos</div>
+        <div class="d">Gestión de ficheros: imágenes de producto y documentos.</div>
+        <div class="file">almacenamiento.html</div>
+      </a>
+      <a href="buscador.html" class="card c-blue">
+        <div class="t">Motor de búsqueda <span class="badge fn">Función de Postgres</span></div>
+        <div class="d">Búsqueda instantánea mediante pg_trgm, integrada en la base de datos. No constituye un servicio independiente.</div>
+        <div class="file">buscador.html</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- INTERFACES -->
+  <div class="sec">
+    <div class="sec-h"><i style="background:var(--indigo)"></i><h2>Interfaces de usuario</h2></div>
+    <div class="grid">
+      <a href="catalogo-publico.html" class="card c-indigo">
+        <div class="t">Catálogo público</div>
+        <div class="d">La tienda online: donde los clientes consultan productos y realizan sus compras.</div>
+        <div class="file">catalogo-publico.html</div>
+      </a>
+      <a href="panel-gestion.html" class="card c-indigo">
+        <div class="t">Panel de gestión</div>
+        <div class="d">El back-office: desde donde el equipo administra la operativa completa del negocio.</div>
+        <div class="file">panel-gestion.html</div>
+      </a>
+      <a href="panel-reportes.html" class="card c-indigo">
+        <div class="t">Reportes y analítica <span class="badge fn">Prototipo</span></div>
+        <div class="d">Dashboard del back-office: KPIs y gráficos (Chart.js) sobre datos simulados.</div>
+        <div class="file">panel-reportes.html</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- OPERACIÓN -->
+  <div class="sec">
+    <div class="sec-h"><i style="background:var(--amber)"></i><h2>Operación e integraciones</h2></div>
+    <div class="grid">
+      <a href="servicios-externos.html" class="card c-amber">
+        <div class="t">Servicios externos</div>
+        <div class="d">Integraciones con SUNAT para comprobantes electrónicos, pasarela de pagos y courier de envíos.</div>
+        <div class="file">servicios-externos.html</div>
+      </a>
+      <a href="tareas-automaticas.html" class="card c-amber">
+        <div class="t">Tareas automáticas</div>
+        <div class="d">Celery: procesamiento en segundo plano de facturas y notificaciones.</div>
+        <div class="file">tareas-automaticas.html</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- LEGAL -->
+  <div class="sec">
+    <div class="sec-h"><i style="background:#51606F"></i><h2>Legal</h2></div>
+    <div class="grid">
+      <a href="legal-aviso.html" class="card c-slate">
+        <div class="t">Aviso legal</div>
+        <div class="d">Identificación del titular (razón social, RUC, domicilio) y condiciones generales de uso del sitio.</div>
+        <div class="file">legal-aviso.html</div>
+      </a>
+      <a href="legal-terminos.html" class="card c-slate">
+        <div class="t">Términos y condiciones</div>
+        <div class="d">Reglas de compra mayorista y minorista: precios, comprobantes SUNAT, pagos, envíos, devoluciones y garantía.</div>
+        <div class="file">legal-terminos.html</div>
+      </a>
+      <a href="legal-privacidad.html" class="card c-slate">
+        <div class="t">Política de privacidad</div>
+        <div class="d">Tratamiento de datos personales conforme a la Ley N° 29733 y derechos ARCO del cliente.</div>
+        <div class="file">legal-privacidad.html</div>
+      </a>
+      <a href="legal-cookies.html" class="card c-slate">
+        <div class="t">Política de cookies</div>
+        <div class="d">Qué cookies utiliza el sitio, con qué finalidad y cómo gestionarlas o desactivarlas.</div>
+        <div class="file">legal-cookies.html</div>
+      </a>
+      <a href="legal-libro-reclamaciones.html" class="card c-slate">
+        <div class="t">Libro de reclamaciones</div>
+        <div class="d">Registro de reclamos y quejas exigido por Indecopi (Código del Consumidor, Ley N° 29571).</div>
+        <div class="file">legal-libro-reclamaciones.html</div>
+      </a>
+    </div>
+  </div>
+
+  <p class="foot">
+    Dos documentos prevalecen sobre el resto: <a href="bases-de-datos.html" style="color:var(--teal);font-weight:600;text-decoration:none">Esquema de datos</a> (el modelo) y <a href="backend-api.html" style="color:var(--teal);font-weight:600;text-decoration:none">API del backend</a> (el contrato del backend). Ante cualquier discrepancia, estos dos tienen prioridad. Los documentos del apartado <strong>Legal</strong> son modelos orientativos.
+  </p>
+</div>
+</body>
+</html>

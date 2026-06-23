@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tareas automáticas · Distribuidora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:820px;margin:0 auto}
+  
+  .back{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:13px;font-weight:500;color:var(--teal);
+    text-decoration:none;margin-bottom:24px;
+    transition:gap .2s ease;
+  }
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{
+    font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--blue);margin:0 0 14px;
+  }
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 32px}
+
+  .chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--blue-tint);color:var(--blue)}
+  .chip svg{width:26px;height:26px}
+
+  .section{margin:40px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+  .section p{font-size:15px;line-height:1.7;color:var(--muted);margin:0}
+  
+  .list-item{margin:12px 0;padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.6}
+  .list-item:last-child{border-bottom:none}
+  .list-item strong{color:var(--ink)}
+
+  .stack{
+    display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;
+  }
+  .badge{
+    display:inline-block;
+    padding:4px 10px;
+    background:var(--blue-tint);
+    border:1px solid var(--line);
+    border-radius:6px;
+    font-size:12px;
+    font-weight:500;
+    color:var(--blue);
+    font-family:var(--mono);
+  }
+
+  .foot{font-size:13px;color:var(--muted);margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
+
+  @media (max-width:720px){
+    body{padding:32px 14px}
+    h1{font-size:28px}
+    .section{padding:16px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="arquitectura.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Volver a la arquitectura
+  </a>
+
+  <p class="eyebrow">Tareas automáticas</p>
+  <h1>Procesamiento en segundo plano</h1>
+  <p class="sub">Cola de tareas (Celery) que procesa operaciones de larga duración sin bloquear al usuario: notificaciones, emisión de comprobantes, generación de reportes y sincronización con terceros.</p>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.4-5.9"/><path d="M20.5 3.5v4h-4"/></svg></div>
+
+  <div class="section">
+    <h2>¿Qué es?</h2>
+    <p>Celery es una cola de tareas distribuida. El backend encola los trabajos en Redis y unos workers (procesos Python independientes) los ejecutan en segundo plano, sin que el usuario tenga que esperar. La petición responde de inmediato mientras la operación pesada se procesa aparte.</p>
+  </div>
+
+  <div class="section">
+    <h2>Funciones principales</h2>
+    <div class="list-item"><strong>Notificaciones:</strong> Al confirmarse un pedido se encola el aviso al cliente; el worker lo ejecuta y la notificación llega en segundos.</div>
+    <div class="list-item"><strong>Emisión de comprobantes:</strong> Una tarea invoca a SUNAT, genera el PDF y lo deposita en el almacenamiento; el usuario ve "generando…" y luego el enlace de descarga.</div>
+    <div class="list-item"><strong>Sincronización de stock:</strong> Cada pocos minutos, una tarea concilia el inventario con sistemas externos.</div>
+    <div class="list-item"><strong>Reportes programados:</strong> Una tarea genera el reporte de ventas diario y lo envía por correo a la gerencia.</div>
+    <div class="list-item"><strong>Mantenimiento de datos:</strong> Depuración de carritos abandonados y sesiones caducadas, en horario nocturno.</div>
+    <div class="list-item"><strong>Reintento de webhooks:</strong> Si la llamada al courier falla, se reintenta automáticamente con espera creciente (1, 5 y 15 minutos).</div>
+  </div>
+
+  <div class="section">
+    <h2>Limitaciones y restricciones</h2>
+    <div class="list-item"><strong>Consistencia eventual:</strong> La tarea no termina de inmediato; si el usuario recarga antes de completarse, puede ver un estado anterior.</div>
+    <div class="list-item"><strong>Fallo silencioso:</strong> Si un worker cae durante una tarea, esta puede perderse sin aviso; exige monitorización.</div>
+    <div class="list-item"><strong>Duplicación:</strong> Procesar dos veces la misma tarea podría emitir dos comprobantes; requiere idempotencia.</div>
+    <div class="list-item"><strong>Escalado de workers:</strong> Ante muchos pedidos simultáneos, la cola crece y se necesitan más workers.</div>
+    <div class="list-item"><strong>Diagnóstico complejo:</strong> Depurar un error en segundo plano es más difícil que en una petición síncrona.</div>
+  </div>
+
+  <div class="section">
+    <h2>Propósito del componente</h2>
+    <p>Ejecutar operaciones largas sin bloquear al usuario, ofreciendo respuesta inmediata; escalar de forma independiente del API; y aislar la lógica, ya que un worker es un proceso separado que puede reiniciarse sin afectar al backend.</p>
+  </div>
+
+  <div class="section">
+    <h2>Stack tecnológico recomendado</h2>
+    <div class="stack">
+      <span class="badge">Celery</span>
+      <span class="badge">Redis (broker)</span>
+      <span class="badge">Flower (monitoring)</span>
+      <span class="badge">Django Celery</span>
+      <span class="badge">APScheduler (scheduling)</span>
+      <span class="badge">Sentry (error tracking)</span>
+    </div>
+    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> Celery es el estándar en Django. Redis actúa como broker de baja latencia. Flower visualiza el estado de las tareas. APScheduler gestiona las tareas recurrentes (cron). Sentry notifica los errores en segundo plano.</p>
+  </div>
+
+  <div class="section">
+    <h2>Información técnica adicional</h2>
+    <div class="list-item"><strong>Reintentos:</strong> Ante un fallo, la tarea se reintenta automáticamente; se configuran max_retries y retry_backoff.</div>
+    <div class="list-item"><strong>Tiempos límite:</strong> Una tarea no debe exceder cierta duración; si se bloquea, el worker termina el proceso.</div>
+    <div class="list-item"><strong>Limitación de tasa:</strong> Acota cuántas tareas del mismo tipo se ejecutan a la vez para no saturar SUNAT.</div>
+    <div class="list-item"><strong>Idempotencia:</strong> La tarea debe producir el mismo resultado si se ejecuta dos veces; es clave para la fiabilidad.</div>
+    <div class="list-item"><strong>Seguimiento de estado:</strong> El usuario puede ver el progreso: "Procesando…" → "Completado" → "Con error".</div>
+  </div>
+
+  <div class="section">
+    <h2>Métricas importantes</h2>
+    <div class="list-item"><strong>Profundidad de cola:</strong> Tareas en espera de ejecución; por encima de 1000, añadir workers.</div>
+    <div class="list-item"><strong>Tasa de éxito:</strong> Porcentaje de tareas completadas frente a fallidas; objetivo superior al 99%.</div>
+    <div class="list-item"><strong>Tiempo de ejecución (P95):</strong> Notificación < 1 s, comprobante < 5 s, reporte < 30 s.</div>
+    <div class="list-item"><strong>Disponibilidad de workers:</strong> Porcentaje de tiempo operativos; alertar por debajo del 95%.</div>
+    <div class="list-item"><strong>Tasa de error:</strong> Porcentaje de tareas fallidas; por encima del 1% indica un defecto o una integración rota.</div>
+  </div>
+
+  <p class="foot">
+    El procesamiento asíncrono mejora notablemente la experiencia de usuario, pero exige disciplina: toda tarea debe ser idempotente, con reintentos y monitorización. Sin ello, el riesgo es la corrupción de datos y la insatisfacción del cliente.
+  </p>
+</div></body>
+</html>
