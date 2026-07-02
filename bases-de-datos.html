@@ -518,7 +518,8 @@
         <tr><td class="campo"><span class="f">nombre</span></td><td class="ej"><span class="v">Franitza León</span></td><td class="desc">Nombre de la persona.</td></tr>
         <tr><td class="campo"><span class="f">email</span></td><td class="ej"><span class="v">franitza@…</span></td><td class="desc">Con qué correo entra al sistema.</td></tr>
         <tr><td class="campo"><span class="f">rol</span></td><td class="ej"><span class="v">Abastecimiento</span></td><td class="desc">Qué puede hacer en el sistema (abastecimiento, ventas, marketing, sistemas, admin).</td></tr>
-        <tr><td class="campo"><span class="f">activo</span></td><td class="ej"><span class="v">Sí</span></td><td class="desc">Si su acceso está habilitado.</td></tr>
+        <tr><td class="campo"><span class="f">activo</span></td><td class="ej"><span class="v">Sí</span></td><td class="desc">Si su acceso está habilitado. Se apaga sola al crear la cuenta hasta que se aprueba (ver <span class="ref">aprobado</span>).</td></tr>
+        <tr><td class="campo"><span class="f">aprobado</span></td><td class="ej"><span class="v">Sí</span></td><td class="desc">Si un admin ya revisó la cuenta. Las que crea un admin desde Equipo nacen aprobadas; las que llegan por autoregistro (<span class="ref">/auth/registro</span>) nacen en <span class="v">No</span> y quedan bloqueadas hasta que un admin las aprueba.</td></tr>
       </tbody></table>
     </div>
   </div>

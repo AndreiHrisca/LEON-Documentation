@@ -153,10 +153,27 @@
     <div class="ent" style="--c:var(--blue)">
       <div class="ent-h"><span class="name">/auth</span><span class="why">Acceso del equipo al panel. La tienda pública no necesita login para mirar el catálogo.</span></div>
       <table class="ftable"><thead><tr><th class="c-ep">Endpoint</th><th class="c-desc">Qué hace y reglas</th></tr></thead><tbody>
-        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /auth/login</div><div class="note">{ email, password } → { token }</div></td><td class="desc">Valida credenciales y devuelve un token JWT con el rol dentro.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /auth/login</div><div class="note">{ email, password } → { access, refresh }</div></td><td class="desc">Valida credenciales y devuelve un JWT con el rol dentro. Además abre una <span class="rule">sesión Django compartida</span> (cookie <code>Domain=.importacionleon.com</code>) para que otros subdominios (p. ej. Documentation) reconozcan la sesión sin manejar el JWT.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /auth/registro</div><div class="note">{ nombre, email, password, rol } → 201, sin token</div><div class="note">Público, sin autenticación</div></td><td class="desc">Autoregistro del equipo. Crea la cuenta ya <span class="rule">bloqueada</span> (<span class="ref">activo</span>=false, <span class="ref">aprobado</span>=false): no inicia sesión ni emite tokens. Queda visible en <span class="ref">/equipo</span> hasta que un admin la apruebe. No admite pedir el rol <span class="ref">admin</span>.</td></tr>
         <tr><td class="ep"><div class="route"><span class="m post">POST</span> /auth/refresh</div></td><td class="desc">Renueva el token antes de que caduque, sin volver a pedir contraseña.</td></tr>
-        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /auth/logout</div></td><td class="desc">Invalida el token actual.</td></tr>
-        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /auth/yo</div></td><td class="desc">Devuelve el usuario en sesión y su rol. Apunta a <span class="ref">usuario</span>.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /auth/logout</div></td><td class="desc">Invalida (blacklist) el refresh token y cierra también la sesión Django compartida.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /auth/verificar</div></td><td class="desc">Solo mira la cookie de sesión compartida (no el JWT); la usa nginx (<code>auth_request</code>) para proteger Documentation. 401 si no hay sesión o la cuenta ya no está <span class="ref">activo</span>.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /auth/yo</div></td><td class="desc">Devuelve el usuario en sesión, su rol y si sigue <span class="ref">activo</span>. Apunta a <span class="ref">usuario</span>.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ===================== EQUIPO ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--blue)"></i><h2>Equipo</h2><span class="note">quién opera el panel</span></div>
+    <div class="ent" style="--c:var(--blue)">
+      <div class="ent-h"><span class="name">/equipo</span><span class="why">Lectura abierta a cualquier autenticado; alta, edición y aprobación solo para admin. Apunta a <span class="ref">usuario</span>.</span></div>
+      <table class="ftable"><thead><tr><th class="c-ep">Endpoint</th><th class="c-desc">Qué hace y reglas</th></tr></thead><tbody>
+        <tr><td class="ep"><div class="route"><span class="m get">GET</span> /equipo</div><div class="note">?activo=&amp;aprobado=&amp;rol=</div></td><td class="desc">Lista el equipo interno, incluidas las solicitudes de autoregistro (<span class="ref">aprobado</span>=false).</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /equipo</div></td><td class="desc"><span class="rule">Solo admin.</span> Alta directa (sin pasar por autoregistro). Aprovisiona la credencial y devuelve <code>password_temporal</code> una única vez; no hay envío de correo con la contraseña.</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m patch">PATCH</span> /equipo/{id}</div></td><td class="desc"><span class="rule">Solo admin.</span> Edita nombre, rol o <span class="ref">activo</span>; sincroniza la credencial (activar/desactivar el acceso, o los permisos de staff/superusuario según el rol).</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /equipo/{id}/aprobar</div></td><td class="desc"><span class="rule">Solo admin.</span> Aprueba una solicitud de autoregistro: pasa <span class="ref">aprobado</span> y <span class="ref">activo</span> a verdadero y avisa por correo que ya puede entrar. Si no hay SMTP configurado, la aprobación igual se aplica (el correo solo se registra en el log).</td></tr>
+        <tr><td class="ep"><div class="route"><span class="m post">POST</span> /equipo/{id}/rechazar</div></td><td class="desc"><span class="rule">Solo admin.</span> Borra una solicitud de autoregistro que aún no fue aprobada, junto con su credencial. No aplica a cuentas ya aprobadas: a esas se las desactiva, no se borran.</td></tr>
       </tbody></table>
     </div>
   </div>

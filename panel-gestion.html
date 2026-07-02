@@ -112,11 +112,11 @@
 
   <div class="section">
     <h2>Limitaciones y restricciones</h2>
-    <div class="list-item"><strong>Acceso restringido:</strong> Solo usuarios con credenciales de administrador o gerente pueden ingresar.</div>
+    <div class="list-item"><strong>Acceso restringido:</strong> Solo entra el equipo con cuenta propia, aprobada por un admin; qué puede hacer cada quien depende de su rol.</div>
     <div class="list-item"><strong>Datos sensibles:</strong> Contiene información confidencial (márgenes, clientes, contraseñas). Requiere una traza de auditoría completa.</div>
     <div class="list-item"><strong>Cambios en vivo:</strong> Las ediciones de productos afectan de inmediato al catálogo público; no hay fase de borrador.</div>
     <div class="list-item"><strong>Sin historial de cambios:</strong> No existe función de deshacer; los cambios son permanentes, salvo recuperación desde un respaldo.</div>
-    <div class="list-item"><strong>Permisos granulares:</strong> Aún no hay sistema de roles; todos los administradores pueden ejecutar cualquier acción.</div>
+    <div class="list-item"><strong>Alta de cuentas:</strong> Un admin la crea directamente desde Equipo, o la persona se autoregistra y queda bloqueada hasta que un admin la aprueba (ver más abajo).</div>
   </div>
 
   <div class="section">
@@ -139,7 +139,8 @@
   <div class="section">
     <h2>Información técnica adicional</h2>
     <div class="list-item"><strong>Autenticación:</strong> Inicio de sesión con correo y contraseña, con 2FA recomendado. Sesiones JWT renovables cada 8 horas.</div>
-    <div class="list-item"><strong>Autorización:</strong> Control de acceso basado en roles (RBAC): gerente, administrador y supervisor con permisos específicos.</div>
+    <div class="list-item"><strong>Autorización:</strong> Control de acceso basado en roles (RBAC): abastecimiento, ventas, marketing, sistemas y admin, cada uno con su propio permiso de escritura por sección.</div>
+    <div class="list-item"><strong>Alta y aprobación:</strong> Un admin da de alta directamente desde Equipo, o la propia persona se autoregistra eligiendo su área; la cuenta queda bloqueada hasta que un admin la aprueba, momento en que recibe un correo avisando que ya puede entrar.</div>
     <div class="list-item"><strong>Auditoría:</strong> Cada acción se registra (quién, cuándo y qué cambió) en una base de datos separada.</div>
     <div class="list-item"><strong>Rendimiento:</strong> Paginación obligatoria en los listados; sin búsqueda en vivo en tablas de más de 10 000 registros.</div>
     <div class="list-item"><strong>Respaldo:</strong> Snapshots diarios y reversión automática ante un error crítico.</div>

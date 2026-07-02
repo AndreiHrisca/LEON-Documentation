@@ -110,7 +110,8 @@
     <div class="list-item"><strong>Compras / importación:</strong> órdenes a proveedores con su tipo de cambio; al recibir, suma stock y reparte flete/aduana en el costo real.</div>
     <div class="list-item"><strong>Ventas:</strong> crea pedidos verificando stock; al confirmar, lo descuenta y congela el precio en cada línea.</div>
     <div class="list-item"><strong>Facturación:</strong> emite boleta/factura a SUNAT y notas de crédito; registra pagos con Yape, Plin, tarjeta o transferencia.</div>
-    <div class="list-item"><strong>Autenticación:</strong> POST /auth/login, /auth/refresh, /auth/logout. Tokens JWT con el rol del usuario.</div>
+    <div class="list-item"><strong>Autenticación:</strong> POST /auth/login, /auth/refresh, /auth/logout. Tokens JWT con el rol del usuario, más una sesión Django compartida (SSO) para el resto de subdominios.</div>
+    <div class="list-item"><strong>Equipo:</strong> autoregistro (POST /auth/registro) con la cuenta bloqueada hasta que un admin la aprueba desde el panel (/equipo/{id}/aprobar), con aviso por correo.</div>
     <div class="list-item"><strong>Integraciones:</strong> SUNAT para comprobantes, pasarela de pagos local y courier (Olva) para envíos.</div>
   </div>
 
