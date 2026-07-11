@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ruta de desarrollo · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --slate:#51606F;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --slate-tint:#EDF0F3;
+    --green:#1D9A6C; --green-tint:#E1F5EC;
+    --red:#C1484B; --red-tint:#F8EAEA;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  /* El tema oscuro global (docs-ui.css, inyectado por nginx) sobrescribe casi
+     todos los tokens, pero no --green/--red ni sus tints, que esta página usa
+     para los estados. Se mapean aquí a los verdes/rosas oscuros del sistema. */
+  :root[data-theme="oscuro"]{
+    --green:#3FCE85; --green-tint:#123328;
+    --red:#E37DA0; --red-tint:#3A1F2B;
+  }
+  :root[data-theme="oscuro"] .tree-stage{
+    background-image:radial-gradient(circle, rgba(255,255,255,.06) 1px, transparent 1px);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+    padding:48px 24px 48px;
+  }
+  .wrap{max-width:1080px;margin:0 auto}
+
+  .back{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:13px;font-weight:500;color:var(--teal);
+    text-decoration:none;margin-bottom:20px;
+    transition:gap .2s ease;
+  }
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin:0 0 14px}
+  h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin:0 0 10px;line-height:1.1}
+  .sub{font-size:15.5px;color:var(--muted);max-width:66ch;line-height:1.6;margin:0}
+
+  /* ── Leyenda de estados ── */
+  .legend{display:flex;flex-wrap:wrap;gap:20px 28px;margin:24px 0 8px;padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:13px}
+  .legend .item{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);max-width:230px}
+  .legend i{width:10px;height:10px;border-radius:50%;display:inline-block;margin-top:4px;flex:none}
+  .legend strong{display:block;color:var(--ink);font-size:13.5px;font-weight:600}
+
+  /* ── Árboles ── */
+  .tree{margin:40px 0 0}
+  .tree-h{display:flex;align-items:baseline;gap:10px;margin:0 2px 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .tree-h i{width:9px;height:9px;border-radius:3px;display:inline-block;flex:none;position:relative;top:-1px}
+  .tree-h h2{font-size:17px;font-weight:700;margin:0;letter-spacing:-.01em}
+  .tree-h .count{font-size:12.5px;color:var(--muted);font-weight:500}
+
+  .scroller{overflow-x:auto;padding-bottom:4px}
+  .tree-stage{
+    position:relative;padding:10px 4px 6px;
+    background-image:radial-gradient(circle, rgba(24,34,46,.05) 1px, transparent 1px);
+    background-size:24px 24px;
+    display:grid;column-gap:64px;row-gap:22px;align-items:start;
+  }
+
+  .wires{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .9s ease}
+  .wires.show{opacity:1}
+  .wire-base{fill:none;stroke-width:1.5;opacity:.22;stroke-linecap:round}
+  .wire-flow{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-dasharray:5 11;animation:flow 1.3s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-16}}
+  .pulse{opacity:.9}
+
+  .node{
+    position:relative;z-index:1;
+    display:flex;align-items:center;gap:9px;
+    background:var(--surface);border:1px solid var(--line);border-radius:13px;
+    padding:11px 14px;width:100%;cursor:pointer;
+    box-shadow:0 1px 2px rgba(24,34,46,.04),0 8px 24px rgba(24,34,46,.05);
+    opacity:0;animation:rise .5s ease forwards;
+    transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+  }
+  .node:hover{transform:translateY(-3px);box-shadow:0 2px 4px rgba(24,34,46,.05),0 14px 34px rgba(24,34,46,.10)}
+  .node:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+  @keyframes rise{to{opacity:1}}
+
+  .node.root{width:190px;border-width:1.5px;border-top:3px solid var(--c,var(--line));border-color:var(--c,var(--line))}
+  .c-indigo{--c:var(--indigo);--c-tint:var(--indigo-tint)} .c-teal{--c:var(--teal);--c-tint:var(--teal-tint)}
+  .c-blue{--c:var(--blue);--c-tint:var(--blue-tint)} .c-amber{--c:var(--amber);--c-tint:var(--amber-tint)}
+
+  /* Punto de estado (código de color de la leyenda, en versión sutil). */
+  .node .dot{width:9px;height:9px;border-radius:50%;flex:none}
+  .dot.st-planned{background:var(--slate)} .dot.st-dev{background:var(--indigo)}
+  .dot.st-done{background:var(--green)} .dot.st-discarded{background:var(--red)}
+
+  /* Enlace externo (solo nodos con url, típicamente las raíces). */
+  .node-link{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:8px;color:var(--muted);flex:none;transition:background .15s ease,color .15s ease}
+  .node-link:hover{background:var(--c-tint,var(--slate-tint));color:var(--c,var(--ink))}
+  .node-link svg{width:15px;height:15px}
+
+  /* Card seleccionada (una sola a la vez). */
+  .node.sel{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink),0 10px 28px rgba(24,34,46,.14)}
+
+  .node h3{font-size:14px;font-weight:600;margin:0;letter-spacing:-.01em;line-height:1.3}
+
+  /* Descartado: se conserva como registro, atenuado y tachado. */
+  .node.status-discarded{opacity:.58}
+  .node.status-discarded h3{text-decoration:line-through;text-decoration-thickness:1.4px;text-decoration-color:var(--red)}
+
+  /* ── Changelog ── */
+  .changelog{margin:48px 0 0;padding-top:24px;border-top:1px solid var(--line)}
+  .changelog h2{font-size:17px;font-weight:700;margin:0 0 16px;letter-spacing:-.01em}
+  .cl-group{margin:0 0 18px}
+  .cl-month{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--green);margin:0 0 8px}
+  .cl-group ul{margin:0;padding:0;list-style:none}
+  .cl-group li{font-size:13.5px;color:var(--muted);line-height:1.7;padding-left:16px;position:relative}
+  .cl-group li::before{content:'';position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--green)}
+  .cl-group li strong{color:var(--ink);font-weight:600}
+  .cl-empty{font-size:13.5px;color:var(--muted)}
+
+  .foot{font-size:13px;color:var(--muted);margin-top:44px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+
+  /* ── Panel de detalle (drawer) ── */
+  .dw-backdrop{position:fixed;inset:0;background:rgba(12,16,22,.42);opacity:0;visibility:hidden;
+    transition:opacity .2s ease,visibility .2s ease;z-index:1300}
+  .dw-backdrop.open{opacity:1;visibility:visible}
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:min(430px,92vw);
+    background:var(--surface);border-left:1px solid var(--line);
+    box-shadow:-10px 0 44px rgba(12,16,22,.22);
+    transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);
+    z-index:1310;display:flex;flex-direction:column;overflow-y:auto;padding:26px 26px 32px}
+  .drawer.open{transform:none}
+  .dw-close{position:absolute;top:16px;right:16px;width:34px;height:34px;border:none;border-radius:9px;
+    background:transparent;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+    transition:background .15s ease,color .15s ease}
+  .dw-close:hover{background:var(--slate-tint);color:var(--ink)}
+  .dw-close:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+  .dw-close svg{width:19px;height:19px}
+  .dw-eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin:0 40px 10px 0}
+  .dw-title{font-size:21px;font-weight:700;letter-spacing:-.01em;line-height:1.2;margin:0 0 12px;color:var(--ink)}
+  .dw-badges{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 18px}
+  .dw-badge{font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;border-radius:6px;padding:3px 9px}
+  .dw-badge.st-planned{background:var(--slate-tint);color:var(--slate)}
+  .dw-badge.st-dev{background:var(--indigo-tint);color:var(--indigo)}
+  .dw-badge.st-done{background:var(--green-tint);color:var(--green)}
+  .dw-badge.st-discarded{background:var(--red-tint);color:var(--red)}
+  .dw-badge.st-live{background:var(--teal-tint);color:var(--teal)}
+  .dw-when{font-size:13px;color:var(--muted)}
+  .dw-link{display:inline-flex;align-items:center;gap:8px;margin:0 0 18px;
+    font-size:13.5px;font-weight:600;text-decoration:none;color:var(--teal);
+    border:1px solid var(--line);border-radius:9px;padding:8px 13px;transition:border-color .15s ease,background .15s ease}
+  .dw-link:hover{border-color:var(--teal);background:var(--teal-tint)}
+  .dw-link svg{width:15px;height:15px}
+  .dw-desc{font-size:14.5px;color:var(--ink);line-height:1.6;margin:0}
+  .dw-note{font-size:13.5px;color:var(--muted);line-height:1.6;margin:16px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+  html.dw-lock{overflow:hidden}
+
+  @media (max-width:640px){
+    .drawer{top:auto;left:0;right:0;bottom:0;width:auto;max-height:88vh;
+      border-left:none;border-top:1px solid var(--line);border-radius:20px 20px 0 0;
+      transform:translateY(100%);box-shadow:0 -10px 44px rgba(12,16,22,.28);padding-top:30px}
+    .drawer.open{transform:none}
+  }
+
+  @media (max-width:720px){
+    body{padding:32px 14px}
+    h1{font-size:24px}
+    .legend{flex-direction:column;gap:14px}
+
+    /* Cada árbol pasa a lista vertical tipo git log: orden DOM = DFS
+       (raíz primero, luego cada rama con sus sub-ramas antes de la
+       siguiente), indentada por profundidad, con una línea lateral. */
+    .tree-stage{
+      display:flex !important;flex-direction:column;gap:14px;
+      grid-template-columns:none !important;grid-template-rows:none !important;
+      min-width:0 !important;padding-left:14px;border-left:2px dashed var(--line);
+    }
+    .tree-stage .wires{display:none}
+    .tree-stage .node{
+      grid-column:auto !important;grid-row:auto !important;
+      width:auto !important;margin-left:calc(var(--depth,0) * 18px);
+    }
+    .tree-stage .node.root{width:auto !important}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .wire-flow{animation:none}
+    .node{opacity:1;animation:none}
+    .wires{opacity:1;transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+  <p class="eyebrow">Importadora León</p>
+  <h1>Ruta de desarrollo</h1>
+  <p class="sub">Qué se hizo, qué está en curso y qué está planeado para cada área del sistema. También sirve como registro: lo descartado se conserva, tachado, para no repetir la discusión.</p>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="forest" id="forest"></div>
+
+  <div class="changelog" id="changelog"></div>
+
+  <p class="foot">
+    Cada idea es una entrada de datos (título, descripción, estado, de qué idea depende, etiqueta y fecha de cierre si aplica) al principio de <code>ruta-desarrollo.html</code>: añadir o mover una idea es editar esa entrada, el árbol y los conectores se recalculan solos. Haz click en cualquier card para ver su detalle.
+  </p>
+</div>
+
+<!-- Panel de detalle reutilizable: se rellena por JS con la card clickeada. -->
+<div class="dw-backdrop" id="dwBackdrop"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dwTitle" aria-hidden="true">
+  <button class="dw-close" id="dwClose" type="button" aria-label="Cerrar detalle">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <div class="dw-body" id="dwBody"></div>
+</aside>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ═══════════════════════════════════════════════════════════════════
+     DATOS — esto es lo único que hace falta tocar para editar el roadmap.
+     Cada área es un árbol independiente con exactamente UN nodo raíz
+     (parent: null). El resto de nodos cuelgan de otro nodo por su "parent".
+
+     Campos de un nodo:
+       id            único dentro del área
+       parent        id del nodo padre, o null solo para la raíz del área
+       title         título corto
+       description   1-2 líneas
+       status        'planned' | 'dev' | 'done' | 'discarded' (no aplica a la raíz)
+       tag           opcional, texto libre (si no se pone, se autogenera
+                     "En curso" para dev, o "Completado en {mes}" si hay
+                     completed_at)
+       completed_at  opcional, 'YYYY-MM'. Solo se usa para el changelog de
+                     abajo; si no lo sabes con precisión, déjalo vacío: el
+                     nodo se sigue viendo en verde igual.
+       url           opcional. Si el nodo es un sistema desplegado con URL
+                     propia (típicamente una raíz), la card muestra un icono
+                     de enlace externo y el panel de detalle un botón "Abrir".
+       note          opcional. Nota adicional que solo aparece en el panel de
+                     detalle, debajo de la descripción.
+
+     La card en el árbol muestra SOLO el nombre (+ enlace externo si hay url);
+     el resto de campos se ven al hacer click, en el panel lateral.
+     ═══════════════════════════════════════════════════════════════════ */
+  var AREAS = [
+    {
+      id: 'intranet', title: 'Intranet', color: 'indigo', icon: 'intranet',
+      nodes: [
+        { id: 'intranet-root', parent: null, title: 'Intranet', tag: 'En producción',
+          url: 'https://intranet.importacionleon.com',
+          description: 'Panel de gestión interno del equipo, con acceso por roles.' },
+
+        { id: 'i-tema', parent: 'intranet-root', status: 'done', completed_at: '2026-07',
+          title: 'Tema claro/oscuro',
+          description: 'Selector de tema persistido por usuario, con toggle junto a las notificaciones.' },
+
+        { id: 'i-reportes', parent: 'intranet-root', status: 'done', completed_at: '2026-06',
+          title: 'Reportes y analítica',
+          description: 'Panel completo: ventas, inventario, compras y rentabilidad, agregado en el backend.' },
+        { id: 'i-reportes-layout', parent: 'i-reportes', status: 'done', completed_at: '2026-07',
+          title: 'Corrección de layout en Reportes',
+          description: 'El gráfico de "Ventas por día" ya llena el card completo (antes dejaba hueco muerto abajo) y las tablas como "Reponer stock" ya no se desbordan del contenedor.' },
+        { id: 'i-reportes-export', parent: 'i-reportes', status: 'planned',
+          title: 'Exportar a Excel/PDF',
+          description: 'Descargar cualquier reporte para compartirlo fuera de la intranet.' },
+
+        { id: 'i-sidebar', parent: 'intranet-root', status: 'done', completed_at: '2026-07',
+          title: 'Sidebar colapsable',
+          description: 'Botón en la topbar para ocultar/mostrar el menú lateral (persistido por usuario); en móvil se abre como overlay.' },
+
+        { id: 'i-oc-modal', parent: 'intranet-root', status: 'done', completed_at: '2026-07',
+          title: 'Rediseño del modal de orden de compra',
+          description: 'Secciones claras (estado, datos, líneas con cantidad recibida, resumen, embarque); mismos tokens y componentes ya existentes.' },
+        { id: 'i-oc-timeline', parent: 'i-oc-modal', status: 'done', completed_at: '2026-07',
+          title: 'La línea de tiempo no reflejaba el estado real',
+          description: 'Bug: comparaba el estado (string) contra un array de objetos con indexOf, así que ningún paso se marcaba nunca como completado o actual. Un fix de una línea (findIndex por clave) también corrigió el mismo componente en el detalle de Pedido (Ventas).' },
+
+        { id: 'i-delete-stock', parent: 'intranet-root', status: 'done', completed_at: '2026-07',
+          title: 'Eliminar movimientos y órdenes',
+          description: 'Movimientos: hard delete (nada los referencia). Órdenes de compra: se pueden eliminar salvo que ya estén "recibido" (afectaron stock) — ahí se bloquea con un aviso claro en vez de dejar datos huérfanos. Botones ocultos para quien no tiene el rol.' },
+
+        { id: 'i-2fa', parent: 'intranet-root', status: 'planned',
+          title: 'Verificación en dos pasos (2FA)',
+          description: 'Segundo factor en el login para cuentas de administración.' }
+      ]
+    },
+    {
+      id: 'frontend', title: 'Frontend público', color: 'teal', icon: 'frontend',
+      nodes: [
+        { id: 'frontend-root', parent: null, title: 'Frontend público', tag: 'En producción',
+          url: 'https://importacionleon.com',
+          description: 'Sitio de catálogo para clientes finales, pedidos por WhatsApp.' },
+
+        { id: 'f-rediseno', parent: 'frontend-root', status: 'done', completed_at: '2026-07',
+          title: 'Rediseño visual + carrito local',
+          description: 'Paleta e iconos propios, tarjetas de producto y carrito persistido en el navegador.' },
+        { id: 'f-iconos', parent: 'f-rediseno', status: 'done', completed_at: '2026-07',
+          title: 'Iconos SVG propios y contraste AA',
+          description: 'Se sustituyeron los emoji de interfaz y se corrigió el contraste de los botones.' },
+
+        { id: 'f-whatsapp', parent: 'frontend-root', status: 'done', completed_at: '2026-07',
+          title: 'Pedido por WhatsApp desde el carrito',
+          description: 'El botón arma el mensaje con cada producto, cantidad y el total.' },
+
+        { id: 'f-checkout', parent: 'frontend-root', status: 'planned',
+          title: 'Checkout con pago en línea',
+          description: 'Comprar directo desde la web, sin pasar por WhatsApp.' },
+        { id: 'f-pasarela', parent: 'f-checkout', status: 'planned',
+          title: 'Pasarela peruana (Culqi/Niubiz)',
+          description: 'Integración de pagos con tarjeta para el checkout.' },
+
+        { id: 'f-seguimiento', parent: 'frontend-root', status: 'planned',
+          title: 'Seguimiento de pedido',
+          description: 'Que el cliente vea el estado de lo que pidió por WhatsApp.' },
+
+        { id: 'f-resenas', parent: 'frontend-root', status: 'discarded',
+          title: 'Reseñas de clientes',
+          description: 'Se evaluó permitir comentarios/calificaciones; se descarta por ahora: no hay capacidad para moderar contenido.' }
+      ]
+    },
+    {
+      id: 'documentacion', title: 'Documentación', color: 'blue', icon: 'docs',
+      nodes: [
+        { id: 'docs-root', parent: null, title: 'Documentación', tag: 'En producción',
+          url: 'https://docs.importacionleon.com',
+          description: 'Sitio estático de documentación técnica y funcional.' },
+
+        { id: 'd-reestructura', parent: 'docs-root', status: 'done', completed_at: '2026-06',
+          title: 'Reestructuración por audiencias',
+          description: 'Introducción general, IT/Sistemas y Funcional por departamento; lo pendiente queda marcado, no documentado como si existiera.' },
+
+        { id: 'd-roadmap', parent: 'docs-root', status: 'done', completed_at: '2026-07',
+          title: 'Ruta de desarrollo (esta página)',
+          description: 'Roadmap visual por área, con estados y changelog automático.' },
+
+        { id: 'd-comentarios', parent: 'docs-root', status: 'done', completed_at: '2026-07',
+          title: 'Comentarios en la documentación',
+          description: 'Cada sección de un documento admite comentarios del equipo, anclados por el texto del encabezado (estables aunque se regenere la doc), con hilos de una respuesta y reacciones like/dislike.',
+          note: 'Se gestionan desde la Intranet (estados abierto / en revisión / resuelto / descartado), con un badge de pendientes en el menú. Autenticado con la misma sesión SSO; las escrituras desde la doc usan CSRF.' },
+
+        { id: 'd-tema-navbar', parent: 'docs-root', status: 'done', completed_at: '2026-07',
+          title: 'Tema oscuro + navbar global',
+          description: 'Toda la documentación comparte ahora una barra de navegación fija (con buscador y menús por sección) y un tema claro/oscuro que respeta la preferencia del sistema y se recuerda entre visitas.',
+          note: 'Misma paleta y clave de preferencia que la Intranet, sin parpadeo de tema al cargar. Los diagramas se mantienen legibles en oscuro sobre un lienzo claro.' },
+
+        { id: 'd-onboarding', parent: 'docs-root', status: 'planned',
+          title: 'Guía de onboarding',
+          description: 'Recorrido paso a paso para nuevos empleados de cada área.' },
+        { id: 'd-video', parent: 'd-onboarding', status: 'planned',
+          title: 'Videos cortos por flujo',
+          description: 'Grabaciones de pantalla de 2-3 min por tarea frecuente.' },
+
+        { id: 'd-diagramas', parent: 'docs-root', status: 'planned',
+          title: 'Diagramas de flujo por proceso',
+          description: 'Compra, venta y recepción de mercancía, un diagrama por proceso.' }
+      ]
+    },
+    {
+      id: 'infraestructura', title: 'Infraestructura / Backend', color: 'amber', icon: 'infra',
+      nodes: [
+        { id: 'infra-root', parent: null, title: 'Infraestructura', tag: 'En producción',
+          description: 'Backend, bases de datos y tareas en segundo plano.' },
+
+        { id: 'in-proxy-https', parent: 'infra-root', status: 'done', completed_at: '2026-07',
+          title: 'HTTPS correcto detrás del proxy',
+          description: 'El backend reconoce el HTTPS real terminado en Caddy (X-Forwarded-Proto), así los enlaces absolutos que genera el API (p. ej. la paginación "next") salen en https y no se rompen.',
+          note: 'Un bug latente rompía el Resumen de la Intranet cuando una colección superaba una página: la URL de paginación llegaba en http y se concatenaba mal. Corregido en el backend y blindado en el cliente.' },
+
+        { id: 'in-bases', parent: 'infra-root', status: 'done',
+          title: 'Bases separadas (fotos, facturas)',
+          description: 'leon_fotos y leon_facturas aparte de la base principal, sin llaves foráneas cruzadas.' },
+
+        { id: 'in-celery', parent: 'infra-root', status: 'done',
+          title: 'Tareas con Celery',
+          description: 'Emisión de comprobantes (simulada) y conversión de fotos a WebP, bajo demanda.' },
+        { id: 'in-beat', parent: 'in-celery', status: 'planned',
+          title: 'Tareas periódicas (Celery beat)',
+          description: 'Ej.: alertas de stock bajo o recordatorios de embarques pendientes.' },
+
+        { id: 'in-seed-demo', parent: 'infra-root', status: 'done', completed_at: '2026-07',
+          title: 'Comando seed_demo_data',
+          description: 'Puebla catálogo, inventario, compras y ventas con datos de demo coherentes usando los servicios reales (confirmar_pedido, recibir_orden, SUNAT). --delete borra exactamente lo creado vía un manifiesto (seed_demo_registro), sin tocar datos reales.' },
+        { id: 'in-bulk-create-bug', parent: 'in-seed-demo', status: 'done', completed_at: '2026-07',
+          title: 'bulk_create() incompatible con ENUM de Postgres',
+          description: 'Bug real (no solo del seed): recibir_orden() y confirmar_pedido() fallaban con cualquier orden/pedido de 2+ líneas — psycopg3 arma un INSERT múltiple vía UNNEST tipado como texto plano, que Postgres rechaza contra la columna ENUM tipo_movimiento. Corregido a un insert por línea.' },
+
+        { id: 'in-sunat', parent: 'infra-root', status: 'planned',
+          title: 'SUNAT real',
+          description: 'Reemplazar el simulador de comprobantes por la integración real cuando el negocio lo requiera.' },
+
+        { id: 'in-pagos', parent: 'infra-root', status: 'planned',
+          title: 'Integración de pagos',
+          description: 'Lado backend de la pasarela de pago para el checkout del frontend.' },
+
+        { id: 'in-microservicios', parent: 'infra-root', status: 'discarded',
+          title: 'Migrar a microservicios',
+          description: 'Se evaluó dividir el backend; se descarta: el monolito actual es simple de mantener y el equipo es pequeño.' }
+      ]
+    }
+  ];
+
+  var AREA_ICONS = {
+    intranet: '<rect x="3" y="3" width="7" height="9" rx="1.6"/><rect x="14" y="3" width="7" height="5" rx="1.6"/><rect x="14" y="12" width="7" height="9" rx="1.6"/><rect x="3" y="16" width="7" height="5" rx="1.6"/>',
+    frontend: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.6 2.6 2.6 15.4 0 18"/><path d="M12 3c-2.6 2.6-2.6 15.4 0 18"/>',
+    docs: '<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v16H6.5A1.5 1.5 0 0 0 5 20.5v-16Z"/><path d="M5 19a1.5 1.5 0 0 1 1.5-1.5H19"/>',
+    infra: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>'
+  };
+  var STATUS_ICONS = {
+    planned: '<circle cx="12" cy="12" r="7.5" stroke-dasharray="3 3"/>',
+    dev: '<path d="M12 4.5a7.5 7.5 0 1 0 7.5 7.5"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/>',
+    done: '<path d="M4.5 12.5l5 5L19.5 6"/>',
+    discarded: '<path d="M6 6l12 12M18 6L6 18"/>'
+  };
+  var STATUS_LABEL = { planned: 'Planeado', dev: 'En desarrollo', done: 'Completado', discarded: 'Descartado' };
+  var AREA_COLOR_HEX = { indigo: '#5B63E6', teal: '#0E9488', blue: '#2E73D9', amber: '#CF8138' };
+  var EXT_ICON = '<path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/>';
+  var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+  function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function svg(inner){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+inner+'</svg>'; }
+  function formatMes(ym){ var p=ym.split('-'); var y=p[0], m=parseInt(p[1],10); return MESES[m-1]+' de '+y; }
+
+  /* ── Layout: DFS donde el primer hijo continúa la fila del padre
+     (línea principal, estilo git log) y cada hijo siguiente abre una
+     fila nueva (rama paralela). Devuelve el orden DFS (útil también
+     para el fallback móvil) y las dimensiones de la grilla. ── */
+  function layoutArea(area){
+    var childrenOf = {};
+    area.nodes.forEach(function(n){
+      if(n.parent){
+        if(!childrenOf[n.parent]) childrenOf[n.parent] = [];
+        childrenOf[n.parent].push(n);
+      }
+    });
+    var root;
+    area.nodes.forEach(function(n){ if(!n.parent) root = n; });
+
+    var nextRow = 0;
+    var order = [];
+    function visit(node, depth, row){
+      node.depth = depth; node.row = row; node._i = order.length;
+      order.push(node);
+      var kids = childrenOf[node.id] || [];
+      kids.forEach(function(k, i){ visit(k, depth+1, i===0 ? row : nextRow++); });
+    }
+    visit(root, 0, nextRow++);
+
+    var maxDepth = 0, maxRow = nextRow - 1;
+    order.forEach(function(n){ if(n.depth > maxDepth) maxDepth = n.depth; });
+    return { order: order, maxDepth: maxDepth, maxRow: maxRow };
+  }
+
+  /* La card muestra SOLO el nombre. No-raíz: punto de estado + título.
+     Raíz: título + (icono de enlace externo si tiene url). Todo lo demás
+     (descripción, estado, fecha, nota, enlace) se ve en el panel de detalle
+     al hacer click; los datos se leen del propio nodo (el._node/_area). */
+  function nodeEl(area, node){
+    var el = document.createElement('div');
+    var isRoot = !node.parent;
+    el.id = 'nd-' + node.id;
+    el.className = 'node' + (isRoot ? ' root c-' + area.color : ' status-' + (node.status || 'planned'));
+    el.style.gridColumn = String(node.depth + 1);
+    el.style.gridRow = String(node.row + 1);
+    el.style.setProperty('--depth', node.depth);
+    el.style.animationDelay = (0.035 * node._i) + 's';
+
+    el.tabIndex = 0;
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-label', node.title + ' — ver detalle');
+    el._node = node; el._area = area;
+
+    var inner = '';
+    if(!isRoot) inner += '<span class="dot st-' + (node.status || 'planned') + '"></span>';
+    inner += '<h3>' + esc(node.title) + '</h3>';
+    if(node.url){
+      inner += '<a class="node-link" href="' + esc(node.url) + '" target="_blank" rel="noopener" ' +
+        'aria-label="Abrir ' + esc(node.title) + ' en una pestaña nueva">' + svg(EXT_ICON) + '</a>';
+    }
+    el.innerHTML = inner;
+    return el;
+  }
+
+  var TREES = [];
+
+  function renderArea(area){
+    var layout = layoutArea(area);
+    var section = document.createElement('section');
+    section.className = 'tree';
+    section.id = 'tree-' + area.id;
+
+    var ideaCount = layout.order.length - 1;
+    section.innerHTML =
+      '<div class="tree-h"><i style="background:' + AREA_COLOR_HEX[area.color] + '"></i><h2>' + esc(area.title) + '</h2>' +
+      '<span class="count">' + ideaCount + (ideaCount === 1 ? ' idea' : ' ideas') + '</span></div>' +
+      '<div class="scroller"><div class="tree-stage" id="stage-' + area.id + '">' +
+      '<svg class="wires" id="wires-' + area.id + '" preserveAspectRatio="none"><g></g></svg>' +
+      '</div></div>';
+    document.getElementById('forest').appendChild(section);
+
+    var stage = document.getElementById('stage-' + area.id);
+    var COL = 208, GAP = 64;
+    stage.style.gridTemplateColumns = 'repeat(' + (layout.maxDepth + 1) + ', ' + COL + 'px)';
+    stage.style.gridTemplateRows = 'repeat(' + (layout.maxRow + 1) + ', minmax(58px,auto))';
+    stage.style.minWidth = ((layout.maxDepth + 1) * COL + layout.maxDepth * GAP + 40) + 'px';
+
+    layout.order.forEach(function(node){ stage.appendChild(nodeEl(area, node)); });
+
+    var edges = layout.order.filter(function(n){ return n.parent; }).map(function(n){
+      return { from: 'nd-' + n.parent, to: 'nd-' + n.id, status: n.status };
+    });
+    TREES.push({ stageId: 'stage-' + area.id, svgId: 'wires-' + area.id, edges: edges, colorHex: AREA_COLOR_HEX[area.color] });
+  }
+
+  /* ── Conectores: mismo cálculo que arquitectura.html (curva bezier
+     entre los bordes reales de los nodos), sin flechas —aquí el orden
+     temporal ya lo da la posición izquierda→derecha. ── */
+  function rel(el, base){ var r = el.getBoundingClientRect(); return { x: r.left - base.left, y: r.top - base.top, w: r.width, h: r.height }; }
+
+  function anchors(a, b){
+    var acx = a.x + a.w/2, acy = a.y + a.h/2, bcx = b.x + b.w/2, bcy = b.y + b.h/2;
+    var dx = bcx - acx, dy = bcy - acy, sx, sy, ex, ey, c1x, c1y, c2x, c2y, off;
+    var GAP = 7;
+    if(Math.abs(dy) >= Math.abs(dx)){
+      var down = dy > 0;
+      sx = acx; ex = bcx;
+      sy = down ? a.y + a.h + GAP : a.y - GAP;
+      ey = down ? b.y - GAP : b.y + b.h + GAP;
+      off = Math.max(40, Math.min(120, Math.abs(ey - sy) * 0.45));
+      c1x = sx; c1y = sy + (down ? off : -off);
+      c2x = ex; c2y = ey - (down ? off : -off);
+    } else {
+      var right = dx > 0;
+      sy = acy; ey = bcy;
+      sx = right ? a.x + a.w + GAP : a.x - GAP;
+      ex = right ? b.x - GAP : b.x + b.w + GAP;
+      off = Math.max(40, Math.min(120, Math.abs(ex - sx) * 0.45));
+      c1x = sx + (right ? off : -off); c1y = sy;
+      c2x = ex - (right ? off : -off); c2y = ey;
+    }
+    return 'M ' + sx + ' ' + sy + ' C ' + c1x + ' ' + c1y + ' ' + c2x + ' ' + c2y + ' ' + ex + ' ' + ey;
+  }
+
+  function mk(tag, attrs){ var e = document.createElementNS('http://www.w3.org/2000/svg', tag); for(var k in attrs) e.setAttribute(k, attrs[k]); return e; }
+
+  var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  function drawAll(){
+    TREES.forEach(function(t){
+      var stage = document.getElementById(t.stageId);
+      var svgEl = document.getElementById(t.svgId);
+      var layer = svgEl.querySelector('g');
+      layer.innerHTML = '';
+      var base = stage.getBoundingClientRect();
+      svgEl.setAttribute('viewBox', '0 0 ' + base.width + ' ' + base.height);
+
+      t.edges.forEach(function(e, i){
+        var a = document.getElementById(e.from), b = document.getElementById(e.to);
+        if(!a || !b) return;
+        var d = anchors(rel(a, base), rel(b, base));
+        var muted = e.status === 'discarded';
+        var still = e.status === 'done' || muted;
+        layer.appendChild(mk('path', { d: d, 'class': 'wire-base', stroke: t.colorHex, opacity: muted ? '0.12' : '0.22' }));
+        if(!still){
+          layer.appendChild(mk('path', { d: d, 'class': 'wire-flow', stroke: t.colorHex }));
+          if(!reduce){
+            var dot = mk('circle', { r: '3', 'class': 'pulse', fill: t.colorHex, cx: '0', cy: '0' });
+            dot.appendChild(mk('animateMotion', { dur: '3s', repeatCount: 'indefinite', path: d, begin: (i * 0.3) + 's' }));
+            layer.appendChild(dot);
+          }
+        }
+      });
+    });
+  }
+
+  function buildLegend(){
+    var items = [
+      { status: 'planned', color: 'var(--slate)', text: 'Aún no iniciado.' },
+      { status: 'dev', color: 'var(--indigo)', text: 'En curso ahora mismo.' },
+      { status: 'done', color: 'var(--green)', text: 'Ya en producción.' },
+      { status: 'discarded', color: 'var(--red)', text: 'Se evaluó y se descartó; se conserva como registro.' }
+    ];
+    document.getElementById('legend').innerHTML = items.map(function(it){
+      return '<div class="item"><i style="background:' + it.color + '"></i><span><strong>' + STATUS_LABEL[it.status] + '</strong>' + it.text + '</span></div>';
+    }).join('');
+  }
+
+  function buildChangelog(){
+    var groups = {};
+    AREAS.forEach(function(area){
+      area.nodes.forEach(function(n){
+        if(n.status === 'done' && n.completed_at){
+          if(!groups[n.completed_at]) groups[n.completed_at] = [];
+          groups[n.completed_at].push({ area: area.title, title: n.title });
+        }
+      });
+    });
+    var keys = Object.keys(groups).sort().reverse();
+    var el = document.getElementById('changelog');
+    if(!keys.length){
+      el.innerHTML = '<h2>Completado recientemente</h2><p class="cl-empty">Todavía no hay ideas marcadas como completadas con fecha.</p>';
+      return;
+    }
+    var html = '<h2>Completado recientemente</h2>';
+    keys.forEach(function(k){
+      html += '<div class="cl-group"><div class="cl-month">' + esc(formatMes(k)) + '</div><ul>' +
+        groups[k].map(function(it){ return '<li><strong>' + esc(it.area) + ':</strong> ' + esc(it.title) + '</li>'; }).join('') +
+        '</ul></div>';
+    });
+    el.innerHTML = html;
+  }
+
+  /* ── Panel de detalle (drawer): un solo panel reutilizable ── */
+  var drawer, backdrop, dwBody, dwClose, selNode = null, lastFocus = null;
+
+  function badgeMeta(node){
+    if(!node.parent) return { cls: 'st-live', label: node.tag || 'En producción' };
+    var s = node.status || 'planned';
+    return { cls: 'st-' + s, label: STATUS_LABEL[s] };
+  }
+
+  function openDrawer(el){
+    var node = el._node, area = el._area;
+    if(selNode && selNode !== el) selNode.classList.remove('sel');
+    selNode = el; el.classList.add('sel');
+    lastFocus = el;
+
+    var meta = badgeMeta(node);
+    var when = (node.status === 'done' && node.completed_at) ? 'Completado en ' + formatMes(node.completed_at)
+             : (node.status === 'dev' ? 'En curso ahora mismo' : '');
+    dwBody.innerHTML =
+      '<p class="dw-eyebrow" style="color:' + AREA_COLOR_HEX[area.color] + '">' + esc(area.title) + '</p>' +
+      '<h2 class="dw-title" id="dwTitle">' + esc(node.title) + '</h2>' +
+      '<div class="dw-badges"><span class="dw-badge ' + meta.cls + '">' + esc(meta.label) + '</span>' +
+        (when ? '<span class="dw-when">' + esc(when) + '</span>' : '') + '</div>' +
+      (node.url ? '<a class="dw-link" href="' + esc(node.url) + '" target="_blank" rel="noopener">' +
+        svg(EXT_ICON) + esc(node.url.replace(/^https?:\/\//, '')) + '</a>' : '') +
+      (node.description ? '<p class="dw-desc">' + esc(node.description) + '</p>' : '') +
+      (node.note ? '<p class="dw-note">' + esc(node.note) + '</p>' : '');
+
+    backdrop.classList.add('open');
+    drawer.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+    document.documentElement.classList.add('dw-lock');
+    dwClose.focus();
+  }
+
+  function closeDrawer(){
+    if(!drawer.classList.contains('open')) return;
+    backdrop.classList.remove('open');
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+    document.documentElement.classList.remove('dw-lock');
+    if(selNode) selNode.classList.remove('sel');
+    var back = lastFocus; selNode = null;
+    if(back){ try { back.focus(); } catch(e){} }
+  }
+
+  function setupDrawer(){
+    drawer = document.getElementById('drawer');
+    backdrop = document.getElementById('dwBackdrop');
+    dwBody = document.getElementById('dwBody');
+    dwClose = document.getElementById('dwClose');
+    dwClose.addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeDrawer(); });
+
+    var forest = document.getElementById('forest');
+    forest.addEventListener('click', function(e){
+      if(e.target.closest('a.node-link')) return;   // el enlace externo navega, no abre el panel
+      var el = e.target.closest('.node');
+      if(el) openDrawer(el);
+    });
+    forest.addEventListener('keydown', function(e){
+      var el = e.target.closest('.node');
+      if(el && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); openDrawer(el); }
+    });
+  }
+
+  function init(){
+    buildLegend();
+    AREAS.forEach(renderArea);
+    buildChangelog();
+    setupDrawer();
+    requestAnimationFrame(function(){
+      drawAll();
+      document.querySelectorAll('.wires').forEach(function(s){ s.classList.add('show'); });
+    });
+  }
+
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(init); } else { window.addEventListener('load', init); }
+  window.addEventListener('load', function(){ setTimeout(drawAll, 50); });
+
+  var t;
+  window.addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(drawAll, 120); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roles y permisos · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --rose:#C0436B; --slate:#51606F;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --rose-tint:#FBE7EE; --slate-tint:#EDF0F3;
+    --pos:#1E9E5A; --pos-tint:#E4F4EA;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:960px;margin:0 auto}
+
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin:0 0 14px}
+  h1{font-size:32px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:72ch;line-height:1.6;margin:0 0 24px}
+
+  .clases{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:32px}
+  .clase{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;border-top:3px solid var(--c)}
+  .clase h3{font-family:var(--mono);font-size:14px;font-weight:700;margin:0 0 8px;color:var(--ink)}
+  .clase p{font-size:13.5px;color:var(--muted);line-height:1.6;margin:0}
+
+  .matriz{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 1px 2px rgba(24,34,46,.04),0 8px 24px rgba(24,34,46,.05)}
+  table.perm{width:100%;border-collapse:collapse;font-size:13px}
+  .perm thead th{text-align:left;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:12px 16px;background:#FAFBFC;border-bottom:1px solid var(--line)}
+  .perm thead th.c{text-align:center}
+  .perm td{padding:11px 16px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .perm tr:last-child td{border-bottom:none}
+  .perm td.recurso{font-family:var(--mono);font-size:12.5px;font-weight:600}
+  .perm td.c{text-align:center}
+  .yes{color:var(--pos);font-weight:700}
+  .no{color:var(--line);font-weight:700}
+  .pub{font-size:10px;font-weight:700;color:var(--teal);background:var(--teal-tint);border-radius:4px;padding:1px 5px}
+
+  .section{margin:32px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+  .list-item{margin:12px 0;padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.6;color:var(--muted)}
+  .list-item:last-child{border-bottom:none}
+  .list-item strong{color:var(--ink)}
+  .mono{font-family:var(--mono);font-size:12.5px;color:var(--blue)}
+
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+  .foot a{color:var(--teal);font-weight:600;text-decoration:none}
+
+  @media (max-width:720px){ body{padding:32px 14px} h1{font-size:26px} .matriz{overflow-x:auto} table.perm{min-width:640px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="backend-api.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Volver a la API del backend
+  </a>
+
+  <p class="eyebrow">Backend</p>
+  <h1>Roles y permisos</h1>
+  <p class="sub">Quién puede escribir qué. El rol viaja dentro del JWT (claim <span class="mono">rol</span>), leído de la tabla <span class="mono">usuario</span> al hacer login.</p>
+
+  <div class="clases">
+    <div class="clase" style="--c:var(--blue)"><h3>HasRole</h3><p>Lectura abierta a cualquier autenticado. Escritura: si el ViewSet no define <span class="mono">roles_escritura</span>, cualquiera autenticado puede escribir; si lo define, exige estar en esa lista <strong>o ser admin</strong>.</p></div>
+    <div class="clase" style="--c:var(--teal)"><h3>LecturaPublica</h3><p>Igual que HasRole, pero la lectura no exige token — para que el catálogo y las fotos funcionen en la tienda pública sin login.</p></div>
+    <div class="clase" style="--c:var(--rose)"><h3>SoloAdminOSistemas</h3><p>Ni la lectura es abierta. Solo <span class="mono">admin</span> o <span class="mono">sistemas</span> — usada exclusivamente por el registro de actividad.</p></div>
+  </div>
+
+  <div class="matriz">
+    <table class="perm">
+      <thead><tr>
+        <th>Recurso</th><th class="c">Lectura</th><th class="c">admin</th><th class="c">abastecimiento</th><th class="c">ventas</th><th class="c">marketing</th><th class="c">sistemas</th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="recurso">categorías / productos / variantes</td><td class="c"><span class="pub">pública</span></td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td class="recurso">fotos de producto</td><td class="c"><span class="pub">pública</span></td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c no">—</td><td class="c yes">✓</td><td class="c no">—</td></tr>
+        <tr><td class="recurso">almacenes / movimientos</td><td class="c">autenticado</td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td class="recurso">proveedores / órdenes de compra / embarques / muestras</td><td class="c">autenticado</td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td class="recurso">clientes / pedidos / envíos</td><td class="c">autenticado</td><td class="c yes">✓</td><td class="c no">—</td><td class="c yes">✓</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td class="recurso">comprobantes / pagos / notas de crédito</td><td class="c">autenticado</td><td class="c yes">✓</td><td class="c no">—</td><td class="c yes">✓</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td class="recurso">equipo (usuario)</td><td class="c">autenticado</td><td class="c yes">✓</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td class="recurso">actividad</td><td class="c">solo admin/sistemas</td><td class="c yes">✓ lee</td><td class="c no">—</td><td class="c no">—</td><td class="c no">—</td><td class="c yes">✓ lee</td></tr>
+        <tr><td class="recurso">reportes</td><td class="c">autenticado</td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c yes">✓</td><td class="c yes">✓</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Reglas que no se ven en la tabla</h2>
+    <div class="list-item"><strong>Admin siempre puede escribir en todo</strong>, esté o no en la lista de roles de ese recurso — es una regla especial en <span class="mono">HasRole</span>, no una casilla más.</div>
+    <div class="list-item"><strong>Sistemas no tiene ningún permiso de escritura de negocio.</strong> Su único privilegio especial es leer <span class="mono">/actividad</span>; en <span class="mono">/equipo</span> se le trata como staff (como admin) pero sin superusuario.</div>
+    <div class="list-item"><strong>Reportes es de solo lectura para todos los roles</strong> por igual — no tiene <span class="mono">roles_escritura</span> propio porque no se escribe nada ahí, solo se consulta.</div>
+    <div class="list-item"><strong>"Lectura pública"</strong> significa sin JWT: lo usa la tienda (Frontend) para mostrar catálogo y fotos sin que el visitante tenga cuenta.</div>
+  </div>
+
+  <p class="foot">
+    El detalle de cada endpoint (métodos, filtros, acciones) está en <a href="backend-api.html">La API del motor</a>; qué significa cada rol en el día a día, en <a href="introduccion.html">Introducción general</a>.
+  </p>
+</div>
+</body>
+</html>

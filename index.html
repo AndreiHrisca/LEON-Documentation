@@ -12,8 +12,8 @@
     --bg1:#F3F5F8; --bg2:#E9EDF3;
     --surface:#FFFFFF;
     --ink:#18222E; --muted:#647183; --line:#E4E9F0;
-    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138;
-    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --slate:#51606F; --rose:#C0436B;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --slate-tint:#EDF0F3; --rose-tint:#FBE7EE;
     --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
     --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
   }
@@ -25,11 +25,11 @@
     min-height:100vh;-webkit-font-smoothing:antialiased;
     padding:56px 24px 48px;
   }
-  .wrap{max-width:1000px;margin:0 auto}
+  .wrap{max-width:1080px;margin:0 auto}
 
   .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin:0 0 14px}
   h1{font-size:34px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
-  .sub{font-size:16px;color:var(--muted);max-width:66ch;line-height:1.6;margin:0 0 8px}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 8px}
 
   .hero{
     display:block;margin:30px 0 8px;padding:22px 24px;text-decoration:none;color:inherit;
@@ -42,12 +42,19 @@
   .hero p{font-size:14px;color:var(--muted);margin:0;line-height:1.5}
   .hero .arrow{margin-left:auto;color:var(--teal)}
 
-  .sec{margin:40px 0 0}
-  .sec-h{display:flex;align-items:center;gap:10px;margin:0 2px 16px;padding-bottom:10px;border-bottom:2px solid var(--line)}
-  .sec-h i{width:11px;height:11px;border-radius:3px;display:inline-block}
-  .sec-h h2{font-size:17px;font-weight:700;margin:0;letter-spacing:-.01em}
+  .audience{margin:44px 0 0}
+  .audience-h{display:flex;align-items:baseline;gap:12px;margin:0 2px 6px;flex-wrap:wrap}
+  .audience-h .n{width:26px;height:26px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;color:#fff;flex:none}
+  .audience-h h2{font-size:19px;font-weight:700;margin:0;letter-spacing:-.01em}
+  .audience-sub{font-size:13.5px;color:var(--muted);margin:0 0 16px 38px;max-width:64ch;line-height:1.5}
 
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+  .sec{margin:28px 0 0}
+  .sec-h{display:flex;align-items:center;gap:10px;margin:0 2px 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .sec-h i{width:9px;height:9px;border-radius:3px;display:inline-block}
+  .sec-h h3{font-size:13px;font-weight:700;margin:0;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
   .card{
     display:flex;flex-direction:column;gap:6px;padding:16px 18px;text-decoration:none;color:inherit;
     background:var(--surface);border:1px solid var(--line);border-radius:13px;border-top:3px solid var(--c,var(--line));
@@ -57,159 +64,277 @@
   .card:hover{transform:translateY(-3px);box-shadow:0 2px 4px rgba(24,34,46,.05),0 14px 34px rgba(24,34,46,.10)}
   .card .t{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .card .d{font-size:13px;color:var(--muted);line-height:1.5}
-  .card .file{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:auto;padding-top:4px}
+  /* .file: fecha de última actualización de cada página (texto "Actualizado: mes año").
+     Se mantiene a mano al editar la página; si no hay fecha fiable, se deja vacío. */
+  .card .file{font-size:11.5px;color:var(--muted);margin-top:auto;padding-top:4px}
 
   .badge{font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:5px;padding:2px 7px;white-space:nowrap}
   .badge.of{background:var(--teal-tint);color:var(--teal)}
   .badge.v1{background:var(--amber-tint);color:var(--amber)}
   .badge.fn{background:var(--blue-tint);color:var(--blue)}
+  .badge.nw{background:var(--indigo-tint);color:var(--indigo)}
 
-  .c-indigo{--c:var(--indigo)} .c-teal{--c:var(--teal)} .c-blue{--c:var(--blue)} .c-amber{--c:var(--amber)} .c-slate{--c:#51606F}
+  .c-indigo{--c:var(--indigo)} .c-teal{--c:var(--teal)} .c-blue{--c:var(--blue)} .c-amber{--c:var(--amber)} .c-slate{--c:var(--slate)} .c-rose{--c:var(--rose)}
 
   .foot{font-size:13px;color:var(--muted);margin-top:44px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
 
-  @media (max-width:640px){ body{padding:36px 16px} h1{font-size:27px} }
+  @media (max-width:640px){ body{padding:36px 16px} h1{font-size:27px} .audience-sub{margin-left:0} }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <p class="eyebrow">Importadora León · Documentación técnica</p>
+  <p class="eyebrow">Importadora León · Documentación</p>
   <h1>Documentación del sistema</h1>
-  <p class="sub">Mapa completo del proyecto: la arquitectura, los modelos de datos, la API del backend, interfaces de usuario y cada componente que lo compone. Se recomienda comenzar por la arquitectura general y descender al detalle desde ahí.</p>
+  <p class="sub">Organizada por a quién le sirve: si eres nuevo, empieza por <strong>Introducción</strong>; si programas o mantienes la infraestructura, ve a <strong>IT/Sistemas</strong>; si trabajas en Ventas, Compras, Almacén o Administración, ve directo a tu sección en <strong>Funcional por departamento</strong>.</p>
 
   <a href="arquitectura.html" class="hero">
     <h2>Arquitectura del ERP<span class="arrow">→</span></h2>
-    <p>Diagrama vivo del conjunto: el catálogo público, el panel de gestión, las analíticas del negocio, sus bases de datos y los servicios externos con los que integra. El punto de entrada a la documentación.</p>
+    <p>Diagrama vivo del conjunto: la tienda pública, el panel de gestión, sus bases de datos y los servicios externos con los que integra. El punto de entrada técnico a la documentación.</p>
   </a>
 
-  <!-- MODELO DE DATOS -->
-  <div class="sec">
-    <div class="sec-h"><i style="background:var(--teal)"></i><h2>Modelo de datos</h2></div>
+  <a href="ruta-desarrollo.html" class="hero" style="border-left-color:var(--indigo)">
+    <h2>Ruta de desarrollo<span class="arrow" style="color:var(--indigo)">→</span></h2>
+    <p>Qué se hizo, qué está en curso y qué está planeado por área: Intranet, Frontend público, Documentación e Infraestructura. Incluye lo descartado, como registro de decisiones.</p>
+  </a>
+
+  <!-- ═══════════════ 1. INTRODUCCIÓN ═══════════════ -->
+  <div class="audience">
+    <div class="audience-h"><span class="n" style="background:var(--teal)">1</span><h2>Introducción general</h2></div>
+    <p class="audience-sub">Para cualquiera que empiece a usar la intranet, sin importar el área.</p>
     <div class="grid">
-      <a href="bases-de-datos.html" class="card c-teal">
-        <div class="t">Esquema de datos <span class="badge of">Oficial</span></div>
-        <div class="d">El modelo canónico del negocio, tabla por tabla y campo por campo. La fuente de verdad del esquema.</div>
-        <div class="file">bases-de-datos.html</div>
+      <a href="introduccion.html" class="card c-teal">
+        <div class="t">Qué es y cómo se accede</div>
+        <div class="d">La intranet en un vistazo: acceso, roles, el tema claro/oscuro y un tour rápido de la interfaz.</div>
+        <div class="file">Actualizado: julio 2026</div>
       </a>
-      <a href="connect-tables-db.html" class="card c-amber">
-        <div class="t">Relaciones entre tablas <span class="badge v1">Partida v1</span></div>
-        <div class="d">Esquema inicial y tablas puente. Se conserva como referencia del punto de partida del diseño.</div>
-        <div class="file">connect-tables-db.html</div>
+      <a href="glosario.html" class="card c-teal">
+        <div class="t">Glosario</div>
+        <div class="d">SKU, movimiento, stock derivado, pedido, comprobante... en lenguaje llano.</div>
+        <div class="file">Actualizado: julio 2026</div>
       </a>
     </div>
   </div>
 
-  <!-- BACKEND -->
-  <div class="sec">
-    <div class="sec-h"><i style="background:var(--teal)"></i><h2>Backend</h2></div>
+  <!-- ═══════════════ 2. IT / SISTEMAS ═══════════════ -->
+  <div class="audience">
+    <div class="audience-h"><span class="n" style="background:var(--indigo)">2</span><h2>IT / Sistemas</h2></div>
+    <p class="audience-sub">Nivel técnico profundo: arquitectura, modelo de datos, API, operación y mantenimiento.</p>
+
+    <div class="sec">
+      <div class="sec-h"><i style="background:var(--indigo)"></i><h3>Arquitectura y componentes</h3></div>
+      <div class="grid">
+        <a href="arquitectura.html" class="card c-indigo">
+          <div class="t">Arquitectura del ERP</div>
+          <div class="d">Diagrama vivo: interfaces, el motor, las 3 bases de datos y los workers.</div>
+          <div class="file">Actualizado: julio 2026</div>
+        </a>
+        <a href="el-motor.html" class="card c-indigo">
+          <div class="t">El motor (backend)</div>
+          <div class="d">Qué es, qué hace y su stack real (Django 5.2 + DRF).</div>
+          <div class="file">Actualizado: julio 2026</div>
+        </a>
+        <a href="base-principal.html" class="card c-indigo">
+          <div class="t">Base principal</div>
+          <div class="d">PostgreSQL: la fuente de verdad. Son 3 bases separadas, sin FK entre ellas.</div>
+          <div class="file">Actualizado: julio 2026</div>
+        </a>
+        <a href="memoria-rapida.html" class="card c-indigo">
+          <div class="t">Memoria rápida (Redis)</div>
+          <div class="d">Solo cola de Celery hoy: no hay carrito ni sesiones en Redis.</div>
+          <div class="file">Actualizado: julio 2026</div>
+        </a>
+        <a href="almacenamiento.html" class="card c-indigo">
+          <div class="t">Almacenamiento de fotos</div>
+          <div class="d">Pipeline real: Pillow, conversión a WebP, miniatura/media/original.</div>
+          <div class="file">Actualizado: julio 2026</div>
+        </a>
+        <a href="buscador.html" class="card c-indigo">
+          <div class="t">Búsqueda <span class="badge fn">Función de Postgres</span></div>
+          <div class="d">pg_trgm, integrada en la base. No es un servicio aparte.</div>
+          <div class="file">Actualizado: julio 2026</div>
+        </a>
+        <a href="tareas-automaticas.html" class="card c-indigo">
+          <div class="t">Tareas automáticas (Celery)</div>
+          <div class="d">Las 2 tareas reales que existen hoy; no hay tareas periódicas.</div>
+          <div class="file">Actualizado: julio 2026</div>
+        </a>
+        <a href="servicios-externos.html" class="card c-indigo">
+          <div class="t">Servicios externos</div>
+          <div class="d">Qué está realmente conectado (poco) y qué es un stub declarado (SUNAT).</div>
+          <div class="file">Actualizado: julio 2026</div>
+        </a>
+        <a href="catalogo-publico.html" class="card c-indigo">
+          <div class="t">Tienda pública (Frontend)</div>
+          <div class="d">Sitio Astro de solo catálogo + contacto por WhatsApp. Sin carrito ni pagos.</div>
+          <div class="file">Actualizado: julio 2026</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><i style="background:var(--teal)"></i><h3>Modelo de datos</h3></div>
+      <div class="grid">
+        <a href="bases-de-datos.html" class="card c-teal">
+          <div class="t">Esquema de datos <span class="badge of">Oficial</span></div>
+          <div class="d">El modelo canónico, tabla por tabla y campo por campo.</div>
+          <div class="file">Actualizado: julio 2026</div>
+        </a>
+        <a href="stock-derivado.html" class="card c-teal">
+          <div class="t">Cómo se deriva el stock <span class="badge nw">Nuevo</span></div>
+          <div class="d">El porqué y el cómo, en profundidad: nunca se guarda, siempre se calcula.</div>
+          <div class="file">Actualizado: julio 2026</div>
+        </a>
+        <a href="connect-tables-db.html" class="card c-amber">
+          <div class="t">Relaciones entre tablas <span class="badge v1">Histórico · v1</span></div>
+          <div class="d">Esquema inicial, ya superado. Se conserva como referencia del punto de partida.</div>
+          <div class="file">Actualizado: junio 2026</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><i style="background:var(--blue)"></i><h3>API y seguridad</h3></div>
+      <div class="grid">
+        <a href="backend-api.html" class="card c-blue">
+          <div class="t">API del backend <span class="badge of">Oficial</span></div>
+          <div class="d">El contrato REST completo, endpoint por endpoint, con permisos.</div>
+          <div class="file">Actualizado: julio 2026</div>
+        </a>
+        <a href="permisos-roles.html" class="card c-blue">
+          <div class="t">Roles y permisos <span class="badge nw">Nuevo</span></div>
+          <div class="d">Matriz de qué puede escribir cada rol, en qué endpoint.</div>
+          <div class="file">Actualizado: julio 2026</div>
+        </a>
+        <a href="auditoria-actividad.html" class="card c-blue">
+          <div class="t">Registro de actividad <span class="badge nw">Nuevo</span></div>
+          <div class="d">Cómo se audita quién hizo qué, y por qué no es vía señales de Django.</div>
+          <div class="file">Actualizado: julio 2026</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><i style="background:var(--amber)"></i><h3>Operación</h3></div>
+      <div class="grid">
+        <a href="operacion.html" class="card c-amber">
+          <div class="t">Despliegue y mantenimiento <span class="badge nw">Nuevo</span></div>
+          <div class="d">Arrancar servicios, logs, backup de Postgres, comandos frecuentes.</div>
+          <div class="file">Actualizado: julio 2026</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ 3. FUNCIONAL POR DEPARTAMENTO ═══════════════ -->
+  <div class="audience">
+    <div class="audience-h"><span class="n" style="background:var(--blue)">3</span><h2>Funcional por departamento</h2></div>
+    <p class="audience-sub">Qué puedes hacer tú en el sistema, en el lenguaje de tu área — sin jerga técnica.</p>
     <div class="grid">
-      <a href="backend-api.html" class="card c-teal">
-        <div class="t">API del backend <span class="badge of">Oficial</span></div>
-        <div class="d">El contrato REST documentado endpoint por endpoint y agrupado por dominio: autenticación, equipo, catálogo, inventario, compras, ventas y facturación.</div>
-        <div class="file">backend-api.html</div>
+      <a href="funcional-ventas.html" class="card c-blue">
+        <div class="t">Ventas</div>
+        <div class="d">Consultar catálogo, clientes, pedidos, comprobantes.</div>
+        <div class="file">Actualizado: julio 2026</div>
       </a>
-      <a href="el-motor.html" class="card c-teal">
-        <div class="t">Visión general del backend</div>
-        <div class="d">Qué es el backend (Django + DRF), de qué se encarga y su stack tecnológico. La perspectiva de componente.</div>
-        <div class="file">el-motor.html</div>
+      <a href="funcional-compras.html" class="card c-amber">
+        <div class="t">Importación / Compras</div>
+        <div class="d">Catálogo, proveedores, órdenes de compra, embarques, recibir mercancía.</div>
+        <div class="file">Actualizado: julio 2026</div>
+      </a>
+      <a href="funcional-almacen.html" class="card c-teal">
+        <div class="t">Almacén / Inventario</div>
+        <div class="d">Movimientos, stock derivado explicado simple, reponer, rotación.</div>
+        <div class="file">Actualizado: julio 2026</div>
+      </a>
+      <a href="funcional-administracion.html" class="card c-slate">
+        <div class="t">Administración</div>
+        <div class="d">Facturación, equipo y usuarios, registro de actividad.</div>
+        <div class="file">Actualizado: julio 2026</div>
+      </a>
+      <a href="reportes-analitica.html" class="card c-indigo">
+        <div class="t">Reportes y analítica</div>
+        <div class="d">Transversal a los 4 departamentos: ventas, inventario, compras y rentabilidad.</div>
+        <div class="file">Actualizado: julio 2026</div>
       </a>
     </div>
   </div>
 
-  <!-- DATOS Y ALMACENAMIENTO -->
-  <div class="sec">
-    <div class="sec-h"><i style="background:var(--blue)"></i><h2>Datos y almacenamiento</h2></div>
+  <!-- ═══════════════ 4. FLUJOS OPERATIVOS ═══════════════ -->
+  <div class="audience">
+    <div class="audience-h"><span class="n" style="background:var(--rose)">4</span><h2>Flujos operativos</h2></div>
+    <p class="audience-sub">Cómo opera el negocio de punta a punta, en diagramas: qué hace el empleado y qué hace el sistema en cada paso, con sus casos límite. Los marcados <em>Objetivo</em> son diseño a futuro, aún no existen.</p>
     <div class="grid">
-      <a href="base-principal.html" class="card c-blue">
-        <div class="t">Base de datos principal</div>
-        <div class="d">PostgreSQL: el repositorio persistente del negocio. También resuelve las consultas de búsqueda.</div>
-        <div class="file">base-principal.html</div>
+      <a href="flujos.html" class="card c-rose">
+        <div class="t">Mapa de flujos</div>
+        <div class="d">Visión de conjunto: cómo se enlazan la venta, el abastecimiento y el post-venta.</div>
+        <div class="file">Actualizado: julio 2026</div>
       </a>
-      <a href="memoria-rapida.html" class="card c-blue">
-        <div class="t">Caché en memoria</div>
-        <div class="d">Redis: gestiona el carrito de compra y la cola de tareas en segundo plano.</div>
-        <div class="file">memoria-rapida.html</div>
+      <a href="flujo-venta-web.html" class="card c-blue">
+        <div class="t">1 · Compra desde la web</div>
+        <div class="d">Del catálogo público a la entrega, con Ventas cerrando el pedido.</div>
+        <div class="file">Actualizado: julio 2026</div>
       </a>
-      <a href="almacenamiento.html" class="card c-blue">
-        <div class="t">Almacenamiento de archivos</div>
-        <div class="d">Gestión de ficheros: imágenes de producto y documentos.</div>
-        <div class="file">almacenamiento.html</div>
+      <a href="flujo-venta-tienda.html" class="card c-blue">
+        <div class="t">2 · Tienda y pago en efectivo</div>
+        <div class="d">Venta presencial: pedido, cobro en efectivo, boleta y entrega en mano.</div>
+        <div class="file">Actualizado: julio 2026</div>
       </a>
-      <a href="buscador.html" class="card c-blue">
-        <div class="t">Motor de búsqueda <span class="badge fn">Función de Postgres</span></div>
-        <div class="d">Búsqueda instantánea mediante pg_trgm, integrada en la base de datos. No constituye un servicio independiente.</div>
-        <div class="file">buscador.html</div>
+      <a href="flujo-pedido-reserva.html" class="card c-rose">
+        <div class="t">3 · Pedido con reserva <span class="badge nw">Objetivo</span></div>
+        <div class="d">Pedido telefónico a futuro: reserva de stock, expiración 5–7 días, precio en vivo.</div>
+        <div class="file">Actualizado: julio 2026</div>
+      </a>
+      <a href="flujo-crear-producto.html" class="card c-amber">
+        <div class="t">4 · Crear un producto</div>
+        <div class="d">Producto, variantes (SKU), volumen por unidad y fotos.</div>
+        <div class="file">Actualizado: julio 2026</div>
+      </a>
+      <a href="flujo-compra-importacion.html" class="card c-amber">
+        <div class="t">5 · Compra importación</div>
+        <div class="d">De la orden de compra en China al stock en almacén, con costo landed.</div>
+        <div class="file">Actualizado: julio 2026</div>
+      </a>
+      <a href="flujo-ciclo-pedido.html" class="card c-blue">
+        <div class="t">6 · Ciclo de vida del pedido</div>
+        <div class="d">Pendiente → Pagado → Enviado → Entregado, con Anulado y Devolución.</div>
+        <div class="file">Actualizado: julio 2026</div>
+      </a>
+      <a href="flujo-reclamacion.html" class="card c-rose">
+        <div class="t">7 · Reclamación web <span class="badge nw">Objetivo</span></div>
+        <div class="d">Libro de reclamaciones en línea: registro, acuse y respuesta en plazo.</div>
+        <div class="file">Actualizado: julio 2026</div>
       </a>
     </div>
   </div>
 
-  <!-- INTERFACES -->
-  <div class="sec">
-    <div class="sec-h"><i style="background:var(--indigo)"></i><h2>Interfaces de usuario</h2></div>
-    <div class="grid">
-      <a href="catalogo-publico.html" class="card c-indigo">
-        <div class="t">Catálogo público</div>
-        <div class="d">La tienda online: donde los clientes consultan productos y realizan sus compras.</div>
-        <div class="file">catalogo-publico.html</div>
-      </a>
-      <a href="panel-gestion.html" class="card c-indigo">
-        <div class="t">Panel de gestión</div>
-        <div class="d">El back-office: desde donde el equipo administra la operativa completa del negocio.</div>
-        <div class="file">panel-gestion.html</div>
-      </a>
-      <a href="panel-reportes.html" class="card c-indigo">
-        <div class="t">Reportes y analítica <span class="badge fn">Prototipo</span></div>
-        <div class="d">Dashboard del back-office: KPIs y gráficos (Chart.js) sobre datos simulados.</div>
-        <div class="file">panel-reportes.html</div>
-      </a>
-    </div>
-  </div>
-
-  <!-- OPERACIÓN -->
-  <div class="sec">
-    <div class="sec-h"><i style="background:var(--amber)"></i><h2>Operación e integraciones</h2></div>
-    <div class="grid">
-      <a href="servicios-externos.html" class="card c-amber">
-        <div class="t">Servicios externos</div>
-        <div class="d">Integraciones con SUNAT para comprobantes electrónicos, pasarela de pagos y courier de envíos.</div>
-        <div class="file">servicios-externos.html</div>
-      </a>
-      <a href="tareas-automaticas.html" class="card c-amber">
-        <div class="t">Tareas automáticas</div>
-        <div class="d">Celery: procesamiento en segundo plano de facturas y notificaciones.</div>
-        <div class="file">tareas-automaticas.html</div>
-      </a>
-    </div>
-  </div>
-
-  <!-- LEGAL -->
-  <div class="sec">
-    <div class="sec-h"><i style="background:#51606F"></i><h2>Legal</h2></div>
+  <!-- ═══════════════ LEGAL ═══════════════ -->
+  <div class="audience">
+    <div class="audience-h"><span class="n" style="background:var(--slate)">5</span><h2>Legal</h2></div>
+    <p class="audience-sub">Modelos orientativos para la tienda pública, no textos oficiales revisados por un abogado.</p>
     <div class="grid">
       <a href="legal-aviso.html" class="card c-slate">
         <div class="t">Aviso legal</div>
-        <div class="d">Identificación del titular (razón social, RUC, domicilio) y condiciones generales de uso del sitio.</div>
-        <div class="file">legal-aviso.html</div>
+        <div class="d">Identificación del titular y condiciones generales de uso del sitio.</div>
+        <div class="file">Actualizado: junio 2026</div>
       </a>
       <a href="legal-terminos.html" class="card c-slate">
         <div class="t">Términos y condiciones</div>
-        <div class="d">Reglas de compra mayorista y minorista: precios, comprobantes SUNAT, pagos, envíos, devoluciones y garantía.</div>
-        <div class="file">legal-terminos.html</div>
+        <div class="d">Reglas de compra: precios, comprobantes SUNAT, pagos, envíos, devoluciones.</div>
+        <div class="file">Actualizado: junio 2026</div>
       </a>
       <a href="legal-privacidad.html" class="card c-slate">
         <div class="t">Política de privacidad</div>
-        <div class="d">Tratamiento de datos personales conforme a la Ley N° 29733 y derechos ARCO del cliente.</div>
-        <div class="file">legal-privacidad.html</div>
+        <div class="d">Tratamiento de datos personales conforme a la Ley N° 29733.</div>
+        <div class="file">Actualizado: junio 2026</div>
       </a>
       <a href="legal-cookies.html" class="card c-slate">
         <div class="t">Política de cookies</div>
-        <div class="d">Qué cookies utiliza el sitio, con qué finalidad y cómo gestionarlas o desactivarlas.</div>
-        <div class="file">legal-cookies.html</div>
+        <div class="d">Qué cookies usa el sitio y cómo gestionarlas o desactivarlas.</div>
+        <div class="file">Actualizado: junio 2026</div>
       </a>
       <a href="legal-libro-reclamaciones.html" class="card c-slate">
         <div class="t">Libro de reclamaciones</div>
-        <div class="d">Registro de reclamos y quejas exigido por Indecopi (Código del Consumidor, Ley N° 29571).</div>
-        <div class="file">legal-libro-reclamaciones.html</div>
+        <div class="d">Registro de reclamos y quejas exigido por Indecopi (Ley N° 29571).</div>
+        <div class="file">Actualizado: junio 2026</div>
       </a>
     </div>
   </div>

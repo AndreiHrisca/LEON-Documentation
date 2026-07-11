@@ -1,0 +1,204 @@
+/* ════════════════════════════════════════════════════════════════════════
+   docs-ui.css — Tema oscuro + navbar global de la documentación.
+   Se inyecta en cada página vía nginx sub_filter (no se edita ningún HTML).
+
+   · Los tokens oscuros son LOS MISMOS de la intranet (Intranet/src/styles/
+     global.css → :root[data-theme="oscuro"]). Como cada página de docu ya
+     define los tokens CLAROS en su propio :root{}, este bloque los sobrescribe
+     en oscuro por especificidad (:root[data-theme] = 0,2,0 > :root = 0,1,0),
+     sin importar el orden de carga.
+   · El navbar usa esos tokens, así que se adapta a ambos temas solo.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ── Paleta oscura (copiada de la intranet para que casen exactamente) ── */
+:root[data-theme="oscuro"]{
+  --bg1:#12161D; --bg2:#0B0E13;
+  --surface:#1A2029; --surface-2:#222937; --surface-3:#2C3546; --chip:#242C3A;
+  --ink:#EAEEF5; --muted:#9AA6B8; --placeholder:#5B6576; --line:#2C3444;
+  --indigo:#7B82F0; --teal:#28B39F; --blue:#5A9BE8; --amber:#E0A868; --rose:#E37DA0; --slate:#8494A5;
+  --indigo-tint:#232649; --teal-tint:#12332F; --blue-tint:#132A42; --amber-tint:#3A2D18; --rose-tint:#3A1F2B; --slate-tint:#232B36;
+  --indigo-line:#383E70; --blue-line:#294464; --amber-line:#5A452A; --rose-line:#5C3241;
+  --pos:#3FCE85; --neg:#E37DA0; --pos-tint:#12332A; --neg-tint:#3A1F2B;
+  --topbar-bg:rgba(26,32,41,.82);
+  --docnav-shadow:0 1px 0 rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+:root{
+  /* Fallbacks para tokens que alguna página de docu podría no declarar. */
+  --surface-2:var(--chip,#F4F6F9);
+  --topbar-bg:rgba(255,255,255,.85);
+  --docnav-shadow:0 1px 0 rgba(24,34,46,.05),0 6px 20px rgba(24,34,46,.06);
+  --docnav-h:56px;
+  --search-ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+}
+
+/* Deja que el propio navegador pinte controles/scrollbars acorde al tema. */
+:root[data-theme="oscuro"] body{color-scheme:dark}
+
+/* ── Layout: hueco para el navbar fijo + anclas que no queden ocultas ── */
+html{scroll-padding-top:72px}
+body{padding-top:76px !important}
+@media (max-width:640px){ body{padding-top:70px !important} }
+
+/* En oscuro, las sombras claras horneadas en las páginas desaparecen; el
+   borde (var(--line)) ya define las tarjetas, pero suavizamos el fondo. */
+:root[data-theme="oscuro"] ::selection{background:var(--indigo-tint)}
+
+/* Mermaid hornea colores CLAROS en el SVG al renderizar (config inline por
+   página). En oscuro mantenemos el contenedor del diagrama como un "panel de
+   papel" claro con borde, para que quede 100% legible. */
+:root[data-theme="oscuro"] .diagram{
+  background:#EEF1F5;
+  border-color:#3A4354;
+  box-shadow:0 1px 2px rgba(0,0,0,.25),0 8px 24px rgba(0,0,0,.28);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   NAVBAR
+   ════════════════════════════════════════════════════════════════════════ */
+.docnav{
+  position:fixed; top:0; left:0; right:0; z-index:1200;
+  height:var(--docnav-h);
+  background:var(--topbar-bg);
+  -webkit-backdrop-filter:saturate(140%) blur(10px);
+  backdrop-filter:saturate(140%) blur(10px);
+  border-bottom:1px solid var(--line);
+  box-shadow:var(--docnav-shadow);
+  font-family:var(--sans,'Inter',system-ui,sans-serif);
+}
+.docnav *{box-sizing:border-box}
+.docnav-inner{
+  max-width:1180px; margin:0 auto; height:100%;
+  display:flex; align-items:center; gap:14px; padding:0 20px;
+}
+@media (max-width:640px){ .docnav-inner{padding:0 14px;gap:10px} }
+
+/* Marca */
+.docnav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);flex:none}
+.docnav-logo{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  background:var(--ink);color:var(--surface);font-weight:700;font-size:13px;letter-spacing:-.02em;flex:none}
+.docnav-brand-tx{font-size:14.5px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.docnav-brand-sub{color:var(--muted);font-weight:600}
+@media (max-width:420px){ .docnav-brand-sub{display:none} }
+
+/* Menú horizontal (desktop) */
+.docnav-menu{flex:1;min-width:0}
+.docnav-list{display:flex;align-items:center;gap:2px;list-style:none;margin:0;padding:0}
+.docnav-item{position:relative}
+.docnav-top{
+  display:inline-flex;align-items:center;gap:5px;
+  border:none;background:transparent;cursor:pointer;
+  font-family:inherit;font-size:13.5px;font-weight:500;color:var(--ink);
+  padding:8px 11px;border-radius:9px;line-height:1;white-space:nowrap;transition:background .12s,color .12s}
+.docnav-top:hover{background:var(--surface-2)}
+.docnav-top .chev{width:13px;height:13px;color:var(--muted);transition:transform .18s}
+.docnav-item:hover .docnav-top .chev,
+.docnav-item.open .docnav-top .chev{transform:rotate(180deg)}
+.docnav-top:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+/* Entrada de primer nivel activa: color de acento por sección + subrayado. */
+.docnav-item.active .docnav-top{color:var(--c,var(--indigo));font-weight:600}
+.docnav-item.active .docnav-top::after{
+  content:"";position:absolute;left:11px;right:11px;bottom:2px;height:2px;border-radius:2px;background:var(--c,var(--indigo))}
+
+/* Dropdown */
+.docnav-drop{
+  position:absolute;top:calc(100% + 6px);left:0;min-width:260px;max-width:min(94vw,360px);
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  box-shadow:var(--docnav-shadow);padding:8px;display:none;
+  max-height:min(74vh,560px);overflow-y:auto}
+.docnav-item:hover .docnav-drop,
+.docnav-item:focus-within .docnav-drop,
+.docnav-item.open .docnav-drop{display:block}
+.docnav-drop.right{left:auto;right:0}
+.docnav-group{padding:6px 4px 4px}
+.docnav-group + .docnav-group{border-top:1px solid var(--line);margin-top:4px}
+.docnav-grouph{display:block;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--muted);padding:6px 10px 4px}
+.docnav-link{
+  display:flex;flex-direction:column;gap:2px;text-decoration:none;color:var(--ink);
+  padding:8px 10px;border-radius:10px;transition:background .12s}
+.docnav-link:hover,.docnav-link:focus-visible{background:var(--surface-2);outline:none}
+.docnav-link .lk-t{font-size:13.5px;font-weight:600;line-height:1.25}
+.docnav-link .lk-d{font-size:11.5px;color:var(--muted);line-height:1.35}
+.docnav-link[aria-current="page"]{background:var(--c-tint,var(--indigo-tint))}
+.docnav-link[aria-current="page"] .lk-t{color:var(--c,var(--indigo))}
+
+/* Acciones (búsqueda + tema) */
+.docnav-actions{display:flex;align-items:center;gap:8px;flex:none;margin-left:auto}
+
+.docsearch{position:relative}
+.docsearch-input{
+  width:190px;max-width:32vw;font-family:inherit;font-size:13px;color:var(--ink);
+  background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
+  padding:8px 12px 8px 32px;transition:.15s}
+.docsearch::before{content:"";position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;
+  background:var(--muted);-webkit-mask:var(--search-ic) center/contain no-repeat;mask:var(--search-ic) center/contain no-repeat}
+.docsearch-input:focus{outline:none;background:var(--surface);border-color:var(--indigo);box-shadow:0 0 0 3px var(--indigo-tint)}
+.docsearch-results{
+  position:absolute;top:calc(100% + 8px);right:0;width:360px;max-width:86vw;
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--docnav-shadow);
+  padding:6px;max-height:min(70vh,460px);overflow-y:auto;display:none}
+.docsearch-results.open{display:block}
+.docsearch-hit{display:flex;flex-direction:column;gap:2px;text-decoration:none;color:var(--ink);padding:8px 10px;border-radius:10px}
+.docsearch-hit:hover,.docsearch-hit.sel{background:var(--surface-2)}
+.docsearch-hit .h-t{font-size:13.5px;font-weight:600}
+.docsearch-hit .h-s{font-size:11px;color:var(--muted)}
+.docsearch-hit .h-sec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--c,var(--muted))}
+.docsearch-empty{padding:12px;font-size:12.5px;color:var(--muted)}
+
+/* Botón de tema */
+.docnav-theme{
+  width:38px;height:38px;flex:none;border:1px solid var(--line);background:var(--surface);border-radius:10px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:.12s}
+.docnav-theme:hover{background:var(--surface-2);color:var(--ink)}
+.docnav-theme:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.docnav-theme svg{width:18px;height:18px}
+
+/* Hamburguesa (solo móvil) */
+.docnav-burger{display:none;width:38px;height:38px;flex:none;border:1px solid var(--line);background:var(--surface);
+  border-radius:10px;cursor:pointer;color:var(--ink);align-items:center;justify-content:center}
+.docnav-burger svg{width:20px;height:20px}
+.docnav-burger:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+
+/* ── Móvil: hamburguesa + acordeones (PRIORITARIO) ── */
+@media (max-width:900px){
+  .docnav-menu{display:none}
+  .docsearch{display:none}                 /* la búsqueda vive dentro del panel */
+  .docnav-burger{display:flex}
+}
+.docnav-mobile{
+  position:fixed;top:var(--docnav-h);left:0;right:0;bottom:0;z-index:1190;
+  background:var(--surface);border-top:1px solid var(--line);
+  padding:14px 16px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  transform:translateX(0)}
+.docnav-mobile[hidden]{display:none}
+.docnav-mobile .docsearch{display:block;position:relative;margin:0 0 14px}
+.docnav-mobile .docsearch-input{width:100%;max-width:none}
+.docnav-mobile .docsearch-results{position:static;width:auto;max-width:none;box-shadow:none;border:none;padding:0;margin-top:6px}
+
+.docacc{border-bottom:1px solid var(--line)}
+.docacc-h{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  border:none;background:transparent;font-family:inherit;font-size:15px;font-weight:600;color:var(--ink);
+  padding:14px 4px;cursor:pointer;text-align:left}
+.docacc-h .chev{width:16px;height:16px;color:var(--muted);transition:transform .2s}
+.docacc.open .docacc-h{color:var(--c,var(--indigo))}
+.docacc.open .docacc-h .chev{transform:rotate(180deg)}
+.docacc-body{display:none;padding:2px 4px 12px}
+.docacc.open .docacc-body{display:block}
+.docacc-grouph{display:block;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--muted);padding:8px 8px 4px}
+.docacc-link{display:flex;flex-direction:column;gap:2px;text-decoration:none;color:var(--ink);
+  padding:10px 10px;border-radius:10px}
+.docacc-link:active,.docacc-link:hover{background:var(--surface-2)}
+.docacc-link[aria-current="page"]{background:var(--c-tint,var(--indigo-tint))}
+.docacc-link[aria-current="page"] .lk-t{color:var(--c,var(--indigo))}
+.docacc-link .lk-t{font-size:14.5px;font-weight:600}
+.docacc-link .lk-d{font-size:12px;color:var(--muted);line-height:1.4}
+
+/* Bloqueo de scroll del fondo cuando el panel móvil está abierto. */
+body.docnav-locked{overflow:hidden}
+
+@media (prefers-reduced-motion:reduce){
+  .docnav-top .chev,.docacc-h .chev{transition:none}
+}

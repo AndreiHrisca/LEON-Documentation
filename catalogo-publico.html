@@ -89,73 +89,52 @@
 
   <p class="eyebrow">Catálogo público</p>
   <h1>Tienda web pública</h1>
-  <p class="sub">El escaparate principal donde los clientes descubren productos, exploran categorías y realizan sus compras. Constituye la interfaz pública del negocio.</p>
+  <p class="sub">Un sitio Astro simple: muestra el catálogo real (leído de los mismos endpoints públicos de solo lectura del backend) y cada producto enlaza a WhatsApp para consultar. <strong>Sin carrito, sin checkout, sin pago online.</strong></p>
 
   <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.6 2.6 2.6 15.4 0 18"/><path d="M12 3c-2.6 2.6-2.6 15.4 0 18"/></svg></div>
 
   <div class="section">
     <h2>¿Qué es?</h2>
-    <p>Es la aplicación web pública accesible por cualquier persona. Funciona como una tienda virtual donde se presentan los productos disponibles, se filtran por categorías, se visualizan detalles, y se completan las compras. Todo con una experiencia fluida, rápida y optimizada para dispositivos móviles y de escritorio.</p>
+    <p>El proyecto <span class="mono" style="font-family:var(--mono);color:var(--blue)">Frontend</span>: un sitio Astro (páginas estáticas, sin framework de componentes tipo React) con contenido de marketing (portada, contacto, legal) y una página de catálogo que consulta en vivo <span class="mono" style="font-family:var(--mono);color:var(--blue)">/productos</span> y <span class="mono" style="font-family:var(--mono);color:var(--blue)">/categorias</span> del backend (lectura pública, sin login) y pinta tarjetas de producto en el navegador.</p>
   </div>
 
   <div class="section">
-    <h2>Funciones principales</h2>
-    <div class="list-item"><strong>Exploración de productos:</strong> Navegación intuitiva por categorías, búsqueda avanzada, filtros por precio, disponibilidad y atributos.</div>
-    <div class="list-item"><strong>Fichas de producto:</strong> Galerías de imágenes, descripciones detalladas, especificaciones técnicas, valoraciones y stock disponible.</div>
-    <div class="list-item"><strong>Carrito de compra:</strong> Agregar/eliminar productos, modificar cantidades, aplicar descuentos y ver resumen de compra.</div>
-    <div class="list-item"><strong>Proceso de pago:</strong> Selección de dirección de envío, método de pago, resumen final y confirmación del pedido.</div>
-    <div class="list-item"><strong>Historial de compras:</strong> Los clientes autenticados consultan sus pedidos anteriores y su estado, y pueden repetirlos.</div>
-    <div class="list-item"><strong>Notificaciones:</strong> Confirmación de compra, estado del envío, ofertas y novedades por correo electrónico.</div>
+    <h2>Cómo compra un cliente, en realidad</h2>
+    <p>No hay checkout: cada tarjeta de producto tiene un botón que abre <span class="mono" style="font-family:var(--mono);color:var(--blue)">wa.me</span> con un mensaje precargado ("Hola, me interesa: {producto}. ¿Me comparten precio, MOQ y disponibilidad?"). La venta se cierra por WhatsApp con una persona del equipo de Ventas, que luego crea el pedido en la intranet — coherente con que <span class="mono" style="font-family:var(--mono);color:var(--blue)">canal=WhatsApp</span> sea una opción real en el modelo de <span class="mono" style="font-family:var(--mono);color:var(--blue)">Pedido</span>.</p>
   </div>
 
   <div class="section">
-    <h2>Limitaciones y restricciones</h2>
-    <div class="list-item"><strong>Información en tiempo real:</strong> Los precios y el stock se sincronizan con el backend cada pocos segundos, por lo que puede haber pequeños desfases.</div>
-    <div class="list-item"><strong>Métodos de pago:</strong> Solo acepta tarjetas de crédito/débito integradas con el proveedor. No hay billeteras digitales por ahora.</div>
-    <div class="list-item"><strong>Gestión de devoluciones:</strong> El proceso es manual: los clientes contactan por correo electrónico o teléfono, sin formulario automatizado en la web.</div>
-    <div class="list-item"><strong>Personalización:</strong> No hay recomendaciones basadas en IA ni historial de compra (en versión actual).</div>
-    <div class="list-item"><strong>Disponibilidad regional:</strong> Solo funciona en Perú. Envíos internacionales no soportados.</div>
+    <h2>Qué páginas tiene</h2>
+    <div class="list-item"><strong>Portada</strong> — presentación del negocio.</div>
+    <div class="list-item"><strong>Catálogo</strong> — tarjetas de producto con precio (o "Desde S/ X" si varía por variante), filtrable por categoría; sin fichas de detalle individuales todavía.</div>
+    <div class="list-item"><strong>Contacto</strong> — con el mismo patrón de WhatsApp flotante en todas las páginas.</div>
+    <div class="list-item"><strong>Legal</strong> — aviso legal, privacidad, cookies (contenido orientativo, ver sección Legal del índice).</div>
+  </div>
+
+  <div class="section">
+    <h2>Lo que NO existe</h2>
+    <div class="list-item">Sin carrito de compra, sin proceso de pago, sin cuenta de cliente ni historial de pedidos.</div>
+    <div class="list-item">Sin notificaciones por correo (confirmación de compra, envío) — no hay "compra" que confirmar en este sitio.</div>
+    <div class="list-item">Sin CDN ni optimización de imágenes más allá de lo que ya sirve <a href="almacenamiento.html" style="color:var(--indigo)">el backend de fotos</a>.</div>
   </div>
 
   <div class="section">
     <h2>Propósito del componente</h2>
-    <p>Convertir visitantes en compradores, generar ingresos directos, recopilar datos sobre las preferencias de los clientes y representar la imagen pública del negocio. Debe ser rápida, segura y coherente con la identidad de la marca.</p>
+    <p>Dar visibilidad pública al catálogo sin construir un checkout completo — apropiado para un negocio que hoy cierra ventas por WhatsApp/Instagram/presencial, no por pago en línea.</p>
   </div>
 
   <div class="section">
-    <h2>Stack tecnológico recomendado</h2>
+    <h2>Stack</h2>
     <div class="stack">
-      <span class="badge">React 18</span>
-      <span class="badge">TypeScript</span>
-      <span class="badge">Vite</span>
-      <span class="badge">TailwindCSS</span>
-      <span class="badge">SWR/React Query</span>
-      <span class="badge">Zustand</span>
-      <span class="badge">Pasarela de pagos</span>
+      <span class="badge">Astro (páginas estáticas)</span>
+      <span class="badge">JS vanilla</span>
+      <span class="badge">nginx</span>
     </div>
-    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> React renderiza con eficiencia los cambios dinámicos (carrito, filtros). TypeScript previene errores en el manejo de datos sensibles. Vite ofrece compilación muy rápida en desarrollo. TailwindCSS facilita componentes consistentes sin CSS a mano. SWR mantiene los datos sincronizados con el backend. Zustand gestiona el estado global (usuario, carrito) con una huella mínima.</p>
-  </div>
-
-  <div class="section">
-    <h2>Información técnica adicional</h2>
-    <div class="list-item"><strong>Renderizado:</strong> La mayoría es SPA (Single Page App) para transiciones suaves. La página inicial se pre-renderiza en servidor para SEO.</div>
-    <div class="list-item"><strong>Rendimiento:</strong> Los datos se cachean localmente (localStorage para el carrito temporal) y las imágenes de producto se optimizan y se sirven desde una CDN.</div>
-    <div class="list-item"><strong>Seguridad:</strong> Se comunica con El motor usando HTTPS. Tokens JWT válidos solo 15 minutos. El carrito se sincroniza en tiempo real con Redis.</div>
-    <div class="list-item"><strong>Escalabilidad:</strong> Se distribuye en múltiples servidores con nginx como balanceador. El caché se maneja centralizadamente en Redis.</div>
-    <div class="list-item"><strong>Accesibilidad:</strong> Cumple WCAG 2.1 nivel AA. Navegación por teclado, colores accesibles, textos descriptivos en imágenes.</div>
-  </div>
-
-  <div class="section">
-    <h2>Métricas importantes</h2>
-    <div class="list-item"><strong>Tiempo de carga:</strong> Objetivo inferior a 2 segundos en red móvil 4G.</div>
-    <div class="list-item"><strong>Tasa de conversión:</strong> Porcentaje de visitantes que completan una compra; objetivo superior al 2%.</div>
-    <div class="list-item"><strong>Abandono de carrito:</strong> Porcentaje que añade producto pero no compra; objetivo inferior al 70%.</div>
-    <div class="list-item"><strong>Disponibilidad:</strong> 99,9% (máximo de 31 min de caída al mes).</div>
-    <div class="list-item"><strong>Errores 404:</strong> Productos no encontrados; objetivo inferior al 1% de las peticiones.</div>
+    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> no hace falta un framework de componentes ni estado del lado cliente cuando no hay carrito ni checkout — Astro genera HTML estático y unas pocas líneas de JS pintan las tarjetas con los datos que trae la API pública.</p>
   </div>
 
   <p class="foot">
-    El catálogo público es el primer contacto del cliente con la marca: cada milisegundo de velocidad y cada detalle visual cuentan. Diseño y frontend deben trabajar en estrecha coordinación con marketing para optimizar la conversión de forma continua.
+    Los mismos endpoints públicos que usa este sitio están documentados en <a href="backend-api.html">La API del motor</a> (sección Catálogo, lectura pública).
   </p>
 </div>
 </body>

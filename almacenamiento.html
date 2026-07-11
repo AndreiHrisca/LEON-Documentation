@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Almacenamiento · Distribuidora</title>
+<title>Fotos de producto · Distribuidora</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -88,73 +88,57 @@
   </a>
 
   <p class="eyebrow">Almacenamiento</p>
-  <h1>Almacenamiento de archivos</h1>
-  <p class="sub">Almacenamiento de objetos para los ficheros del negocio: imágenes de producto, comprobantes en PDF, documentos y logotipos. Típicamente AWS S3, desacoplado del servidor principal para escalar de forma independiente.</p>
+  <h1>Fotos de producto</h1>
+  <p class="sub">El pipeline real de imágenes: se sube un original, un worker de Celery lo convierte a WebP en tres tamaños, y hoy se sirve directamente desde PostgreSQL (no hay S3, CDN ni servicio de archivos aparte todavía).</p>
 
   <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m20 16-5-5L6 20"/></svg></div>
 
   <div class="section">
     <h2>¿Qué es?</h2>
-    <p>Un servicio de almacenamiento de objetos en la nube (AWS S3 o equivalente). Custodia archivos estáticos —imágenes, PDF, documentos— fuera de la base de datos, dado su tamaño, y los expone mediante URLs. La base de datos guarda solo la referencia (la ruta), no el binario.</p>
+    <p>La app <span class="mono" style="font-family:var(--mono);color:var(--blue)">apps.fotos</span>, con su propia base de datos (<span class="mono" style="font-family:var(--mono);color:var(--blue)">leon_fotos</span>). Guarda las fotos de cada variante y sus tamaños ya procesados. No hay comprobantes en PDF ni documentos genéricos aquí — solo imágenes de producto.</p>
   </div>
 
   <div class="section">
-    <h2>Funciones principales</h2>
-    <div class="list-item"><strong>Carga de imágenes:</strong> Se suben de 3 a 5 imágenes por producto y se generan automáticamente sus variantes (miniatura, media, original).</div>
-    <div class="list-item"><strong>Organización:</strong> Estructura por prefijos (productos/, comprobantes/, documentos/) con permisos diferenciados (privado o público).</div>
-    <div class="list-item"><strong>Distribución por CDN:</strong> Los archivos se sirven desde nodos de borde próximos al usuario, con caché global para minimizar la latencia.</div>
-    <div class="list-item"><strong>Comprobantes en PDF:</strong> El backend genera el PDF y lo deposita aquí; el cliente lo descarga mediante una URL estable.</div>
-    <div class="list-item"><strong>Respaldo:</strong> Replicación entre centros de datos y versionado para recuperar revisiones anteriores de un archivo.</div>
-    <div class="list-item"><strong>Depuración:</strong> Los archivos sin referencia se eliminan automáticamente transcurridos 30 días.</div>
+    <h2>Cómo funciona hoy</h2>
+    <div class="list-item"><strong>1. Subida:</strong> <span class="mono">POST /imagenes</span> (multipart) crea el registro <span class="mono">imagen_producto</span> y un primer render "original" con el archivo tal cual se subió.</div>
+    <div class="list-item"><strong>2. Procesado en segundo plano:</strong> se encola la tarea <span class="mono">procesar_imagen</span> (Celery); no bloquea la respuesta.</div>
+    <div class="list-item"><strong>3. Conversión real con Pillow:</strong> la tarea abre la imagen, la convierte a modo RGB/RGBA si hace falta, la redimensiona si supera 1920px de ancho (Lanczos) y la re-guarda como <strong>WebP calidad 80</strong>, sobrescribiendo el mismo render — el binario original que se subió no se conserva aparte.</div>
+    <div class="list-item"><strong>4. Tamaños (<span class="mono">imagen_render</span>):</strong> miniatura, media y original — cada uno es una fila con su propio <span class="mono">ancho</span>/<span class="mono">alto</span>/<span class="mono">bytes</span>/<span class="mono">checksum_sha256</span>.</div>
+    <div class="list-item"><strong>5. Servido:</strong> <span class="mono">GET /imagenes-render/{id}/archivo</span> devuelve el binario guardado en Postgres (<span class="rule" style="color:var(--teal);font-weight:600">modo autónomo, el que está activo hoy</span>) — o redirige a una URL si el render tiene <span class="mono">url</span> rellena (modo CDN/S3, preparado en el modelo pero <strong>sin activar</strong>).</div>
+  </div>
+
+  <div class="section">
+    <h2>Lo que NO existe todavía</h2>
+    <div class="list-item">No hay AWS S3, CloudFront ni ningún almacenamiento de objetos externo conectado — el campo <span class="mono">url</span> del render está pensado para eso, pero hoy siempre está vacío y se sirve el binario.</div>
+    <div class="list-item">No hay comprobantes en PDF generados por el sistema.</div>
+    <div class="list-item">No hay borrado automático de archivos huérfanos ni políticas de ciclo de vida.</div>
   </div>
 
   <div class="section">
     <h2>Limitaciones y restricciones</h2>
-    <div class="list-item"><strong>Coste de almacenamiento:</strong> S3 ronda los US$ 0,023 por GB/mes (1 TB ≈ US$ 23/mes); escala con el volumen acumulado.</div>
-    <div class="list-item"><strong>Coste de transferencia:</strong> La descarga (egress) tiene coste; la subida (ingress) es gratuita.</div>
-    <div class="list-item"><strong>Latencia:</strong> El primer byte tarda entre 50 y 200 ms, superior a la de un disco local.</div>
-    <div class="list-item"><strong>Configuración de permisos:</strong> CORS, políticas y permisos de bucket requieren configuración cuidadosa.</div>
-    <div class="list-item"><strong>Dependencia de terceros:</strong> AWS garantiza una durabilidad del 99,999999999%, a costa de delegar en un proveedor externo.</div>
+    <div class="list-item"><strong>Tamaño de la base:</strong> al guardar el binario en Postgres (<span class="mono">BinaryField</span>), la base de fotos crece con cada imagen — no hay un límite de tamaño de subida más allá de <span class="mono">DATA_UPLOAD_MAX_MEMORY_SIZE</span> (10 MB) en la configuración de Django.</div>
+    <div class="list-item"><strong>Sin CDN:</strong> cada imagen se sirve directamente desde el backend, sin nodos de borde ni caché geográfico.</div>
+    <div class="list-item"><strong>Reproceso:</strong> si <span class="mono">procesar_imagen</span> falla (imagen corrupta), reintenta hasta 3 veces; si sigue fallando, la imagen queda sin sus tamaños procesados.</div>
   </div>
 
   <div class="section">
     <h2>Propósito del componente</h2>
-    <p>Desacoplar los archivos pesados del servidor principal, escalar la capacidad sin saturar el disco, servir el contenido con baja latencia mediante una CDN global y delegar el mantenimiento de la infraestructura de almacenamiento en un servicio gestionado.</p>
+    <p>Separar las fotos (pesadas, de crecimiento constante) de <span class="mono">leon_principal</span>, y servir siempre WebP optimizado sin importar en qué formato subió la foto quien la cargó.</p>
   </div>
 
   <div class="section">
-    <h2>Stack tecnológico recomendado</h2>
+    <h2>Stack</h2>
     <div class="stack">
-      <span class="badge">AWS S3</span>
-      <span class="badge">CloudFront (CDN)</span>
-      <span class="badge">boto3 (Python client)</span>
-      <span class="badge">Pillow (image processing)</span>
-      <span class="badge">IAM (permissions)</span>
-      <span class="badge">S3 versioning</span>
+      <span class="badge">PostgreSQL (leon_fotos)</span>
+      <span class="badge">Pillow</span>
+      <span class="badge">Celery</span>
+      <span class="badge">BinaryField (modo autónomo)</span>
     </div>
-    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> S3 es el estándar del sector. CloudFront distribuye los archivos globalmente. boto3 es el cliente oficial desde Python. Pillow procesa y optimiza las imágenes. IAM controla permisos de forma granular.</p>
-  </div>
-
-  <div class="section">
-    <h2>Información técnica adicional</h2>
-    <div class="list-item"><strong>URLs prefirmadas:</strong> Enlaces temporales con caducidad configurable, idóneos para la descarga de comprobantes privados.</div>
-    <div class="list-item"><strong>Carga multiparte:</strong> Los archivos grandes se dividen en fragmentos; si uno falla, se reintenta solo ese fragmento.</div>
-    <div class="list-item"><strong>Ciclo de vida del objeto:</strong> Traslado automático de archivos antiguos a un almacenamiento más económico (Glacier) según su antigüedad.</div>
-    <div class="list-item"><strong>Cifrado en reposo:</strong> Los archivos se almacenan cifrados y se descifran al descargarse, de forma transparente para el usuario.</div>
-    <div class="list-item"><strong>Registro de accesos:</strong> Trazabilidad de cada acceso para auditar quién descargó qué.</div>
-  </div>
-
-  <div class="section">
-    <h2>Métricas importantes</h2>
-    <div class="list-item"><strong>Coste total:</strong> Almacenamiento más transferencia de salida; presupuestar el crecimiento mensual.</div>
-    <div class="list-item"><strong>Tamaño medio del archivo:</strong> Con imágenes de ~2 MB y 10 000 productos, se parte de unos 20 GB.</div>
-    <div class="list-item"><strong>Latencia de CDN:</strong> P95 < 100 ms. Por encima de 500 ms, indica problema de caché o de distribución geográfica.</div>
-    <div class="list-item"><strong>Tasa de aciertos de CDN:</strong> Porcentaje de peticiones servidas desde caché; objetivo superior al 90%.</div>
-    <div class="list-item"><strong>Integridad:</strong> Sumas de verificación (checksums) para detectar corrupción de archivos.</div>
+    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> con el volumen actual, guardar el binario en Postgres evita montar un servicio de almacenamiento aparte. Si el catálogo crece mucho, el modelo ya tiene el campo <span class="mono">url</span> preparado para migrar a S3/CDN sin cambiar el contrato de la API.</p>
   </div>
 
   <p class="foot">
-    El almacenamiento en la nube escala de forma automática, pero su coste crece con el volumen. Conviene optimizar el tamaño de las imágenes y aplicar políticas de ciclo de vida y versionado para contener el gasto.
+    El modelo completo (<span class="mono">imagen_producto</span> / <span class="mono">imagen_render</span>) está en <a href="bases-de-datos.html">Las tablas del negocio</a>; los endpoints, en <a href="backend-api.html">La API del motor</a>.
   </p>
 </div></body>
 </html>

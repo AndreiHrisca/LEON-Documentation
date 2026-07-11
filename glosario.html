@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glosario · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:820px;margin:0 auto}
+
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin:0 0 14px}
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 32px}
+
+  .term{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:12px;border-left:3px solid var(--teal)}
+  .term .w{font-family:var(--mono);font-size:14.5px;font-weight:700;color:var(--ink);margin-bottom:5px;display:block}
+  .term p{font-size:14px;color:var(--muted);line-height:1.6;margin:0}
+  .term .ref{color:var(--blue);text-decoration:none;font-weight:600}
+
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+  .foot a{color:var(--teal);font-weight:600;text-decoration:none}
+
+  @media (max-width:720px){ body{padding:32px 14px} h1{font-size:28px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+
+  <p class="eyebrow">Introducción general</p>
+  <h1>Glosario</h1>
+  <p class="sub">Los términos que vas a ver repetidos por toda la intranet, explicados en lenguaje llano.</p>
+
+  <div class="term"><span class="w">Producto</span><p>El concepto comercial ("Cuaderno universitario"). No se compra ni se vende directamente: lo que se mueve son sus <strong>variantes</strong>.</p></div>
+  <div class="term"><span class="w">Variante / SKU</span><p>La versión exacta de un producto que de verdad se compra, se vende y se cuenta en el almacén (p. ej. "Cuaderno universitario — 100 hojas — cuadriculado"). El SKU es su código único.</p></div>
+  <div class="term"><span class="w">Movimiento</span><p>Cada entrada o salida de una variante del almacén: una compra que llega, una venta que sale, un ajuste o una merma. Es el "cuaderno de anotaciones" del inventario.</p></div>
+  <div class="term"><span class="w">Stock derivado</span><p>El stock de una variante <strong>no se guarda como un número</strong>: se calcula sumando todos sus movimientos cada vez que se consulta. Detalle completo en <a href="stock-derivado.html" class="ref">Cómo se deriva el stock</a>.</p></div>
+  <div class="term"><span class="w">Pedido</span><p>Una venta a un cliente, con sus líneas (qué productos, cuántas unidades, a qué precio). Pasa por los estados pendiente → pagado → enviado → entregado (o anulado).</p></div>
+  <div class="term"><span class="w">Orden de compra</span><p>Un pedido nuestro a un proveedor. Pasa por pedido → producción → en tránsito → recibido. Al marcarla "recibida", esas unidades entran como stock.</p></div>
+  <div class="term"><span class="w">Embarque</span><p>El viaje físico de una orden de compra hasta Perú: naviera, contenedor, fechas de salida/llegada y los costos de flete y aduana.</p></div>
+  <div class="term"><span class="w">Comprobante</span><p>La boleta o factura legal de una venta, emitida a SUNAT. Se genera desde el detalle del pedido.</p></div>
+  <div class="term"><span class="w">Nota de crédito</span><p>El documento que corrige un comprobante ya emitido (una devolución o anulación).</p></div>
+  <div class="term"><span class="w">Canal de venta</span><p>Por dónde llegó el pedido: WhatsApp, Instagram, presencial, correo o web.</p></div>
+  <div class="term"><span class="w">Rol</span><p>Qué puede hacer tu cuenta en el sistema: admin, abastecimiento, ventas, marketing o sistemas. Ver <a href="permisos-roles.html" class="ref">Roles y permisos</a>.</p></div>
+  <div class="term"><span class="w">Actividad</span><p>El registro de auditoría: quién hizo qué acción (crear, editar, eliminar, activar/desactivar, iniciar/cerrar sesión) y cuándo. Solo lectura.</p></div>
+
+  <p class="foot">
+    ¿Falta un término? Es parte de la misma documentación — dile a Sistemas para añadirlo aquí.
+  </p>
+</div>
+</body>
+</html>

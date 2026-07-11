@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reportes y analítica · Guía funcional · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --rose:#C0436B;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --rose-tint:#FBE7EE;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:880px;margin:0 auto}
+
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--indigo);margin:0 0 14px}
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 24px}
+
+  .chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--indigo-tint);color:var(--indigo)}
+  .chip svg{width:26px;height:26px}
+
+  .depts{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 28px}
+  .dept{font-size:12px;font-weight:600;border-radius:20px;padding:5px 13px}
+  .dept.a{background:var(--blue-tint);color:var(--blue)} .dept.b{background:var(--teal-tint);color:var(--teal)}
+  .dept.c{background:var(--amber-tint);color:var(--amber)} .dept.d{background:var(--indigo-tint);color:var(--indigo)}
+
+  .section{margin:32px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px;border-top:3px solid var(--c)}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink);display:flex;align-items:center;gap:9px}
+  .section p{font-size:15px;line-height:1.7;color:var(--muted);margin:0 0 10px}
+
+  .list-item{margin:10px 0;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.6;color:var(--muted)}
+  .list-item:last-child{border-bottom:none}
+  .list-item strong{color:var(--ink)}
+
+  .callout{display:flex;gap:12px;align-items:flex-start;margin:14px 0;padding:14px 16px;border-radius:12px;font-size:13.5px;line-height:1.6}
+  .callout svg{width:17px;height:17px;flex:none;margin-top:1px}
+  .callout.amber{background:var(--amber-tint);border:1px solid #EAD8C2;color:var(--ink)}
+  .callout.amber svg{color:var(--amber)}
+  .callout.indigo{background:var(--indigo-tint);border:1px solid #D7D9F6;color:var(--ink)}
+  .callout.indigo svg{color:var(--indigo)}
+
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+  .foot a{color:var(--teal);font-weight:600;text-decoration:none}
+
+  @media (max-width:720px){ body{padding:32px 14px} h1{font-size:28px} .section{padding:16px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+
+  <p class="eyebrow">Funcional · Transversal</p>
+  <h1>Reportes y analítica</h1>
+  <p class="sub">Una sola pantalla con todo lo que importa saber sobre cómo va el negocio, calculado en el backend a partir de datos reales — no es una maqueta. Cualquier rol puede verla.</p>
+  <div class="depts">
+    <span class="dept a">Ventas</span><span class="dept b">Almacén</span><span class="dept c">Compras</span><span class="dept d">Administración</span>
+  </div>
+
+  <div class="section" style="--c:var(--indigo)">
+    <h2>El selector de periodo</h2>
+    <p>Tres opciones — <strong>Este mes</strong>, <strong>Mes pasado</strong>, <strong>Últimos 90 días</strong> — que aplican a la vez a todos los reportes de la página. Las comparativas (▲/▼ %) se calculan siempre contra el tramo inmediatamente anterior, de la misma duración.</p>
+  </div>
+
+  <div class="section" style="--c:var(--blue)">
+    <h2>Ventas</h2>
+    <div class="list-item">Ventas del periodo con variación vs. el anterior, unidades vendidas, número de pedidos y ticket medio.</div>
+    <div class="list-item">Gráfico de ventas por día, semana o mes (se ajusta solo según lo largo del periodo).</div>
+    <div class="list-item">Top productos, por unidades o por importe (alterna con el botón de la tarjeta).</div>
+  </div>
+
+  <div class="section" style="--c:var(--teal)">
+    <h2>Inventario</h2>
+    <div class="list-item">Valor total de inventario a costo, hoy.</div>
+    <div class="list-item">SKU por reponer (con nivel de urgencia) y SKU con stock parado (sin ventas hace más de 60 días, con el capital que tienen inmovilizado).</div>
+    <div class="list-item">Entradas vs. salidas del periodo, y "más movidos" (mismos datos que el top de Ventas).</div>
+  </div>
+
+  <div class="section" style="--c:var(--amber)">
+    <h2>Compras</h2>
+    <div class="list-item">Compras del periodo por proveedor.</div>
+    <div class="list-item">Líneas pendientes de recibir — lo que sigue en camino ahora mismo, sin importar el periodo seleccionado.</div>
+  </div>
+
+  <div class="section" style="--c:var(--indigo)">
+    <h2>Rentabilidad</h2>
+    <div class="list-item">Margen bruto del periodo (total y %), y los productos más y menos rentables.</div>
+    <div class="callout amber">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg>
+      <span>El margen usa el <strong>costo actual</strong> de cada variante, no el que tenía en el momento histórico de cada venta (el sistema no guarda ese dato por línea). Si un costo cambió mucho en el tiempo, el margen de ventas antiguas es una aproximación.</span>
+    </div>
+  </div>
+
+  <div class="section" style="--c:var(--indigo)">
+    <h2>Botón "Datos demo"</h2>
+    <p>Arriba a la derecha, separado del selector de periodo. Rellena toda la página con un año de datos ficticios (con picos y valles realistas) para ver cómo luce el panel con actividad real — útil para formación o para mostrarle el sistema a alguien sin exponer datos reales del negocio.</p>
+    <div class="list-item">Se nota siempre que estás en modo demo: el botón queda resaltado y aparece un aviso "Datos demo" junto al título.</div>
+    <div class="list-item">Es <strong>solo visual</strong>: no llama al backend, no se guarda nada, no toca la base de datos. Al desactivarlo o recargar la página, vuelves a los datos reales.</div>
+  </div>
+
+  <p class="foot">
+    Cada sección enlaza de vuelta a su guía de departamento: <a href="funcional-ventas.html">Ventas</a>, <a href="funcional-compras.html">Compras</a>, <a href="funcional-almacen.html">Almacén</a>, <a href="funcional-administracion.html">Administración</a>. El detalle de los 5 endpoints que alimentan esta página está en <a href="backend-api.html">La API del motor</a>.
+  </p>
+</div>
+</body>
+</html>

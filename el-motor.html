@@ -105,64 +105,58 @@
 
   <div class="section">
     <h2>Funciones principales</h2>
-    <div class="list-item"><strong>Catálogo:</strong> producto y variante (el SKU), con búsqueda (pg_trgm), filtros y paginación para la tienda.</div>
-    <div class="list-item"><strong>Inventario:</strong> calcula el stock sumando movimientos —nunca lo fija a mano— y registra ajustes y mermas.</div>
+    <div class="list-item"><strong>Catálogo:</strong> producto y variante (el SKU), con búsqueda (pg_trgm), filtros y paginación.</div>
+    <div class="list-item"><strong>Inventario:</strong> calcula el stock sumando movimientos —nunca lo fija a mano— y registra ajustes y mermas (ver <a href="stock-derivado.html">Cómo se deriva el stock</a>).</div>
     <div class="list-item"><strong>Compras / importación:</strong> órdenes a proveedores con su tipo de cambio; al recibir, suma stock y reparte flete/aduana en el costo real.</div>
-    <div class="list-item"><strong>Ventas:</strong> crea pedidos verificando stock; al confirmar, lo descuenta y congela el precio en cada línea.</div>
-    <div class="list-item"><strong>Facturación:</strong> emite boleta/factura a SUNAT y notas de crédito; registra pagos con Yape, Plin, tarjeta o transferencia.</div>
-    <div class="list-item"><strong>Autenticación:</strong> POST /auth/login, /auth/refresh, /auth/logout. Tokens JWT con el rol del usuario, más una sesión Django compartida (SSO) para el resto de subdominios.</div>
-    <div class="list-item"><strong>Equipo:</strong> autoregistro (POST /auth/registro) con la cuenta bloqueada hasta que un admin la aprueba desde el panel (/equipo/{id}/aprobar), con aviso por correo.</div>
-    <div class="list-item"><strong>Integraciones:</strong> SUNAT para comprobantes, pasarela de pagos local y courier (Olva) para envíos.</div>
+    <div class="list-item"><strong>Ventas:</strong> crea pedidos; al confirmar, verifica y descuenta stock, y congela el precio en cada línea.</div>
+    <div class="list-item"><strong>Facturación:</strong> registra boleta/factura y encola su emisión a SUNAT (hoy <strong>simulada</strong>, ver <a href="servicios-externos.html">Servicios externos</a>); registra pagos con Yape, Plin, tarjeta, transferencia o efectivo.</div>
+    <div class="list-item"><strong>Autenticación:</strong> POST /auth/login, /auth/refresh, /auth/logout. Tokens JWT con el rol del usuario, más una sesión Django compartida (SSO) para Documentation.</div>
+    <div class="list-item"><strong>Equipo:</strong> autoregistro (POST /auth/registro) con la cuenta bloqueada hasta que un admin la aprueba desde la intranet (/equipo/{id}/aprobar), con aviso por correo best-effort.</div>
+    <div class="list-item"><strong>Fotos de producto:</strong> sube el original y encola la conversión real a WebP (miniatura/media/original) con Pillow.</div>
   </div>
 
   <div class="section">
     <h2>Limitaciones y restricciones</h2>
-    <div class="list-item"><strong>Limitación de tasa:</strong> Máximo de 100 peticiones por minuto e IP, como protección frente a ataques de denegación de servicio.</div>
-    <div class="list-item"><strong>Tiempos límite:</strong> Las operaciones largas (reportes) se limitan a 30 segundos; lo más pesado se delega en tareas asíncronas.</div>
-    <div class="list-item"><strong>Concurrencia:</strong> Dos pedidos simultáneos podrían provocar condiciones de carrera sobre el stock, mitigadas con bloqueos.</div>
-    <div class="list-item"><strong>Coste computacional:</strong> Los reportes muy grandes pueden saturar la CPU; sus resultados se cachean.</div>
-    <div class="list-item"><strong>Dependencia externa:</strong> Si SUNAT o la pasarela de pagos caen, no se pueden completar pedidos. Hay reintentos pero requiere intervención manual.</div>
+    <div class="list-item"><strong>Sin límite de tasa (rate limiting):</strong> no hay throttling configurado en DRF hoy; no hay protección explícita frente a abuso por IP.</div>
+    <div class="list-item"><strong>Concurrencia:</strong> confirmar pedido y recibir orden son transacciones atómicas que verifican stock antes de escribir, pero no hay bloqueo pesimista explícito sobre la fila de la variante.</div>
+    <div class="list-item"><strong>Sin caché de reportes:</strong> cada consulta de Reportes recalcula desde cero (agregaciones SQL), no hay resultados cacheados.</div>
+    <div class="list-item"><strong>Dependencia externa real:</strong> hoy ninguna integración externa puede "caerse" porque ninguna está conectada de verdad (SUNAT es un simulacro; no hay pasarela de pagos ni courier con API). Es una limitación en sí misma: no hay facturación electrónica legal real todavía.</div>
   </div>
 
   <div class="section">
     <h2>Propósito del componente</h2>
-    <p>Actuar como intermediario entre el frontend (tienda y panel) y los datos: aplicar reglas, validar operaciones y coordinar integraciones. Una API bien diseñada permite que la tienda y el panel deleguen toda la lógica y se limiten a presentar la información.</p>
+    <p>Actuar como intermediario entre los clientes (intranet, tienda pública) y los datos: aplicar reglas, validar operaciones y coordinar lo asíncrono. Una API bien diseñada permite que los frontends deleguen toda la lógica y se limiten a presentar la información.</p>
   </div>
 
   <div class="section">
     <h2>Stack tecnológico</h2>
     <div class="stack">
-      <span class="badge">Django 4+</span>
-      <span class="badge">Django REST Framework</span>
-      <span class="badge">PostgreSQL</span>
-      <span class="badge">Redis</span>
-      <span class="badge">Celery</span>
+      <span class="badge">Django 5.2.6</span>
+      <span class="badge">Django REST Framework 3.16</span>
+      <span class="badge">djangorestframework-simplejwt</span>
+      <span class="badge">django-filter</span>
+      <span class="badge">psycopg 3</span>
+      <span class="badge">Redis 5</span>
+      <span class="badge">Celery 5.5</span>
+      <span class="badge">Pillow</span>
       <span class="badge">Gunicorn</span>
       <span class="badge">Docker</span>
     </div>
-    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> Django es maduro y seguro. DRF agiliza construir APIs. PostgreSQL maneja datos relacionales complejos. Redis para cache y colas. Celery para tareas asincrónicas (envío de facturas). Gunicorn como servidor WSGI. Docker para deployment reproducible.</p>
+    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> Django + DRF para la API. simplejwt para el login por token. django-filter para los filtros de cada listado. Redis + Celery para lo asíncrono (fotos, emisión simulada de SUNAT). Pillow procesa las imágenes de verdad. Gunicorn sirve la app en producción, Docker empaqueta cada servicio.</p>
   </div>
 
   <div class="section">
     <h2>Información técnica adicional</h2>
-    <div class="list-item"><strong>Arquitectura:</strong> Patrón MVC con modelos normalizados. Serializers para validar la entrada y ViewSets para el CRUD repetitivo.</div>
-    <div class="list-item"><strong>Seguridad:</strong> CORS restringido a dominios autorizados, tokens CSRF, prevención de inyección SQL mediante el ORM y contraseñas con hash.</div>
-    <div class="list-item"><strong>Monitorización:</strong> Logs centralizados, alertas si la tasa de error supera el 1% y endpoint de health check.</div>
-    <div class="list-item"><strong>Versionado:</strong> /api/v1/pedidos, /api/v2/pedidos permite evolucionar sin romper la tienda ni el panel.</div>
-    <div class="list-item"><strong>Documentación:</strong> Generada automáticamente con Swagger/OpenAPI; permite probar los endpoints desde la interfaz.</div>
-  </div>
-
-  <div class="section">
-    <h2>Métricas importantes</h2>
-    <div class="list-item"><strong>Tiempo de respuesta:</strong> P95 < 200 ms, P99 < 500 ms; ningún endpoint debería superar los 5 s.</div>
-    <div class="list-item"><strong>Disponibilidad:</strong> 99,9%. Es el cuello de botella: si cae, nada funciona.</div>
-    <div class="list-item"><strong>Tasa de error:</strong> < 0,5%. Los errores 5xx son críticos y se alertan de inmediato.</div>
-    <div class="list-item"><strong>Rendimiento (throughput):</strong> Capacidad de procesar al menos 500 peticiones por segundo sin degradación.</div>
-    <div class="list-item"><strong>Precisión de datos:</strong> Transacciones ACID garantizadas; no se pierden pedidos.</div>
+    <div class="list-item"><strong>Arquitectura:</strong> Serializers para validar la entrada, ViewSets para el CRUD, y <span style="font-family:var(--mono);font-size:12.5px">services.py</span> para las reglas de negocio (confirmar pedido, recibir orden) que no encajan en un serializer.</div>
+    <div class="list-item"><strong>Tres bases de datos:</strong> leon_principal, leon_fotos y leon_facturas, enrutadas por <span style="font-family:var(--mono);font-size:12.5px">LeonRouter</span> según la app. Sin FK entre ellas.</div>
+    <div class="list-item"><strong>Seguridad:</strong> CORS restringido por variable de entorno, contraseñas con hash (Django), inyección SQL prevenida por el ORM.</div>
+    <div class="list-item"><strong>Monitorización:</strong> endpoint <span style="font-family:var(--mono);font-size:12.5px">/salud</span> de health check. Sin dashboards de métricas ni alertas configuradas para el backend en sí.</div>
+    <div class="list-item"><strong>Versionado:</strong> <span style="font-family:var(--mono);font-size:12.5px">URLPathVersioning</span> de DRF está activo, pero solo existe <span style="font-family:var(--mono);font-size:12.5px">/api/v1/</span> — no hay una v2 todavía.</div>
+    <div class="list-item"><strong>Documentación de la API:</strong> este mismo documento (<a href="backend-api.html">La API del motor</a>), escrito a mano. No hay Swagger/OpenAPI autogenerado.</div>
   </div>
 
   <p class="foot">
-    El motor es la pieza más crítica del sistema: un defecto aquí corrompe datos y una caída detiene todo. Conviene invertir en pruebas, monitorización y documentación. La velocidad de procesamiento incide directamente en la experiencia del cliente.
+    El motor es la pieza más crítica del sistema: un defecto aquí corrompe datos y una caída detiene todo. El detalle completo de cada endpoint está en <a href="backend-api.html">La API del motor</a>.
   </p>
 </div></body>
 </html>

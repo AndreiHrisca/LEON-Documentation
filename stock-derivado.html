@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cómo se deriva el stock · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --rose:#C0436B;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --rose-tint:#FBE7EE;
+    --pos:#1E9E5A; --neg:#C0436B; --pos-tint:#E4F4EA; --neg-tint:#FBE7EE;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:900px;margin:0 auto}
+
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin:0 0 14px}
+  h1{font-size:34px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:72ch;line-height:1.6;margin:0 0 8px}
+
+  .callout{display:flex;gap:12px;align-items:flex-start;margin:22px 0 8px;padding:14px 16px;border-radius:12px;font-size:14px;line-height:1.6}
+  .callout svg{width:18px;height:18px;flex:none;margin-top:1px}
+  .callout.teal{background:var(--teal-tint);border:1px solid #CFE6E2;color:var(--ink)}
+  .callout.teal svg{color:var(--teal)}
+  .callout.rose{background:var(--rose-tint);border:1px solid #F2D2DC;color:var(--ink)}
+  .callout.rose svg{color:var(--rose)}
+  .callout a{color:var(--teal);font-weight:600;text-decoration:none}
+
+  .section{margin:32px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+  .section p{font-size:15px;line-height:1.7;color:var(--muted);margin:0 0 10px}
+  .section p:last-child{margin-bottom:0}
+
+  .formula{font-family:var(--mono);font-size:14px;background:#18222E;color:#E4E9F0;border-radius:10px;padding:14px 18px;margin:10px 0;overflow-x:auto}
+  .formula .c{color:#7FDBCA} .formula .k{color:#9DB8F2} .formula .s{color:#F0C27A}
+
+  table.ex{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+  .ex thead th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:9px 14px;background:#FAFBFC;border-bottom:1px solid var(--line)}
+  .ex td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .ex tr:last-child td{border-bottom:none}
+  .ex td.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono)}
+  .ex .pos{color:var(--pos);font-weight:600} .ex .neg{color:var(--neg);font-weight:600}
+  .ex tr.total td{font-weight:700;background:var(--teal-tint)}
+  .badge{display:inline-block;font-size:10.5px;font-weight:600;border-radius:5px;padding:2px 8px}
+  .badge.entrada{background:var(--pos-tint);color:var(--pos)} .badge.compra{background:var(--teal-tint);color:var(--teal)}
+  .badge.venta{background:var(--blue-tint);color:var(--blue)} .badge.merma{background:var(--rose-tint);color:var(--rose)}
+  .badge.ajuste{background:var(--amber-tint);color:var(--amber)}
+
+  .list-item{margin:12px 0;padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.6;color:var(--muted)}
+  .list-item:last-child{border-bottom:none}
+  .list-item strong{color:var(--ink)}
+  .mono{font-family:var(--mono);font-size:12.5px;color:var(--blue)}
+
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+  .foot a{color:var(--teal);font-weight:600;text-decoration:none}
+
+  @media (max-width:720px){ body{padding:32px 14px} h1{font-size:27px} .section{padding:16px} .ex{font-size:12.5px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="bases-de-datos.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Volver al esquema de datos
+  </a>
+
+  <p class="eyebrow">Modelo de datos</p>
+  <h1>Cómo se deriva el stock</h1>
+  <p class="sub">La idea más importante de todo el sistema, así que merece su propia página: <strong>el stock nunca se guarda como un número</strong>. Se calcula, cada vez que se pide, sumando el historial de movimientos.</p>
+
+  <div class="callout teal">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    <span>No existe una columna <span class="mono">variante.stock</span>. Buscarla en el esquema no tiene sentido: el número que ves en Inventario o en el catálogo es siempre el resultado de una suma en el momento de la consulta.</span>
+  </div>
+
+  <div class="section">
+    <h2>El modelo: <span class="mono">movimiento_inventario</span></h2>
+    <p>Cada entrada o salida de una variante del almacén queda anotada como una fila en esta tabla — nunca se edita ni se borra un movimiento ya creado, solo se añaden nuevos:</p>
+    <div class="formula">
+<span class="k">variante_id</span>, <span class="k">almacen_id</span>, <span class="k">tipo</span>, <span class="k">cantidad</span>, <span class="k">referencia</span>, <span class="k">fecha</span>
+<span class="c">-- cantidad es SIEMPRE con signo: positiva si entra, negativa si sale</span>
+    </div>
+    <p>El signo de <span class="mono">cantidad</span> depende del <span class="mono">tipo</span>, y la base de datos lo obliga con una restricción (CHECK), no solo la aplicación:</p>
+    <div class="list-item"><span class="badge entrada">entrada</span> <span class="badge compra">compra</span> → siempre positiva (suma).</div>
+    <div class="list-item"><span class="badge venta">venta</span> <span class="badge merma">merma</span> → siempre negativa (resta).</div>
+    <div class="list-item"><span class="badge ajuste">ajuste</span> → puede ser cualquiera de los dos signos (corrección manual, p. ej. tras un conteo físico).</div>
+  </div>
+
+  <div class="section">
+    <h2>La fórmula</h2>
+    <p>El stock de una variante es la suma de todos sus movimientos. Por almacén, se filtra además por <span class="mono">almacen_id</span>:</p>
+    <div class="formula">
+<span class="s">stock</span>(variante) = <span class="c">SUM</span>(cantidad) <span class="k">WHERE</span> variante_id = X
+<span class="s">stock</span>(variante, almacén) = <span class="c">SUM</span>(cantidad) <span class="k">WHERE</span> variante_id = X <span class="k">AND</span> almacen_id = Y
+    </div>
+    <p>En el backend esto vive en <span class="mono">apps/principal/services.py</span> (<span class="mono">stock_variante</span> / <span class="mono">stock_por_almacen</span>), y en la base de datos hay una vista equivalente, <span class="mono">v_stock_variante</span>, que hace exactamente el mismo cálculo con SQL — se usa desde <span class="mono">v_stock_bajo</span> para saber qué reponer.</p>
+  </div>
+
+  <div class="section">
+    <h2>Ejemplo paso a paso</h2>
+    <p>La variante <span class="mono">CUAD-100H</span> (Cuaderno universitario, 100 hojas) tiene estos movimientos, en orden:</p>
+    <table class="ex">
+      <thead><tr><th>Fecha</th><th>Tipo</th><th>Referencia</th><th style="text-align:right">Cantidad</th></tr></thead>
+      <tbody>
+        <tr><td>02/03</td><td><span class="badge compra">compra</span></td><td>Recepción orden #14</td><td class="num pos">+200</td></tr>
+        <tr><td>05/03</td><td><span class="badge venta">venta</span></td><td>Pedido #881</td><td class="num neg">−12</td></tr>
+        <tr><td>06/03</td><td><span class="badge venta">venta</span></td><td>Pedido #883</td><td class="num neg">−45</td></tr>
+        <tr><td>10/03</td><td><span class="badge merma">merma</span></td><td>Cajas dañadas en almacén</td><td class="num neg">−3</td></tr>
+        <tr><td>18/03</td><td><span class="badge ajuste">ajuste</span></td><td>Conteo físico (sobraban 2)</td><td class="num pos">+2</td></tr>
+        <tr class="total"><td colspan="3">Stock actual (suma de todo lo anterior)</td><td class="num">142</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:12px">Nadie escribió "142" en ningún sitio: es 200 − 12 − 45 − 3 + 2. Si mañana entra una nueva compra, el número cambia solo, sin tocar ninguna fila anterior.</p>
+  </div>
+
+  <div class="section">
+    <h2>Por qué no se guarda como un contador</h2>
+    <div class="list-item"><strong>Concurrencia:</strong> si dos personas confirman un pedido de la misma variante al mismo tiempo, un contador con <span class="mono">UPDATE stock = stock - N</span> puede perder una de las dos restas. Sumar filas nuevas no tiene ese problema.</div>
+    <div class="list-item"><strong>Auditoría:</strong> con un contador, si el número "no cuadra" no hay forma de saber por qué. Con movimientos, se puede reconstruir exactamente de dónde salió o entró cada unidad.</div>
+    <div class="list-item"><strong>Consistencia:</strong> el mismo cálculo sirve para el stock total, el stock por almacén, el valor de inventario (stock × costo) y la rotación — todo deriva de la misma tabla, no hay varias fuentes que se puedan desincronizar entre sí.</div>
+  </div>
+
+  <div class="section">
+    <h2>Dónde se usa en la práctica</h2>
+    <div class="list-item"><strong>Confirmar un pedido</strong> (<span class="mono">services.confirmar_pedido</span>): antes de nada, verifica que haya stock suficiente en <em>todas</em> las líneas; si falta, no confirma nada (409, todo o nada) — no descuenta unas líneas sí y otras no.</div>
+    <div class="list-item"><strong>Recibir una orden de compra</strong> (<span class="mono">services.recibir_orden</span>): genera un movimiento de entrada por cada línea recibida, en una sola transacción.</div>
+    <div class="list-item"><strong>Reponer stock</strong> (Inventario y Reportes): la vista <span class="mono">v_stock_bajo</span> compara el stock calculado contra el mínimo de cada variante.</div>
+    <div class="list-item"><strong>Valor de inventario y rotación</strong> (Reportes): suman <span class="mono">stock × costo</span> variante por variante, y buscan la última venta (<span class="mono">Max(fecha)</span> con <span class="mono">tipo=venta</span>) para saber qué lleva tiempo sin moverse.</div>
+  </div>
+
+  <div class="section">
+    <h2>Rendimiento</h2>
+    <p><span class="mono">movimiento_inventario</span> crece sin límite (nunca se borra nada), así que sumar sobre ella podría volverse lento con el tiempo. Por eso tiene índices dedicados: <span class="mono">idx_mov_variante</span> y <span class="mono">idx_mov_fecha</span> para las sumas y filtros por periodo, y un índice parcial <span class="mono">idx_mov_variante_fecha_venta</span> (solo filas de tipo venta) pensado específicamente para "última venta de esta variante" — la consulta más pesada de rotación/stock parado, porque sin él implica revisar todo el historial de cada SKU.</p>
+  </div>
+
+  <p class="foot">
+    El modelo completo de la tabla está en <a href="bases-de-datos.html">Esquema de datos</a>; el contrato de la API que lo expone, en <a href="backend-api.html">API del backend</a>; y la explicación en lenguaje de negocio, sin código, en <a href="funcional-almacen.html">Almacén / Inventario</a>.
+  </p>
+</div>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<!-- ════════════════════════════════════════════════════════════════════════
+     PLANTILLA DE GUÍA · cópiala para crear una guía nueva.
+
+     Una "guía" explica CÓMO SE HACE una operación en la intranet, con la
+     pantalla delante. No explica cómo funciona el negocio (eso son los
+     "Flujos operativos"): cuando haga falta ese contexto, se enlaza al flujo
+     con el bloque .porque, no se repite aquí.
+
+     PARA CREAR UNA GUÍA NUEVA:
+       1. Copia este archivo con nombre guia-<tema>.html
+       2. Cambia el <title>, el color de acento (:root de abajo), el eyebrow,
+          el h1 y el .sub.
+       3. Rellena las 6 secciones. Borra los comentarios <!-- GUÍA: ... -->.
+       4. Alta en el sitio: añade la página al array SITEMAP de
+          assets/docs-nav.js (sección "guias") y una card en index.html.
+       5. Pon la fecha "Actualizado: mes año" en la card del índice.
+
+     REGLAS DE ORO:
+       · Un paso = una acción. Frases cortas, en imperativo ("Pulsa…", "Elige…").
+       · Nombres literales de botones/campos entre <span class="lit">…</span>,
+         copiados TAL CUAL aparecen en la pantalla.
+       · No inventes. Si no puedes confirmar algo desde la interfaz o el código,
+         márcalo con  <!-- VERIFICAR: … -->  en vez de adivinar.
+       · Captura solo donde la interfaz NO sea obvia (no en todos los pasos).
+       · La sección "Si te sale mal" es obligatoria y es la más importante.
+     ════════════════════════════════════════════════════════════════════════ -->
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · [Título de la guía] · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/guias.css">
+<!-- GUÍA: elige el color de acento. Usa el del área: ventas→blue,
+     catálogo→indigo, compras→amber, inventario→teal, admin→slate. -->
+<style>:root{ --accent:var(--slate); --accent-tint:var(--slate-tint) }</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+
+  <!-- ── 1 · TÍTULO Y PARA QUÉ SIRVE ─────────────────────────────────── -->
+  <p class="eyebrow">Guías · [Área]</p>
+  <h1>[Qué vas a hacer, en lenguaje llano]</h1>
+  <p class="sub">[Una línea: para qué sirve esta guía y qué habrás conseguido al terminarla.]</p>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+
+  <!-- ── Enlace al flujo (contexto del negocio) ──────────────────────── -->
+  <div class="porque">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    <span>¿Quieres entender <strong>por qué</strong> funciona así? Míralo en el flujo <a href="[flujo-relacionado].html">[Nombre del flujo]</a>.</span>
+  </div>
+
+  <!-- ── 2 · QUIÉN LO HACE Y CUÁNDO ──────────────────────────────────── -->
+  <div class="meta">
+    <div class="m"><div class="k">Quién lo hace</div><div class="v">[Rol/es]</div></div>
+    <div class="m"><div class="k">Cuándo</div><div class="v">[En qué momento del día/proceso]</div></div>
+  </div>
+
+  <!-- ── 3 · ANTES DE EMPEZAR (requisitos) ───────────────────────────── -->
+  <div class="section">
+    <h2><span class="hnum">✓</span> Antes de empezar</h2>
+    <ul class="reqs">
+      <li><strong>[Permiso/rol]</strong> — [qué permiso hace falta].</li>
+      <li><strong>[Dato a tener a mano]</strong> — [qué información necesitas antes de empezar].</li>
+    </ul>
+  </div>
+
+  <!-- ── 4 · PASOS ───────────────────────────────────────────────────── -->
+  <div class="section">
+    <h2><span class="hnum">1</span> Paso a paso</h2>
+    <div class="steps">
+
+      <div class="step"><span class="n"></span><div class="tx">
+        <h3>[Acción del paso, en imperativo]</h3>
+        <p>[Qué pulsar/elegir. Botones y campos literales con <span class="lit">Nombre exacto</span>.]</p>
+      </div></div>
+
+      <!-- GUÍA: captura SOLO si la pantalla no es obvia. Borra este <figure>
+           en los pasos donde sobre. El equipo la sustituye por la imagen real. -->
+      <div class="step"><span class="n"></span><div class="tx">
+        <h3>[Un paso donde ayuda ver la pantalla]</h3>
+        <p>[Instrucción.]</p>
+        <figure class="captura" data-pendiente="true">
+          <div class="ph">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3.5"/></svg>
+            <span class="lab">Captura pendiente</span>
+          </div>
+          <figcaption><strong>Qué debe mostrar:</strong> [describe la pantalla exacta: qué modal/pantalla, qué botón resaltado].</figcaption>
+        </figure>
+      </div></div>
+
+    </div>
+  </div>
+
+  <!-- ── 5 · CÓMO SABER QUE SALIÓ BIEN ───────────────────────────────── -->
+  <div class="section">
+    <h2><span class="hnum">2</span> Cómo saber que salió bien</h2>
+    <div class="exito">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+      <div>
+        <strong>[La señal concreta de éxito]:</strong>
+        <ul>
+          <li>[Mensaje que aparece / estado al que pasa / dónde queda el registro].</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 6 · SI TE SALE MAL (obligatoria — la más importante) ─────────── -->
+  <div class="section malo">
+    <h2><span class="hnum">!</span> Si te sale mal</h2>
+
+    <div class="fix">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+      <div class="tx">
+        <h3>[Título del problema típico]</h3>
+        <p class="causa"><span class="lbl">Por qué pasa:</span> [causa].</p>
+        <p class="salida"><span class="lbl">Cómo salir:</span> [solución paso a paso].</p>
+      </div>
+    </div>
+
+    <!-- GUÍA: repite el bloque .fix por cada error (3–5 en total). -->
+
+  </div>
+
+  <p class="foot">
+    Términos técnicos en el <a href="glosario.html">glosario</a>.
+    Relacionado: <a href="[flujo-relacionado].html">[Nombre del flujo]</a>.
+  </p>
+</div>
+</body>
+</html>

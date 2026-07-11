@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Almacén / Inventario · Guía funcional · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --rose:#C0436B;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --rose-tint:#FBE7EE;
+    --pos:#1E9E5A; --pos-tint:#E4F4EA;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin:0 0 14px}
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 24px}
+
+  .chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--teal-tint);color:var(--teal)}
+  .chip svg{width:26px;height:26px}
+
+  .callout{display:flex;gap:12px;align-items:flex-start;margin:14px 0;padding:14px 16px;border-radius:12px;font-size:13.5px;line-height:1.6}
+  .callout svg{width:17px;height:17px;flex:none;margin-top:1px}
+  .callout.teal{background:var(--teal-tint);border:1px solid #CFE6E2;color:var(--ink)}
+  .callout.teal svg{color:var(--teal)}
+
+  .example{background:#18222E;color:#E4E9F0;border-radius:12px;padding:16px 18px;margin:14px 0;font-size:13.5px;line-height:1.7}
+  .example .row{display:flex;justify-content:space-between;gap:12px;padding:4px 0}
+  .example .row.total{border-top:1px solid rgba(255,255,255,.15);margin-top:6px;padding-top:8px;font-weight:700}
+  .example .pos{color:#7FE0AE} .example .neg{color:#F0A0B8}
+
+  .section{margin:32px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+  .section p{font-size:15px;line-height:1.7;color:var(--muted);margin:0 0 10px}
+
+  .list-item{margin:12px 0;padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.6;color:var(--muted)}
+  .list-item:last-child{border-bottom:none}
+  .list-item strong{color:var(--ink)}
+
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+  .foot a{color:var(--teal);font-weight:600;text-decoration:none}
+
+  @media (max-width:720px){ body{padding:32px 14px} h1{font-size:28px} .section{padding:16px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+
+  <p class="eyebrow">Funcional · Almacén / Inventario</p>
+  <h1>Guía de Almacén</h1>
+  <p class="sub">Quién controla cuánto hay de cada producto, dónde está, y qué se mueve o se estanca. Requiere el rol <strong>abastecimiento</strong> (o admin) para registrar movimientos; cualquiera puede consultar el stock.</p>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/></svg></div>
+
+  <div class="section">
+    <h2>Cómo funciona el stock (explicado simple)</h2>
+    <p>El número de "stock" que ves nunca se escribe a mano: es la <strong>suma de todo lo que entró menos todo lo que salió</strong>. Cada compra recibida, cada venta confirmada, cada ajuste o merma que registras queda anotado como un movimiento — y el stock es siempre el resultado de sumarlos.</p>
+    <div class="example">
+      <div class="row"><span>Compra recibida (orden #14)</span><span class="pos">+200</span></div>
+      <div class="row"><span>Venta (pedido #881)</span><span class="neg">−12</span></div>
+      <div class="row"><span>Venta (pedido #883)</span><span class="neg">−45</span></div>
+      <div class="row"><span>Merma (cajas dañadas)</span><span class="neg">−3</span></div>
+      <div class="row"><span>Ajuste (conteo físico)</span><span class="pos">+2</span></div>
+      <div class="row total"><span>Stock actual</span><span>142</span></div>
+    </div>
+    <p>Por eso, si un número "no cuadra", siempre se puede revisar el historial de movimientos de ese SKU y ver exactamente qué pasó — no hay un contador suelto que se pueda desincronizar.</p>
+  </div>
+
+  <div class="section">
+    <h2>Qué puedes hacer</h2>
+    <div class="list-item"><strong>Consultar stock</strong> por SKU y por almacén, con nivel visual (bajo mínimo / sin stock / OK).</div>
+    <div class="list-item"><strong>Registrar un ajuste o una merma</strong> a mano — por ejemplo, tras un conteo físico o por mercadería dañada. Las entradas por compra y las salidas por venta <strong>se generan solas</strong>, no se registran aquí.</div>
+    <div class="list-item"><strong>Ver el historial completo de movimientos</strong> de una variante, o de todo el almacén.</div>
+    <div class="list-item"><strong>Gestionar almacenes</strong> (zonas físicas), con su capacidad y espacio disponible calculado.</div>
+  </div>
+
+  <div class="section">
+    <h2>Reponer stock y rotación</h2>
+    <p>En <strong>Reportes</strong> (sección Inventario) encuentras, calculado sobre datos reales:</p>
+    <div class="list-item"><strong>SKU por reponer:</strong> con nivel de urgencia — <em>agotado</em> (sin stock), <em>crítico</em> (menos de la mitad del mínimo) o <em>bajo mínimo</em>.</div>
+    <div class="list-item"><strong>Valor de inventario:</strong> el stock actual valorizado a costo, hoy.</div>
+    <div class="list-item"><strong>Stock parado:</strong> SKU que llevan más de 60 días sin venderse, con el valor de capital que tienen inmovilizado — útil para decidir qué dejar de reponer.</div>
+    <div class="list-item"><strong>Entradas vs. salidas</strong> del periodo, para ver el ritmo real de movimiento del almacén.</div>
+  </div>
+
+  <div class="callout teal">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    <span>Las compras entran como stock solo al pulsar <strong>"Recibir y sumar stock"</strong> en Compras; las ventas salen solo al <strong>confirmar</strong> un pedido en Ventas. Si algo no coincide, revisa esos dos flujos antes de hacer un ajuste manual.</span>
+  </div>
+
+  <p class="foot">
+    La explicación técnica completa (para quien programa o depura) está en <a href="stock-derivado.html">Cómo se deriva el stock</a>. Reportes con más detalle en <a href="reportes-analitica.html">Reportes y analítica</a>.
+  </p>
+</div>
+</body>
+</html>

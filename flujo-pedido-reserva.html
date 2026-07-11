@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flujo · Pedido telefónico con reserva · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --rose:#C0436B; --slate:#51606F;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --rose-tint:#FBE7EE; --slate-tint:#EDF0F3;
+    --accent:#C0436B; --accent-tint:#FBE7EE;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:var(--sans);color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2));min-height:100vh;-webkit-font-smoothing:antialiased;padding:48px 24px 36px}
+  .wrap{max-width:860px;margin:0 auto}
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .tag{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:6px;padding:4px 10px;white-space:nowrap}
+  .tag.obj{background:var(--indigo-tint);color:var(--indigo)}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 24px}
+  .chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--accent-tint);color:var(--accent)}
+  .chip svg{width:26px;height:26px}
+  .objbanner{display:flex;gap:12px;align-items:flex-start;margin:0 0 20px;padding:16px 18px;border-radius:14px;background:var(--indigo-tint);border:1px solid #D6D8F5;font-size:13.5px;line-height:1.6;color:var(--ink)}
+  .objbanner svg{width:20px;height:20px;flex:none;margin-top:1px;color:var(--indigo)}
+  .objbanner strong{color:var(--indigo)}
+  .diagram{margin:22px 0;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 1px 2px rgba(24,34,46,.04),0 6px 18px rgba(24,34,46,.04);overflow-x:auto}
+  .diagram .mermaid{min-width:540px;display:flex;justify-content:center}
+  .diagram .mermaid svg{max-width:100%;height:auto}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:14px 2px 0;font-size:12px;color:var(--muted)}
+  .legend .lg{display:inline-flex;align-items:center;gap:6px}
+  .legend .sw{width:12px;height:12px;border-radius:4px;border:1.5px solid}
+  .sw-cliente{background:var(--rose-tint);border-color:var(--rose)}
+  .sw-empleado{background:var(--blue-tint);border-color:var(--blue)}
+  .sw-sistema{background:var(--teal-tint);border-color:var(--teal)}
+  .sw-decision{background:var(--amber-tint);border-color:var(--amber)}
+  .sw-fin{background:var(--indigo-tint);border-color:var(--indigo)}
+  .section{margin:32px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+  .section p{font-size:15px;line-height:1.7;color:var(--muted);margin:0 0 10px}
+  .list-item{margin:12px 0;padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.6;color:var(--muted)}
+  .list-item:last-child{border-bottom:none}
+  .list-item strong{color:var(--ink)}
+  .steps{counter-reset:step;margin:6px 0}
+  .step{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .step:last-child{border-bottom:none}
+  .step .n{counter-increment:step;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+  .step .n::before{content:counter(step)}
+  .step .tx h3{font-size:14.5px;font-weight:600;margin:0 0 4px}
+  .step .tx p{font-size:13.5px;color:var(--muted);line-height:1.55;margin:0}
+  .rolegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0 4px}
+  .rolecol{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#FAFBFC}
+  .rolecol h3{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:0 0 10px;display:flex;align-items:center;gap:7px}
+  .rolecol.emp h3{color:var(--blue)} .rolecol.sys h3{color:var(--teal)}
+  .rolecol h3 .dot{width:9px;height:9px;border-radius:3px} .rolecol.emp .dot{background:var(--blue)} .rolecol.sys .dot{background:var(--teal)}
+  .rolecol ul{margin:0;padding:0;list-style:none}
+  .rolecol li{font-size:13px;color:var(--muted);line-height:1.5;padding:6px 0;border-bottom:1px solid var(--line)}
+  .rolecol li:last-child{border-bottom:none}
+  @media (max-width:640px){ .rolegrid{grid-template-columns:1fr} }
+  .case{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .case:last-child{border-bottom:none}
+  .case .ic{width:30px;height:30px;border-radius:8px;background:var(--amber-tint);color:var(--amber);display:flex;align-items:center;justify-content:center;flex:none}
+  .case .ic svg{width:17px;height:17px}
+  .case .tx{font-size:13.5px;line-height:1.6;color:var(--muted)}
+  .case .tx strong{color:var(--ink)}
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+  .foot a{color:var(--teal);font-weight:600;text-decoration:none}
+  @media (max-width:720px){ body{padding:32px 14px} h1{font-size:28px} .section{padding:16px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+
+  <p class="eyebrow">Flujos · Venta</p>
+  <h1>Pedido telefónico con reserva <span class="tag obj">Objetivo · diseño</span></h1>
+  <p class="sub">El cliente llama y aparta mercancía para comprarla en unos días. El sistema reserva ese stock (deja de estar disponible para otras ventas), la reserva expira a los 5–7 días si no se confirma, y el precio se aplica según la lista vigente en el momento de confirmar.</p>
+
+  <div class="objbanner">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 2"/></svg>
+    <span><strong>Este flujo todavía no existe en el sistema.</strong> Es un diseño objetivo. Hoy no hay concepto de "reserva" ni de stock apartado: un pedido descuenta stock solo al confirmarse. Para implementarlo haría falta un estado <em>Reservado</em>, distinguir stock <em>reservado</em> de <em>disponible</em>, y una tarea automática que libere las reservas vencidas.</span>
+  </div>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z"/></svg></div>
+
+  <div class="diagram">
+    <pre class="mermaid">
+flowchart TD
+    A([Cliente llama por teléfono]):::cliente --> B[Ventas arma el pedido&lt;br/&gt;y solicita reservar]:::empleado
+    B --> C{¿Hay stock&lt;br/&gt;disponible?}:::decision
+    C -- No --> C2([No se puede reservar&lt;br/&gt;se ofrece alternativa]):::fin
+    C -- Sí --> D[Sistema aparta el stock&lt;br/&gt;estado Reservado]:::sistema
+    D --> E[Sistema fija vencimiento&lt;br/&gt;5 a 7 días]:::sistema
+    E --> F{¿Confirma dentro&lt;br/&gt;del plazo?}:::decision
+    F -- No, expira --> G[Sistema libera la reserva&lt;br/&gt;stock vuelve a disponible]:::sistema
+    G --> G2([Reserva caducada]):::fin
+    F -- Sí --> H[Sistema aplica el precio&lt;br/&gt;vigente al confirmar]:::sistema
+    H --> I[Cliente paga · Ventas confirma]:::empleado
+    I --> J[Sistema descuenta stock&lt;br/&gt;de forma definitiva]:::sistema
+    J --> K([Pedido normal · sigue su ciclo]):::fin
+
+    classDef cliente fill:#FBE7EE,stroke:#C0436B,stroke-width:1.5px,color:#18222E;
+    classDef empleado fill:#E7F0FC,stroke:#2E73D9,stroke-width:1.5px,color:#18222E;
+    classDef sistema fill:#E1F2F0,stroke:#0E9488,stroke-width:1.5px,color:#18222E;
+    classDef decision fill:#F7EEE1,stroke:#CF8138,stroke-width:1.5px,color:#18222E;
+    classDef fin fill:#ECEDFB,stroke:#5B63E6,stroke-width:1.5px,color:#18222E;
+    </pre>
+  </div>
+  <div class="legend">
+    <span class="lg"><span class="sw sw-cliente"></span> Acción del cliente</span>
+    <span class="lg"><span class="sw sw-empleado"></span> Acción del empleado</span>
+    <span class="lg"><span class="sw sw-sistema"></span> Lo hace el sistema</span>
+    <span class="lg"><span class="sw sw-decision"></span> Decisión</span>
+    <span class="lg"><span class="sw sw-fin"></span> Estado final</span>
+  </div>
+
+  <div class="section">
+    <h2>Las tres piezas nuevas que exige</h2>
+    <div class="list-item"><strong>Reserva de stock:</strong> apartar unidades para un cliente sin venderlas todavía. El stock <em>disponible</em> que ven las demás ventas baja, pero no se genera un movimiento de venta hasta confirmar.</div>
+    <div class="list-item"><strong>Expiración 5–7 días:</strong> cada reserva lleva una fecha de vencimiento. Una tarea automática libera las que caducan sin confirmarse, devolviendo el stock a disponible.</div>
+    <div class="list-item"><strong>Precio adaptable en tiempo real:</strong> el precio no se congela al reservar. Al confirmar, se aplica el precio vigente en la lista de ese momento — así una subida o bajada de precios se refleja al cerrar la venta.</div>
+  </div>
+
+  <div class="section">
+    <h2>Paso a paso (diseño)</h2>
+    <div class="steps">
+      <div class="step"><span class="n"></span><div class="tx"><h3>El cliente llama y aparta</h3><p>Pide reservar ciertas unidades para comprarlas en unos días. Ventas arma el pedido y solicita la reserva.</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>El sistema reserva y pone el reloj</h3><p>Si hay stock disponible, lo aparta (estado <strong>Reservado</strong>) y fija el vencimiento (5–7 días). Ese stock deja de ofrecerse a otras ventas.</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>El cliente confirma dentro del plazo</h3><p>Al confirmar y pagar, el sistema aplica el <strong>precio vigente</strong> y descuenta el stock de forma definitiva. El pedido pasa a comportarse como uno normal.</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>O la reserva expira</h3><p>Si no confirma a tiempo, la tarea automática <strong>libera la reserva</strong> y el stock vuelve a estar disponible, sin penalización ni movimiento de venta.</p></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Quién haría qué</h2>
+    <div class="rolegrid">
+      <div class="rolecol emp">
+        <h3><span class="dot"></span> El empleado</h3>
+        <ul>
+          <li>Atiende la llamada y arma el pedido</li>
+          <li>Solicita la reserva del stock</li>
+          <li>Confirma y cobra cuando el cliente decide</li>
+          <li>Ofrece alternativa si no hay stock para reservar</li>
+        </ul>
+      </div>
+      <div class="rolecol sys">
+        <h3><span class="dot"></span> El sistema</h3>
+        <ul>
+          <li>Aparta el stock y marca la reserva</li>
+          <li>Controla el vencimiento y libera lo caducado</li>
+          <li>Aplica el precio vigente al confirmar</li>
+          <li>Descuenta el stock definitivo al cerrar la venta</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Casos límite</h2>
+    <div class="case"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div><div class="tx"><strong>La reserva expira:</strong> el stock vuelve a disponible automáticamente. Conviene avisar al cliente antes de que caduque.</div></div>
+    <div class="case"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div><div class="tx"><strong>El cliente reduce cantidades:</strong> se ajusta la reserva y las unidades sobrantes se liberan de inmediato para otras ventas.</div></div>
+    <div class="case"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div><div class="tx"><strong>El precio cambia durante la reserva:</strong> se cobra el precio vigente al confirmar, no el del día de la reserva. Es una decisión de diseño explícita ("precio adaptable en tiempo real") que conviene comunicar al cliente.</div></div>
+    <div class="case"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div><div class="tx"><strong>No hay stock para reservar:</strong> el sistema no permite apartar más de lo disponible; Ventas ofrece una fecha de reposición o un producto alternativo.</div></div>
+  </div>
+
+  <p class="foot">
+    Cuando la reserva se confirma, el pedido entra en el <a href="flujo-ciclo-pedido.html">ciclo de vida normal</a>. Ver también la <a href="funcional-ventas.html">Guía de Ventas</a> y <a href="stock-derivado.html">cómo se deriva el stock</a>.
+  </p>
+</div>
+
+<script src="vendor/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: false, theme: 'base',
+    themeVariables: { fontFamily: "'Inter',-apple-system,'Segoe UI',Roboto,sans-serif", fontSize: '13.5px', lineColor: '#8A97A8', primaryColor: '#ECEDFB', primaryBorderColor: '#5B63E6', primaryTextColor: '#18222E', tertiaryColor: '#FFFFFF' },
+    flowchart: { curve: 'basis', useMaxWidth: true, htmlLabels: true, padding: 14, nodeSpacing: 40, rankSpacing: 46 }
+  });
+  mermaid.run({ querySelector: '.diagram .mermaid' });
+</script>
+</body>
+</html>

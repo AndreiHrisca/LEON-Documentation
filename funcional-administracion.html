@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administración · Guía funcional · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --rose:#C0436B; --slate:#51606F;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --rose-tint:#FBE7EE; --slate-tint:#EDF0F3;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--slate);margin:0 0 14px}
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 24px}
+
+  .chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--slate-tint);color:var(--slate)}
+  .chip svg{width:26px;height:26px}
+
+  .section{margin:32px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+  .section p{font-size:15px;line-height:1.7;color:var(--muted);margin:0 0 10px}
+
+  .list-item{margin:12px 0;padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.6;color:var(--muted)}
+  .list-item:last-child{border-bottom:none}
+  .list-item strong{color:var(--ink)}
+
+  .callout{display:flex;gap:12px;align-items:flex-start;margin:14px 0;padding:14px 16px;border-radius:12px;font-size:13.5px;line-height:1.6}
+  .callout svg{width:17px;height:17px;flex:none;margin-top:1px}
+  .callout.amber{background:var(--amber-tint);border:1px solid #EAD8C2;color:var(--ink)}
+  .callout.amber svg{color:var(--amber)}
+  .callout.rose{background:var(--rose-tint);border:1px solid #F2D2DC;color:var(--ink)}
+  .callout.rose svg{color:var(--rose)}
+
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+  .foot a{color:var(--teal);font-weight:600;text-decoration:none}
+
+  @media (max-width:720px){ body{padding:32px 14px} h1{font-size:28px} .section{padding:16px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+
+  <p class="eyebrow">Funcional · Administración</p>
+  <h1>Guía de Administración</h1>
+  <p class="sub">Facturación, equipo y control. Algunas partes son de solo consulta hoy — te lo señalamos donde aplica.</p>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.6"/><rect x="14" y="3" width="7" height="5" rx="1.6"/><rect x="14" y="12" width="7" height="9" rx="1.6"/><rect x="3" y="16" width="7" height="5" rx="1.6"/></svg></div>
+
+  <div class="section">
+    <h2>Facturación</h2>
+    <p>Tres pestañas — Comprobantes, Pagos, Notas de crédito — más un resumen del periodo. En la práctica, <strong>la única acción real de toda la pantalla es "Confirmar" un pago pendiente</strong>:</p>
+    <div class="list-item"><strong>Comprobantes:</strong> solo consulta. Se emiten desde el detalle del pedido, en Ventas.</div>
+    <div class="list-item"><strong>Pagos:</strong> se ven todos, pero solo se pueden <strong>confirmar</strong> los pendientes — no se registran pagos nuevos desde aquí.</div>
+    <div class="list-item"><strong>Notas de crédito:</strong> solo consulta. Hoy no hay forma de emitir una devolución/anulación desde la intranet.</div>
+  </div>
+
+  <div class="callout amber">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg>
+    <span>Si buscas "emitir factura" o "crear nota de crédito" aquí, no lo vas a encontrar: la emisión de comprobantes está en el detalle del pedido (Ventas), y las notas de crédito hoy no tienen pantalla de creación.</span>
+  </div>
+
+  <div class="section">
+    <h2>Equipo (usuarios internos)</h2>
+    <div class="list-item"><strong>Pendientes de aprobación:</strong> quien se autoregistró eligiendo su área espera aquí. Puedes cambiar el rol solicitado antes de aprobar, y luego <strong>Aprobar</strong> (activa la cuenta) o <strong>Rechazar</strong> (irreversible).</div>
+    <div class="list-item"><strong>Crear cuenta directamente:</strong> nombre, email, rol y si el acceso está habilitado. Se genera una contraseña temporal que se muestra <strong>una sola vez</strong>, en pantalla — si se cierra el modal sin copiarla, se pierde.</div>
+    <div class="list-item"><strong>Editar cuenta:</strong> nombre, email, rol, y activar/desactivar el acceso. No hay botón de "eliminar" — a alguien se le desactiva, no se le borra.</div>
+  </div>
+
+  <div class="section">
+    <h2>Actividad (auditoría)</h2>
+    <p>Un registro cronológico de quién hizo qué (crear, editar, eliminar, activar/desactivar, iniciar/cerrar sesión) sobre qué dato, con filtros por usuario, tipo de acción, entidad y fecha. Es de <strong>solo lectura</strong> — nadie edita ni borra estos registros. Visible solo para roles <strong>admin</strong> y <strong>sistemas</strong>; si no tienes ese rol, verás un aviso de que no tienes permiso.</p>
+  </div>
+
+  <div class="section">
+    <h2>Comentarios de la documentación</h2>
+    <p>El equipo puede dejar comentarios sobre cualquier sección de la documentación, anclados al apartado concreto, con reacciones 👍 / 👎. Desde la sección <strong>Comentarios</strong> de la Intranet (solo administración) se ve el listado completo con filtros por página, autor y estado, se cambia el estado de cada uno (<strong>abierto</strong>, <strong>en revisión</strong>, <strong>resuelto</strong>, <strong>descartado</strong>) y se salta directo a la sección comentada. El menú lateral muestra un contador de los que siguen abiertos.</p>
+  </div>
+
+  <div class="callout rose">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg>
+    <span>Los comprobantes emitidos hoy no son legalmente válidos ante SUNAT — la integración real todavía no está conectada (ver <a href="servicios-externos.html" style="color:var(--rose);font-weight:600">Servicios externos</a>). Ten esto presente para no tratarlos como documentos tributarios definitivos.</span>
+  </div>
+
+  <p class="foot">
+    El detalle técnico del registro de actividad (cómo se captura, por qué no es tan simple) está en <a href="auditoria-actividad.html">Registro de actividad</a>. Para ver facturación aceptada, pendiente SUNAT y monto por cobrar del periodo: <a href="reportes-analitica.html">Reportes y analítica</a>.
+  </p>
+</div>
+</body>
+</html>

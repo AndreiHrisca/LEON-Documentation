@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Importación / Compras · Guía funcional · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --rose:#C0436B;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --rose-tint:#FBE7EE;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin:0 0 14px}
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 24px}
+
+  .chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--amber-tint);color:var(--amber)}
+  .chip svg{width:26px;height:26px}
+
+  .steps{counter-reset:step;margin:18px 0}
+  .step{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .step:last-child{border-bottom:none}
+  .step .n{counter-increment:step;width:26px;height:26px;border-radius:50%;background:var(--amber);color:#fff;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+  .step .n::before{content:counter(step)}
+  .step .tx h3{font-size:14.5px;font-weight:600;margin:0 0 4px}
+  .step .tx p{font-size:13.5px;color:var(--muted);line-height:1.55;margin:0}
+
+  .section{margin:32px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+  .section p{font-size:15px;line-height:1.7;color:var(--muted);margin:0 0 10px}
+
+  .list-item{margin:12px 0;padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.6;color:var(--muted)}
+  .list-item:last-child{border-bottom:none}
+  .list-item strong{color:var(--ink)}
+
+  .callout{display:flex;gap:12px;align-items:flex-start;margin:14px 0;padding:14px 16px;border-radius:12px;font-size:13.5px;line-height:1.6}
+  .callout svg{width:17px;height:17px;flex:none;margin-top:1px}
+  .callout.rose{background:var(--rose-tint);border:1px solid #F2D2DC;color:var(--ink)}
+  .callout.rose svg{color:var(--rose)}
+
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+  .foot a{color:var(--teal);font-weight:600;text-decoration:none}
+
+  @media (max-width:720px){ body{padding:32px 14px} h1{font-size:28px} .section{padding:16px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+
+  <p class="eyebrow">Funcional · Importación / Compras</p>
+  <h1>Guía de Compras</h1>
+  <p class="sub">Abastecimiento gestiona tanto el catálogo (qué vendemos) como las compras a proveedores (de dónde sale). Requiere el rol <strong>abastecimiento</strong> (o admin) para crear y editar.</p>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L23 6H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg></div>
+
+  <div class="section">
+    <h2>Catálogo: productos, variantes y fotos</h2>
+    <div class="list-item"><strong>Producto</strong> es el concepto comercial ("Cuaderno universitario"); <strong>variante</strong> es lo que de verdad se compra y vende (SKU, con su costo, precio y mínimo de alerta). Un producto puede tener varias variantes (color, tamaño, etc.).</div>
+    <div class="list-item">Al crear un producto: nombre, marca, categoría (puedes crear una nueva sin salir del formulario), proveedor principal y si está visible.</div>
+    <div class="list-item">El <strong>stock inicial no se carga desde aquí</strong> — eso es un movimiento, se registra desde Inventario o al recibir una orden de compra.</div>
+    <div class="list-item"><strong>Fotos:</strong> desde cada variante puedes subir imágenes (la última subida se marca como principal automáticamente — no hay botón para elegir manualmente cuál es la principal, ni para reordenarlas).</div>
+  </div>
+
+  <div class="section">
+    <h2>El flujo de una orden de compra</h2>
+    <div class="steps">
+      <div class="step"><span class="n"></span><div class="tx"><h3>Crea la orden</h3><p>Elige proveedor, fecha, moneda y tipo de cambio, y añade líneas (variante, cantidad, precio unitario en la moneda de origen).</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>Avanza el estado</h3><p>Pedido → Producción → En tránsito, un paso a la vez. No se puede retroceder si te equivocas de estado.</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>Asigna el embarque</h3><p>Incoterm, contenedor, fechas de salida/llegada, y el flete + aduana en dólares — esto se convierte en el costo real desembarcado.</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>Recibe la mercancía</h3><p>Botón "Recibir y sumar stock": pide el almacén destino y da entrada a todas las unidades de la orden de una sola vez. Es el único punto donde una compra se convierte en stock disponible.</p></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Proveedores</h2>
+    <p>Ficha con país, moneda habitual, contacto, condiciones (p. ej. "MOQ 100 uds · FOB Shenzhen") y los productos que provee. Se puede editar en cualquier momento; no se puede borrar un proveedor con órdenes o muestras asociadas.</p>
+  </div>
+
+  <div class="section">
+    <h2>Lo que no puedes hacer desde aquí</h2>
+    <div class="list-item"><strong>Editar una orden ya creada</strong> (proveedor, moneda, líneas) — solo avanzar su estado o recibirla.</div>
+    <div class="list-item"><strong>Editar el embarque una vez asignado</strong> — solo consultarlo.</div>
+    <div class="list-item"><strong>Anular o cancelar una orden de compra</strong> — no existe esa acción hoy.</div>
+    <div class="list-item"><strong>Gestionar muestras</strong> desde la intranet: existen en el sistema (y quedan auditadas en Actividad) pero no hay pantalla para crearlas o verlas todavía — es una función pendiente de interfaz.</div>
+  </div>
+
+  <div class="callout rose">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg>
+    <span>Si te equivocas al avanzar el estado de una orden o al asignar un embarque, hoy no hay forma de deshacerlo desde la interfaz — avisa a Sistemas para corregirlo directo en la base si es necesario.</span>
+  </div>
+
+  <p class="foot">
+    Para ver rotación de inventario, compras por proveedor y stock a reponer: <a href="reportes-analitica.html">Reportes y analítica</a>. El registro de movimientos que genera "recibir" se explica en <a href="funcional-almacen.html">Almacén / Inventario</a>.
+  </p>
+</div>
+</body>
+</html>

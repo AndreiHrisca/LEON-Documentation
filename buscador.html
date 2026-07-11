@@ -89,72 +89,52 @@
 
   <p class="eyebrow">Buscador</p>
   <h1>Motor de búsqueda</h1>
-  <p class="sub">Permite a los clientes localizar productos de forma instantánea mediante palabras clave. Optimizado para velocidad: consultas sobre 10 000 productos en menos de 100 ms.</p>
+  <p class="sub">No es un servicio aparte: es <span class="mono" style="font-family:var(--mono);color:var(--blue)">pg_trgm</span>, una extensión de PostgreSQL que permite buscar por similitud de texto (tolera errores de tipeo) directamente sobre las tablas del catálogo, clientes y variantes.</p>
 
   <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div>
 
   <div class="section">
     <h2>¿Qué es?</h2>
-    <p>Un motor de búsqueda de texto completo (típicamente Elasticsearch o Solr). Indexa los productos —nombre, descripción, categoría— y resuelve las consultas en milisegundos, con un rendimiento muy superior al de un LIKE sobre PostgreSQL.</p>
+    <p><span class="mono" style="font-family:var(--mono);color:var(--blue)">pg_trgm</span> descompone el texto en trigramas (grupos de 3 caracteres) e indexa esas piezas con un índice GIN. Así, buscar "tempera" también encuentra "témpera": no hace falta que la palabra coincida exactamente. Es la extensión activada en <span class="mono" style="font-family:var(--mono);color:var(--blue)">01_extensions.sql</span> y usada por el parámetro <span class="mono" style="font-family:var(--mono);color:var(--blue)">?buscar=</span> de la API (ver <span style="font-family:var(--mono);font-size:12px">config.filters.BuscarFilter</span>).</p>
   </div>
 
   <div class="section">
-    <h2>Funciones principales</h2>
-    <div class="list-item"><strong>Búsqueda de texto:</strong> GET /search?q=témpera → devuelve los productos coincidentes ordenados por relevancia.</div>
-    <div class="list-item"><strong>Autocompletado:</strong> Sugiere productos a medida que el usuario escribe.</div>
-    <div class="list-item"><strong>Filtros facetados:</strong> Tras la búsqueda, indica cuántos resultados hay por categoría, precio o marca.</div>
-    <div class="list-item"><strong>Tolerancia a errores:</strong> Ante una errata como "tempera", recupera igualmente "témpera".</div>
-    <div class="list-item"><strong>Sinónimos:</strong> Términos equivalentes devuelven el mismo conjunto de resultados; configurable.</div>
-    <div class="list-item"><strong>Ajuste de relevancia:</strong> Los productos nuevos o destacados se priorizan aunque la coincidencia no sea exacta.</div>
+    <h2>Dónde se usa hoy</h2>
+    <div class="list-item"><strong>Productos:</strong> <span class="mono" style="font-family:var(--mono);color:var(--blue)">GET /productos?buscar=témpera</span> — busca en nombre y marca.</div>
+    <div class="list-item"><strong>Variantes:</strong> por SKU o código de barras.</div>
+    <div class="list-item"><strong>Clientes:</strong> por nombre o número de documento.</div>
+    <div class="list-item"><strong>Búsqueda global de la intranet:</strong> la barra superior busca en productos, clientes, pedidos y proveedores ya cargados en el navegador (no vuelve a golpear la API en cada tecla).</div>
+  </div>
+
+  <div class="section">
+    <h2>Lo que NO existe</h2>
+    <div class="list-item">No hay Elasticsearch, Solr ni ningún motor de búsqueda dedicado. No hace falta uno aparte con el volumen de catálogo actual (decenas de SKU, no miles).</div>
+    <div class="list-item">No hay autocompletado del lado servidor, filtros facetados (conteo por categoría/precio) ni sinónimos configurables — <span class="mono" style="font-family:var(--mono);color:var(--blue)">?buscar=</span> es una coincidencia por similitud simple, no un ranking de relevancia.</div>
   </div>
 
   <div class="section">
     <h2>Limitaciones y restricciones</h2>
-    <div class="list-item"><strong>Latencia de indexación:</strong> Un producto nuevo en PostgreSQL tarda unos segundos en reflejarse en la búsqueda; no es instantáneo.</div>
-    <div class="list-item"><strong>Sincronización:</strong> Si el motor se desconecta, el índice queda desactualizado y requiere reindexación.</div>
-    <div class="list-item"><strong>Almacenamiento:</strong> El índice puede ocupar de 2 a 3 veces el tamaño de los datos originales.</div>
-    <div class="list-item"><strong>Complejidad operativa:</strong> Un sistema adicional que mantener, monitorizar y diagnosticar; un punto de fallo más.</div>
-    <div class="list-item"><strong>Curva de aprendizaje:</strong> Su lenguaje de consulta difiere de SQL y exige formación del equipo.</div>
+    <div class="list-item"><strong>Escala:</strong> <span class="mono" style="font-family:var(--mono);color:var(--blue)">pg_trgm</span> funciona bien hasta cientos de miles de filas; con un catálogo mucho más grande, un motor dedicado (Elasticsearch) rendiría mejor — pero es una decisión para <em>si</em> el catálogo crece así de grande, no algo pendiente de esta versión.</div>
+    <div class="list-item"><strong>Sin relevancia avanzada:</strong> no pondera "producto destacado" ni aprende de clics anteriores.</div>
   </div>
 
   <div class="section">
     <h2>Propósito del componente</h2>
-    <p>Ofrecer una búsqueda de productos rápida y flexible y mejorar la experiencia de usuario y, con ella, la conversión: una búsqueda deficiente frustra al cliente y reduce las ventas.</p>
+    <p>Que buscar "lapiz" encuentre "lápiz", sin necesitar infraestructura adicional, aprovechando algo que Postgres ya sabe hacer bien a esta escala.</p>
   </div>
 
   <div class="section">
-    <h2>Stack tecnológico recomendado</h2>
+    <h2>Stack</h2>
     <div class="stack">
-      <span class="badge">Elasticsearch 8+</span>
-      <span class="badge">Kibana (monitoring)</span>
-      <span class="badge">Logstash (indexer)</span>
-      <span class="badge">Python elasticsearch-py</span>
-      <span class="badge">Query DSL</span>
-      <span class="badge">Analyzers (tokenizers)</span>
+      <span class="badge">PostgreSQL — pg_trgm</span>
+      <span class="badge">Índices GIN</span>
+      <span class="badge">django-filter (SearchFilter)</span>
     </div>
-    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> Elasticsearch es el estándar del sector para búsqueda. Kibana permite inspeccionar los índices. Logstash sincroniza los cambios desde PostgreSQL. El Query DSL habilita consultas avanzadas y los analizadores procesan correctamente el español.</p>
-  </div>
-
-  <div class="section">
-    <h2>Información técnica adicional</h2>
-    <div class="list-item"><strong>Particionamiento (sharding):</strong> El índice se distribuye entre varios nodos para procesar en paralelo, de forma automática.</div>
-    <div class="list-item"><strong>Replicación:</strong> Cada fragmento dispone de una réplica; si un nodo cae, otra copia asume el trabajo.</div>
-    <div class="list-item"><strong>Analizadores:</strong> Tokenización y lematización del español (lápices → lápiz); configurable.</div>
-    <div class="list-item"><strong>Ranking:</strong> TF-IDF combinado con relevancia personalizada determina el orden de los resultados.</div>
-    <div class="list-item"><strong>Reindexación:</strong> Ante un cambio de esquema, se reindexa sin interrupción del servicio mediante alias.</div>
-  </div>
-
-  <div class="section">
-    <h2>Métricas importantes</h2>
-    <div class="list-item"><strong>Latencia de búsqueda:</strong> P95 < 100 ms, P99 < 500 ms; si aumenta, revisar el índice.</div>
-    <div class="list-item"><strong>Tamaño del índice:</strong> Vigilar su crecimiento; por encima de 50 GB, evaluar el particionamiento.</div>
-    <div class="list-item"><strong>Tasa de consultas:</strong> Búsquedas por segundo; superados los 1000 QPS, puede requerir más nodos.</div>
-    <div class="list-item"><strong>Frescura:</strong> Desfase entre el cambio en PostgreSQL y su aparición en la búsqueda; objetivo inferior a 1 segundo.</div>
-    <div class="list-item"><strong>Precisión:</strong> Porcentaje de resultados relevantes; medir las sesiones con éxito frente a las fallidas.</div>
+    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> evita montar y mantener un servicio de búsqueda aparte (indexación, sincronización, otro punto de fallo) cuando la base de datos ya resuelve el caso de uso real.</p>
   </div>
 
   <p class="foot">
-    Una búsqueda rápida convierte visitantes en compradores: cada mejora de latencia incide en la conversión. No obstante, un motor dedicado solo se justifica a partir de cierto volumen de catálogo (más de 1000 productos); para el piloto, pg_trgm dentro de PostgreSQL es suficiente y evita un componente adicional.
+    Si el catálogo creciera a miles de productos y la búsqueda se quedara corta, Elasticsearch sería la alternativa a evaluar — pero eso es una decisión futura, no parte de lo construido hoy.
   </p>
 </div></body>
 </html>

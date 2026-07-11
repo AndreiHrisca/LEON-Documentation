@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de actividad · Distribuidora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --rose:#C0436B;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --rose-tint:#FBE7EE;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:820px;margin:0 auto}
+
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin:0 0 14px}
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 24px}
+
+  .chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--blue-tint);color:var(--blue)}
+  .chip svg{width:26px;height:26px}
+
+  .section{margin:32px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+  .section p{font-size:15px;line-height:1.7;color:var(--muted);margin:0 0 10px}
+  .section p:last-child{margin-bottom:0}
+
+  .list-item{margin:12px 0;padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.6;color:var(--muted)}
+  .list-item:last-child{border-bottom:none}
+  .list-item strong{color:var(--ink)}
+  .mono{font-family:var(--mono);font-size:12.5px;color:var(--blue)}
+
+  .role{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--rose);background:var(--rose-tint);border:1px solid #F2D2DC;border-radius:6px;padding:3px 9px;margin:8px 0}
+
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+  .foot a{color:var(--teal);font-weight:600;text-decoration:none}
+
+  @media (max-width:720px){ body{padding:32px 14px} h1{font-size:28px} .section{padding:16px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="backend-api.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Volver a la API del backend
+  </a>
+
+  <p class="eyebrow">Backend</p>
+  <h1>Registro de actividad</h1>
+  <p class="sub">Quién hizo qué, cuándo. Un registro por cada acción relevante, de solo lectura — nadie puede editar ni borrar estos registros desde la aplicación.</p>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+
+  <div class="role">Acceso: solo admin / sistemas</div>
+
+  <div class="section">
+    <h2>Qué se registra</h2>
+    <p>Siete tipos de acción: <strong>crear, editar, eliminar, activar, desactivar, login, logout</strong>. Sobre estos modelos: Producto, Variante, Categoría, Proveedor, Almacén, Movimiento de inventario, Usuario, Cliente, Pedido, Envío, Orden de compra, Embarque, Muestra, Comprobante, Pago, Nota de crédito y Foto de producto.</p>
+  </div>
+
+  <div class="section">
+    <h2>Cómo se captura (y por qué no es tan simple como parece)</h2>
+    <p>Lo intuitivo sería usar señales de Django (<span class="mono">post_save</span>/<span class="mono">post_delete</span>). Este sistema <strong>no las usa</strong> para las operaciones de negocio, por dos razones deliberadas:</p>
+    <div class="list-item"><strong>Los movimientos de inventario, líneas de pedido y costos de importación se crean con <span class="mono">bulk_create()</span></strong> — y Django <strong>no dispara</strong> <span class="mono">post_save</span> en un <span class="mono">bulk_create</span>. Un enfoque por señales dejaría fuera, en silencio, justo las operaciones más sensibles de auditar.</div>
+    <div class="list-item"><strong>Las vistas ya tienen <span class="mono">request.user</span> a mano.</strong> Resolver quién hizo la acción vía señales exigiría un middleware con estado en un hilo (thread-local), una capa extra de complejidad evitable.</div>
+    <p style="margin-top:14px">En su lugar, un <span class="mono">RegistraActividadMixin</span> se añade a cada ViewSet y sobreescribe <span class="mono">perform_create</span>/<span class="mono">perform_update</span>/<span class="mono">perform_destroy</span>. Cuando un ViewSet tiene lógica propia más compleja (crear un usuario, emitir un comprobante, confirmar un pago o una orden), se llama a <span class="mono">apps.actividad.services.registrar()</span> a mano, en el punto exacto donde ocurre la acción de negocio.</p>
+  </div>
+
+  <div class="section">
+    <h2>La única excepción: login y logout</h2>
+    <p>Iniciar y cerrar sesión sí se capturan por señales de Django (<span class="mono">user_logged_in</span> / <span class="mono">user_logged_out</span>) — no hay una "vista" de negocio donde enganchar el mixin, así que aquí sí tiene sentido.</p>
+  </div>
+
+  <div class="section">
+    <h2>Quién puede verlo</h2>
+    <p>Solo <strong>admin</strong> y <strong>sistemas</strong> — ni siquiera la lectura es abierta a cualquier autenticado (<span class="mono">SoloAdminOSistemas</span>, la única regla de permisos de todo el sistema que restringe también el GET). Cualquier otro rol que abra la sección Actividad en la intranet verá un mensaje de "sin permiso"; el control real ocurre en el servidor (403), la pantalla solo refleja eso.</p>
+  </div>
+
+  <p class="foot">
+    El endpoint (filtros, paginación) está en <a href="backend-api.html">La API del motor</a>; cómo se ve desde la intranet, en <a href="funcional-administracion.html">Administración</a>.
+  </p>
+</div>
+</body>
+</html>

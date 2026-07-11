@@ -98,7 +98,7 @@
 
   <p class="eyebrow">Base principal</p>
   <h1>Fuente de verdad</h1>
-  <p class="sub">PostgreSQL guarda permanentemente todo lo que importa: catálogo, inventario, compras, ventas y los comprobantes legales. Es la única "verdad" del sistema; todo lo demás (la memoria rápida, el buscador) es caché o se deriva de aquí.</p>
+  <p class="sub">PostgreSQL guarda permanentemente todo lo que importa: catálogo, inventario, compras, ventas y los comprobantes. Es la única "verdad" del sistema; todo lo demás (la memoria rápida, el buscador) es caché o se deriva de aquí. En realidad son <strong>3 bases separadas</strong> en el mismo servidor — esta página describe la principal (<span class="mono">leon_principal</span>); las otras dos, en <a href="bases-de-datos.html" style="color:var(--blue)">Las tablas del negocio</a>.</p>
 
   <div class="callout">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
@@ -133,8 +133,8 @@
     <div class="list-item"><strong>Transacciones (ACID):</strong> si una operación falla a mitad, se deshace entera. Nunca queda un pedido sin su línea ni un cobro a medias.</div>
     <div class="list-item"><strong>Integridad referencial:</strong> las llaves foráneas impiden datos huérfanos (una línea de pedido siempre apunta a una variante que existe).</div>
     <div class="list-item"><strong>Índices:</strong> búsquedas rápidas por SKU, por documento de cliente, por pedido.</div>
-    <div class="list-item"><strong>Comprobantes permanentes:</strong> lo que SUNAT exige se guarda aquí para siempre, nunca en la memoria rápida.</div>
-    <div class="list-item"><strong>Respaldos:</strong> copia diaria automática para poder recuperar el negocio si algo se rompe.</div>
+    <div class="list-item"><strong>Comprobantes:</strong> se guardan aquí para siempre, nunca en la memoria rápida.</div>
+    <div class="list-item"><strong>Respaldos:</strong> con <span class="mono">pg_dump</span>, hoy manual — no hay un cron ni una tarea automática de backup diario configurada todavía. Procedimiento en <a href="operacion.html" style="color:var(--blue)">Despliegue y mantenimiento</a>.</div>
   </div>
 
   <div class="section">
@@ -150,11 +150,11 @@
     <div class="stack">
       <span class="badge">PostgreSQL 16</span>
       <span class="badge">Django ORM</span>
-      <span class="badge">Migraciones de Django</span>
+      <span class="badge">SQL a mano (sin migraciones)</span>
       <span class="badge">pg_trgm (búsqueda)</span>
       <span class="badge">pg_dump (respaldo)</span>
     </div>
-    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> PostgreSQL es robusto y maneja bien lo relacional. El ORM de Django permite escribir consultas sin SQL a mano, y <strong>sus propias migraciones</strong> versionan el esquema (no se usa Alembic, que es de otro ecosistema). La extensión <span class="mono">pg_trgm</span>, dentro de la misma base, cubre la búsqueda por ahora —no hace falta un buscador aparte.</p>
+    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> PostgreSQL es robusto y maneja bien lo relacional. El ORM de Django lee y escribe sin SQL a mano en el día a día, pero <strong>el esquema no lo versionan migraciones de Django</strong>: todos los modelos de negocio son <span class="mono">managed=False</span> y el esquema real vive en archivos <span class="mono">.sql</span> versionados en un repositorio aparte, aplicados directamente con <span class="mono">psql</span>. Cambiar una tabla es editar ese SQL y aplicarlo a mano, no <span class="mono">makemigrations</span>. La extensión <span class="mono">pg_trgm</span>, dentro de la misma base, cubre la búsqueda —no hace falta un buscador aparte.</p>
   </div>
 
   <p class="foot">

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Recibir mercancía de una orden de importación · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/guias.css">
+<style>:root{ --accent:var(--amber); --accent-tint:var(--amber-tint) }</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+
+  <p class="eyebrow">Guías · Compras / Importación</p>
+  <h1>Recibir mercancía de una orden de importación</h1>
+  <p class="sub">Aquí el error es caro y silencioso: si el stock o el costo entran mal, nadie se da cuenta hasta que la rentabilidad miente. Esta guía cubre cómo localizar la orden de compra, registrar sus gastos (flete, aduana), recibirla para que entre como stock, y comprobar que el stock y el costo quedaron bien.</p>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16h20M4 16l1-5h14l1 5M6 11V7a1 1 0 0 1 1-1h4v5"/><circle cx="7.5" cy="19" r="1.5"/><circle cx="16.5" cy="19" r="1.5"/></svg></div>
+
+  <div class="porque">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    <span>¿Quieres entender <strong>por qué</strong> el costo real no es el de fábrica? Míralo en el flujo <a href="flujo-compra-importacion.html">Compra importación</a> (incluye el <a href="glosario.html">costo desembarcado o landed</a> con un ejemplo).</span>
+  </div>
+
+  <div class="meta">
+    <div class="m"><div class="k">Quién lo hace</div><div class="v">Abastecimiento o Administración.</div></div>
+    <div class="m"><div class="k">Cuándo</div><div class="v">Cuando la mercancía llega al almacén y ya conoces los gastos de flete y aduana.</div></div>
+  </div>
+
+  <!-- ── ANTES DE EMPEZAR ─────────────────────────────────────────────── -->
+  <div class="section">
+    <h2><span class="hnum">✓</span> Antes de empezar</h2>
+    <ul class="reqs">
+      <li><strong>Rol Abastecimiento o Administración.</strong></li>
+      <li><strong>La orden de compra ya creada</strong> — con su proveedor, moneda, tipo de cambio y líneas. Si no existe, se crea antes con <span class="lit">Nueva orden</span>.</li>
+      <li><strong>Los importes de flete y aduana (en USD)</strong> — para registrarlos en el embarque antes de recibir.</li>
+      <li><strong>El almacén de destino</strong> — dónde va a entrar físicamente la mercancía.</li>
+      <li><strong>La cantidad realmente recibida</strong>, por si difiere de la pedida (lo verás en «Si te sale mal»).</li>
+    </ul>
+  </div>
+
+  <!-- ── PASO A PASO ──────────────────────────────────────────────────── -->
+  <div class="section">
+    <h2><span class="hnum">1</span> Paso a paso</h2>
+    <div class="steps">
+
+      <div class="step"><span class="n"></span><div class="tx">
+        <h3>Localiza la orden de compra</h3>
+        <p>En el menú lateral entra en <span class="lit">Compras</span>, pestaña <span class="lit">Órdenes de compra</span>. Busca la orden por proveedor y fecha (aparece como <span class="lit">Compra #N</span>) y ábrela con clic en su fila. Verás su barra de estado: <strong>Pedido → Producción → Tránsito → Recibido</strong>.</p>
+      </div></div>
+
+      <div class="step"><span class="n"></span><div class="tx">
+        <h3>Registra el embarque con el flete y la aduana</h3>
+        <p>Si la orden aún no tiene embarque, pulsa <span class="lit">Asignar embarque</span>. Rellena <span class="lit">Incoterm</span>, <span class="lit">Contenedor</span>, las fechas de salida y llegada, y sobre todo <span class="lit">Flete (USD)</span> y <span class="lit">Aduana (USD)</span> — son los gastos que convierten el precio de fábrica en el costo real puesto en almacén. Pulsa <span class="lit">Guardar embarque</span>.</p>
+        <figure class="captura" data-pendiente="true">
+          <div class="ph">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3.5"/></svg>
+            <span class="lab">Captura pendiente</span>
+          </div>
+          <figcaption><strong>Qué debe mostrar:</strong> el modal <em>Asignar embarque</em> resaltando los campos <em>Flete (USD)</em> y <em>Aduana (USD)</em>.</figcaption>
+        </figure>
+      </div></div>
+
+      <div class="step"><span class="n"></span><div class="tx">
+        <h3>Ajusta el estado si hace falta</h3>
+        <p>Con <span class="lit">Avanzar estado</span> puedes ir moviendo la orden (Pedido → Producción → Tránsito) según la realidad. No es obligatorio para recibir, pero mantiene el seguimiento al día. El avance es en un solo sentido: no se retrocede.</p>
+      </div></div>
+
+      <div class="step"><span class="n"></span><div class="tx">
+        <h3>Recibe y suma el stock</h3>
+        <p>Pulsa <span class="lit">Recibir y sumar stock</span>. Elige el <span class="lit">Almacén de recepción</span> y pulsa <span class="lit">Confirmar recepción</span>. El sistema da entrada a <strong>todas las unidades de la orden de una sola vez</strong> (un <a href="glosario.html">movimiento</a> de tipo compra por línea) y deja la orden en <strong>Recibido</strong>. Verás el aviso <em>«Orden #N recibida · +U unidades en stock.»</em></p>
+        <div class="callout ojo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span>Revisa bien el almacén antes de confirmar: <strong>recibir es irreversible desde la interfaz</strong> y, una vez recibida, la orden ya no se puede eliminar.</span>
+        </div>
+        <figure class="captura" data-pendiente="true">
+          <div class="ph">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3.5"/></svg>
+            <span class="lab">Captura pendiente</span>
+          </div>
+          <figcaption><strong>Qué debe mostrar:</strong> el modal <em>Recibir y sumar stock</em> con el selector <em>Almacén de recepción</em> y el botón <em>Confirmar recepción</em>.</figcaption>
+        </figure>
+      </div></div>
+
+      <div class="step"><span class="n"></span><div class="tx">
+        <h3>Comprueba el stock y actualiza el costo landed</h3>
+        <p><strong>Stock:</strong> ve a <span class="lit">Inventario</span> y confirma que las variantes de la orden subieron por la cantidad recibida. En sus movimientos verás una entrada de tipo <em>compra</em> con la referencia «Compra #N».</p>
+        <p><strong>Costo landed (paso manual, importante):</strong> recibir suma stock pero <strong>no cambia el costo de la variante</strong>. Para que el costo real quede bien tienes que actualizarlo a mano: calcula
+        <br><span class="pill-mono">costo unitario = (mercadería + flete + aduana, en soles) ÷ unidades</span><br>
+        y ponlo en <span class="lit">Catálogo → (abre la variante) → Costo (S/)</span>. El resumen de la orden te da la mercadería y el «Flete + aduana» ya sumados para ese cálculo.</p>
+        <div class="callout aviso">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg>
+          <span>Si no actualizas el costo, el sistema seguirá valorando esas unidades al precio de fábrica: el <span class="lit">Valor de inventario</span> y los márgenes de Reportes quedarán mal.
+          <!-- VERIFICAR: el flujo "Compra importación" dice que "el sistema calcula el costo desembarcado (landed)", pero en el código la recepción (services.recibir_orden) SOLO crea los movimientos de stock y marca la orden como Recibido: NO recalcula ni escribe el costo de la variante, y los costos del embarque no se prorratean solos. Esta guía describe el comportamiento REAL (actualización manual). Reconciliar con el flujo: ¿debe el sistema calcularlo (funcionalidad pendiente) o el paso es manual a propósito? --></span>
+        </div>
+      </div></div>
+
+    </div>
+  </div>
+
+  <!-- ── CÓMO SABER QUE SALIÓ BIEN ────────────────────────────────────── -->
+  <div class="section">
+    <h2><span class="hnum">2</span> Cómo saber que salió bien</h2>
+    <div class="exito">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+      <div>
+        <strong>La recepción quedó bien cuando:</strong>
+        <ul>
+          <li>La orden muestra el estado <strong>Recibido</strong> y el sello <em>«✓ Recibida · stock ingresado»</em>.</li>
+          <li>En <span class="lit">Inventario</span>, cada variante subió por la cantidad recibida, con un movimiento <em>compra</em> y referencia «Compra #N».</li>
+          <li>El <span class="lit">Costo (S/)</span> de cada variante ya refleja el costo landed que calculaste (no el precio de fábrica).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SI TE SALE MAL ───────────────────────────────────────────────── -->
+  <div class="section malo">
+    <h2><span class="hnum">!</span> Si te sale mal</h2>
+
+    <div class="fix">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+      <div class="tx">
+        <h3>Llegó menos cantidad de la pedida</h3>
+        <p class="causa"><span class="lbl">Por qué pasa:</span> <span class="lit">Recibir y sumar stock</span> mete la orden completa; <strong>no hay recepción parcial</strong>: siempre suma la cantidad de cada línea tal como se pidió.</p>
+        <p class="salida"><span class="lbl">Cómo salir:</span> recibe igual y luego corrige la diferencia en <span class="lit">Inventario → Registrar movimiento</span>, tipo <span class="lit">Merma (−)</span>, por las unidades que faltaron, con una referencia clara (p. ej. «Faltante recepción compra #N»).</p>
+      </div>
+    </div>
+
+    <div class="fix">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+      <div class="tx">
+        <h3>Llegó producto que no estaba en la orden</h3>
+        <p class="causa"><span class="lbl">Por qué pasa:</span> la recepción solo da entrada a lo que figura en las líneas de la orden; lo demás no entra.</p>
+        <p class="salida"><span class="lbl">Cómo salir:</span> registra ese producto aparte en <span class="lit">Inventario → Registrar movimiento</span>, tipo <span class="lit">Ajuste (+)</span>, con el SKU y el almacén correctos. Si es un producto que aún no existe, créalo primero (<a href="guia-dar-alta-producto.html">Dar de alta un producto</a>) y ten en cuenta que su costo tendrás que fijarlo a mano.</p>
+      </div>
+    </div>
+
+    <div class="fix">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <div class="tx">
+        <h3>Los gastos (flete/aduana) llegan después de recibir</h3>
+        <p class="causa"><span class="lbl">Por qué pasa:</span> a veces la factura del flete o de la aduana llega cuando la mercancía ya se recibió.</p>
+        <p class="salida"><span class="lbl">Cómo salir:</span> aún puedes registrar el embarque después de recibir (el botón <span class="lit">Asignar embarque</span> sigue disponible si la orden no tenía uno), pero eso <strong>no cambia el stock ni recalcula el costo</strong>. Como el costo landed se actualiza a mano de todos modos, incorpora esos gastos cuando recalcules el <span class="lit">Costo (S/)</span> de las variantes.
+        <!-- VERIFICAR: si el embarque YA existe, la intranet no ofrece pantalla para editar sus costos (el backend lo permitiría por API, pero no está expuesto en la interfaz). Confirmar el procedimiento para gastos que llegan tarde cuando ya hay embarque. --></p>
+      </div>
+    </div>
+
+    <div class="fix">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg></div>
+      <div class="tx">
+        <h3>Cómo detectar que el costo landed salió mal</h3>
+        <p class="causa"><span class="lbl">Señal de alarma:</span> el <span class="lit">Costo (S/)</span> de la variante sigue mostrando el precio de fábrica (sin flete ni aduana), o el margen en <span class="lit">Reportes</span> se ve sospechosamente alto. El valor de inventario y el margen usan el <em>costo actual</em> de la variante; si no lo actualizaste tras recibir, todos esos números mienten.</p>
+        <p class="salida"><span class="lbl">Cómo salir:</span> recalcula <span class="pill-mono">(mercadería + flete + aduana) ÷ unidades</span> y corrígelo en <span class="lit">Catálogo → variante → Costo (S/)</span>. Contrasta con el resumen de la orden, que ya muestra la mercadería y el «Flete + aduana».</p>
+      </div>
+    </div>
+
+    <div class="fix">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+      <div class="tx">
+        <h3>Recibiste en el almacén equivocado</h3>
+        <p class="causa"><span class="lbl">Por qué pasa:</span> elegiste mal el almacén y confirmaste. La recepción es irreversible y la orden ya no se puede borrar.</p>
+        <p class="salida"><span class="lbl">Cómo salir:</span> mueve el stock a mano en <span class="lit">Inventario</span>: una <span class="lit">Merma (−)</span> por esas unidades en el almacén equivocado y un <span class="lit">Ajuste (+)</span> por la misma cantidad en el correcto, con una referencia que lo explique. Si es un lío grande, avisa a Sistemas para corregirlo en la base.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="foot">
+    Términos técnicos en el <a href="glosario.html">glosario</a>.
+    Relacionado: <a href="flujo-compra-importacion.html">Compra importación</a>, <a href="guia-dar-alta-producto.html">Dar de alta un producto</a> y <a href="stock-derivado.html">cómo se deriva el stock</a>.
+  </p>
+</div>
+</body>
+</html>

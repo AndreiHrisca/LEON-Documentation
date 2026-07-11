@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ventas · Guía funcional · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --rose:#C0436B;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --rose-tint:#FBE7EE;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin:0 0 14px}
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 24px}
+
+  .chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--blue-tint);color:var(--blue)}
+  .chip svg{width:26px;height:26px}
+
+  .steps{counter-reset:step;margin:18px 0}
+  .step{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .step:last-child{border-bottom:none}
+  .step .n{counter-increment:step;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+  .step .n::before{content:counter(step)}
+  .step .tx h3{font-size:14.5px;font-weight:600;margin:0 0 4px}
+  .step .tx p{font-size:13.5px;color:var(--muted);line-height:1.55;margin:0}
+
+  .section{margin:32px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+  .section p{font-size:15px;line-height:1.7;color:var(--muted);margin:0 0 10px}
+
+  .list-item{margin:12px 0;padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.6;color:var(--muted)}
+  .list-item:last-child{border-bottom:none}
+  .list-item strong{color:var(--ink)}
+
+  .callout{display:flex;gap:12px;align-items:flex-start;margin:14px 0;padding:14px 16px;border-radius:12px;font-size:13.5px;line-height:1.6}
+  .callout svg{width:17px;height:17px;flex:none;margin-top:1px}
+  .callout.amber{background:var(--amber-tint);border:1px solid #EAD8C2;color:var(--ink)}
+  .callout.amber svg{color:var(--amber)}
+
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+  .foot a{color:var(--teal);font-weight:600;text-decoration:none}
+
+  @media (max-width:720px){ body{padding:32px 14px} h1{font-size:28px} .section{padding:16px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+
+  <p class="eyebrow">Funcional · Ventas</p>
+  <h1>Guía de Ventas</h1>
+  <p class="sub">Para quien atiende consultas por WhatsApp, Instagram, presencial o correo, y convierte esas consultas en pedidos. Requiere el rol <strong>ventas</strong> (o admin) para crear y editar; cualquiera puede consultar.</p>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 3-3 3 3 5-6"/></svg></div>
+
+  <div class="section">
+    <h2>Flujo típico de una venta</h2>
+    <div class="steps">
+      <div class="step"><span class="n"></span><div class="tx"><h3>Consulta el catálogo</h3><p>En <strong>Catálogo</strong> busca el producto por nombre, marca o SKU y confirma precio y disponibilidad. Quien mantiene las fichas de producto es Abastecimiento — aquí solo consultas.</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>Da de alta o busca al cliente</h3><p>En <strong>Ventas → Clientes</strong>: si es nuevo, créalo con su tipo de documento (DNI para boleta, RUC para factura) y dirección fiscal si vas a facturar.</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>Crea el pedido</h3><p>Elige cliente, canal de venta (WhatsApp, Instagram, presencial, correo, web), courier y costo de envío si aplica, y añade líneas (producto, cantidad, precio — se autocompleta con el precio de catálogo pero puedes ajustarlo).</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>Confirma el pedido</h3><p>Pide el almacén de despacho y descuenta el stock. Si no alcanza, el sistema te dice exactamente qué SKU falta y cuánto hay — no te deja confirmar a medias.</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>Emite el comprobante</h3><p>Desde el propio pedido, boleta o factura según el documento del cliente. Queda "pendiente" y pasa a su estado final poco después (hoy, siempre "aceptado" — ver nota abajo).</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>Marca enviado / entregado</h3><p>A medida que avanza el despacho, actualizas el estado del pedido y de su envío.</p></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Lo que no puedes hacer desde aquí</h2>
+    <div class="list-item"><strong>Registrar un pago nuevo:</strong> los pagos se ven en Ventas/Facturación, pero <strong>no se crean</strong> desde la intranet — solo se confirman los que ya existen, desde Facturación.</div>
+    <div class="list-item"><strong>Editar un pedido ya confirmado:</strong> se puede anular mientras está <em>pendiente</em>, pero una vez confirmado no se editan sus líneas.</div>
+    <div class="list-item"><strong>Gestionar el catálogo:</strong> crear o editar productos, variantes y fotos es de Abastecimiento (ver <a href="funcional-compras.html">Importación / Compras</a>).</div>
+  </div>
+
+  <div class="callout amber">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg>
+    <span>Los comprobantes que emites hoy <strong>no llegan de verdad a SUNAT</strong> — la integración está simulada mientras se termina de conectar (ver <a href="servicios-externos.html" style="color:var(--amber);font-weight:600">Servicios externos</a>). Úsalo para el flujo interno, no como factura legal todavía.</span>
+  </div>
+
+  <p class="foot">
+    Para ver cómo van tus ventas del mes, top productos y ticket medio: <a href="reportes-analitica.html">Reportes y analítica</a>. Términos que no conozcas, en el <a href="glosario.html">glosario</a>.
+  </p>
+</div>
+</body>
+</html>

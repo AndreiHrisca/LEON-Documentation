@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flujo · Venta en tienda (efectivo) · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --rose:#C0436B; --slate:#51606F;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --rose-tint:#FBE7EE; --slate-tint:#EDF0F3;
+    --accent:#2E73D9; --accent-tint:#E7F0FC;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:var(--sans);color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2));min-height:100vh;-webkit-font-smoothing:antialiased;padding:48px 24px 36px}
+  .wrap{max-width:860px;margin:0 auto}
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 24px}
+  .chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--accent-tint);color:var(--accent)}
+  .chip svg{width:26px;height:26px}
+  .diagram{margin:22px 0;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 1px 2px rgba(24,34,46,.04),0 6px 18px rgba(24,34,46,.04);overflow-x:auto}
+  .diagram .mermaid{min-width:520px;display:flex;justify-content:center}
+  .diagram .mermaid svg{max-width:100%;height:auto}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:14px 2px 0;font-size:12px;color:var(--muted)}
+  .legend .lg{display:inline-flex;align-items:center;gap:6px}
+  .legend .sw{width:12px;height:12px;border-radius:4px;border:1.5px solid}
+  .sw-cliente{background:var(--rose-tint);border-color:var(--rose)}
+  .sw-empleado{background:var(--blue-tint);border-color:var(--blue)}
+  .sw-sistema{background:var(--teal-tint);border-color:var(--teal)}
+  .sw-decision{background:var(--amber-tint);border-color:var(--amber)}
+  .sw-fin{background:var(--indigo-tint);border-color:var(--indigo)}
+  .section{margin:32px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+  .section p{font-size:15px;line-height:1.7;color:var(--muted);margin:0 0 10px}
+  .rolegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0 4px}
+  .rolecol{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#FAFBFC}
+  .rolecol h3{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:0 0 10px;display:flex;align-items:center;gap:7px}
+  .rolecol.emp h3{color:var(--blue)} .rolecol.sys h3{color:var(--teal)}
+  .rolecol h3 .dot{width:9px;height:9px;border-radius:3px} .rolecol.emp .dot{background:var(--blue)} .rolecol.sys .dot{background:var(--teal)}
+  .rolecol ul{margin:0;padding:0;list-style:none}
+  .rolecol li{font-size:13px;color:var(--muted);line-height:1.5;padding:6px 0;border-bottom:1px solid var(--line)}
+  .rolecol li:last-child{border-bottom:none}
+  @media (max-width:640px){ .rolegrid{grid-template-columns:1fr} }
+  .steps{counter-reset:step;margin:6px 0}
+  .step{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .step:last-child{border-bottom:none}
+  .step .n{counter-increment:step;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+  .step .n::before{content:counter(step)}
+  .step .tx h3{font-size:14.5px;font-weight:600;margin:0 0 4px}
+  .step .tx p{font-size:13.5px;color:var(--muted);line-height:1.55;margin:0}
+  .case{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .case:last-child{border-bottom:none}
+  .case .ic{width:30px;height:30px;border-radius:8px;background:var(--amber-tint);color:var(--amber);display:flex;align-items:center;justify-content:center;flex:none}
+  .case .ic svg{width:17px;height:17px}
+  .case .tx{font-size:13.5px;line-height:1.6;color:var(--muted)}
+  .case .tx strong{color:var(--ink)}
+  .callout{display:flex;gap:12px;align-items:flex-start;margin:14px 0;padding:14px 16px;border-radius:12px;font-size:13.5px;line-height:1.6}
+  .callout svg{width:17px;height:17px;flex:none;margin-top:1px}
+  .callout.teal{background:var(--teal-tint);border:1px solid #CFE6E2;color:var(--ink)}
+  .callout.teal svg{color:var(--teal)}
+  .callout a{font-weight:600;text-decoration:none;color:var(--teal)}
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+  .foot a{color:var(--teal);font-weight:600;text-decoration:none}
+  @media (max-width:720px){ body{padding:32px 14px} h1{font-size:28px} .section{padding:16px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+
+  <p class="eyebrow">Flujos · Venta</p>
+  <h1>Compra en tienda y pago en efectivo</h1>
+  <p class="sub">Venta presencial en el mostrador: el cliente elige, paga en efectivo y se lleva la mercancía en el momento. Todo el ciclo del pedido ocurre de una sola vez, cara a cara.</p>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9 4.5 4h15L21 9M3 9h18M3 9v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9M8 13h8"/></svg></div>
+
+  <div class="diagram">
+    <pre class="mermaid">
+flowchart TD
+    A([Cliente en el mostrador]):::cliente --> B[Ventas ubica o crea al cliente]:::empleado
+    B --> C[Ventas crea el pedido&lt;br/&gt;canal = Presencial]:::empleado
+    C --> D[Ventas confirma el pedido&lt;br/&gt;almacén = Tienda]:::empleado
+    D --> E{¿Cuadra el stock&lt;br/&gt;en la tienda?}:::decision
+    E -- No --> F[Ajuste por conteo físico&lt;br/&gt;y se reintenta]:::empleado
+    F --> D
+    E -- Sí --> G[Sistema descuenta stock&lt;br/&gt;y marca el pedido Pagado]:::sistema
+    G --> H[Cliente paga en efectivo]:::cliente
+    H --> I[Ventas registra el pago&lt;br/&gt;método = Efectivo · confirmado]:::empleado
+    I --> J[Emite boleta o factura]:::empleado
+    J --> K[Entrega la mercancía&lt;br/&gt;Enviado y Entregado]:::empleado
+    K --> L([Venta cerrada]):::fin
+
+    classDef cliente fill:#FBE7EE,stroke:#C0436B,stroke-width:1.5px,color:#18222E;
+    classDef empleado fill:#E7F0FC,stroke:#2E73D9,stroke-width:1.5px,color:#18222E;
+    classDef sistema fill:#E1F2F0,stroke:#0E9488,stroke-width:1.5px,color:#18222E;
+    classDef decision fill:#F7EEE1,stroke:#CF8138,stroke-width:1.5px,color:#18222E;
+    classDef fin fill:#ECEDFB,stroke:#5B63E6,stroke-width:1.5px,color:#18222E;
+    </pre>
+  </div>
+  <div class="legend">
+    <span class="lg"><span class="sw sw-cliente"></span> Acción del cliente</span>
+    <span class="lg"><span class="sw sw-empleado"></span> Acción del empleado</span>
+    <span class="lg"><span class="sw sw-sistema"></span> Lo hace el sistema</span>
+    <span class="lg"><span class="sw sw-decision"></span> Decisión</span>
+    <span class="lg"><span class="sw sw-fin"></span> Estado final</span>
+  </div>
+
+  <div class="section">
+    <h2>Paso a paso</h2>
+    <div class="steps">
+      <div class="step"><span class="n"></span><div class="tx"><h3>El cliente elige en el mostrador</h3><p>Ventas identifica al cliente (o lo crea al vuelo). Para boleta basta el DNI; si pide factura, hace falta RUC y dirección fiscal.</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>Arma el pedido</h3><p>Canal <strong>Presencial</strong>, con las líneas de lo que se lleva. El precio sale del catálogo y es ajustable si se pacta un descuento.</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>Confirma contra el almacén de la tienda</h3><p>Al confirmar, el sistema descuenta el stock del almacén <strong>Tienda</strong> con un movimiento de venta y pasa el pedido a <strong>Pagado</strong>.</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>Cobra el efectivo</h3><p>Recibe el importe y registra el pago con método <strong>Efectivo</strong>, ya confirmado (no queda pendiente como en una transferencia).</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>Emite el comprobante</h3><p>Boleta o factura desde el propio pedido. Queda "pendiente" y pasa a "aceptado" (respuesta de SUNAT hoy simulada).</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>Entrega en mano</h3><p>Como la mercancía sale en el acto, el envío se marca <strong>Enviado</strong> y <strong>Entregado</strong> de inmediato.</p></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Quién hace qué</h2>
+    <div class="rolegrid">
+      <div class="rolecol emp">
+        <h3><span class="dot"></span> El empleado</h3>
+        <ul>
+          <li>Identifica al cliente y arma el pedido presencial</li>
+          <li>Confirma contra el almacén de la tienda</li>
+          <li>Cobra el efectivo y registra el pago</li>
+          <li>Emite la boleta y entrega la mercancía</li>
+        </ul>
+      </div>
+      <div class="rolecol sys">
+        <h3><span class="dot"></span> El sistema</h3>
+        <ul>
+          <li>Verifica y descuenta el stock de la tienda</li>
+          <li>Marca el pedido como Pagado</li>
+          <li>Genera el comprobante (SUNAT simulado)</li>
+          <li>Deja el movimiento y la venta auditados</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Casos límite</h2>
+    <div class="case"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div><div class="tx"><strong>El stock del sistema no cuadra con lo físico:</strong> el cliente tiene el producto en la mano pero el sistema marca 0. Se registra un <strong>ajuste por conteo físico</strong> en Inventario y se reintenta la confirmación — así el histórico queda cuadrado.</div></div>
+    <div class="case"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div><div class="tx"><strong>El cliente no quiere comprobante:</strong> igual conviene emitir boleta para que el stock y la caja cuadren. Sin comprobante no queda registro fiscal de la salida.</div></div>
+    <div class="case"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div><div class="tx"><strong>Paga solo una parte:</strong> si no completa el efectivo, no se cierra la venta. El pedido puede quedar <strong>Pendiente</strong> o anularse; no se entrega mercancía sin el pago completo.</div></div>
+  </div>
+
+  <div class="callout teal">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    <span>La diferencia con la venta web es solo el <strong>canal</strong> (Presencial) y que el pago en <strong>efectivo</strong> se confirma en el acto. El motor es el mismo: confirmar descuenta stock, y el stock siempre se <a href="stock-derivado.html">deriva de los movimientos</a>.</span>
+  </div>
+
+  <p class="foot">
+    Relacionado: <a href="flujo-ciclo-pedido.html">Ciclo de vida del pedido</a>, <a href="flujo-venta-web.html">Compra desde la web</a> y la <a href="funcional-ventas.html">Guía de Ventas</a>.
+  </p>
+</div>
+
+<script src="vendor/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: false, theme: 'base',
+    themeVariables: { fontFamily: "'Inter',-apple-system,'Segoe UI',Roboto,sans-serif", fontSize: '13.5px', lineColor: '#8A97A8', primaryColor: '#ECEDFB', primaryBorderColor: '#5B63E6', primaryTextColor: '#18222E', tertiaryColor: '#FFFFFF' },
+    flowchart: { curve: 'basis', useMaxWidth: true, htmlLabels: true, padding: 14, nodeSpacing: 40, rankSpacing: 46 }
+  });
+  mermaid.run({ querySelector: '.diagram .mermaid' });
+</script>
+</body>
+</html>

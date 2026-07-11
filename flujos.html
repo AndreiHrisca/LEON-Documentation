@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flujos operativos · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --rose:#C0436B; --slate:#51606F;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --rose-tint:#FBE7EE; --slate-tint:#EDF0F3;
+    --accent:#C0436B; --accent-tint:#FBE7EE;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:960px;margin:0 auto}
+
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:72ch;line-height:1.6;margin:0 0 24px}
+
+  .chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--accent-tint);color:var(--accent)}
+  .chip svg{width:26px;height:26px}
+
+  .diagram{margin:22px 0;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 1px 2px rgba(24,34,46,.04),0 6px 18px rgba(24,34,46,.04);overflow-x:auto}
+  .diagram .mermaid{min-width:560px;display:flex;justify-content:center}
+  .diagram .mermaid svg{max-width:100%;height:auto}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:14px 2px 0;font-size:12px;color:var(--muted)}
+  .legend .lg{display:inline-flex;align-items:center;gap:6px}
+  .legend .sw{width:12px;height:12px;border-radius:4px;border:1.5px solid}
+  .sw-entrada{background:var(--rose-tint);border-color:var(--rose)}
+  .sw-venta{background:var(--blue-tint);border-color:var(--blue)}
+  .sw-abast{background:var(--amber-tint);border-color:var(--amber)}
+  .sw-stock{background:var(--teal-tint);border-color:var(--teal)}
+  .sw-obj{background:#EFEFFA;border-color:var(--indigo);border-style:dashed}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin:16px 0}
+  .card{display:flex;flex-direction:column;gap:6px;padding:16px 18px;text-decoration:none;color:inherit;
+    background:var(--surface);border:1px solid var(--line);border-radius:13px;border-top:3px solid var(--c,var(--line));
+    box-shadow:0 1px 2px rgba(24,34,46,.04),0 6px 18px rgba(24,34,46,.04);transition:transform .2s ease,box-shadow .2s ease}
+  .card:hover{transform:translateY(-3px);box-shadow:0 2px 4px rgba(24,34,46,.05),0 14px 34px rgba(24,34,46,.10)}
+  .card .t{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card .d{font-size:13px;color:var(--muted);line-height:1.5}
+  .c-blue{--c:var(--blue)} .c-amber{--c:var(--amber)} .c-rose{--c:var(--rose)}
+  .tag{font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:5px;padding:2px 7px;white-space:nowrap}
+  .tag.obj{background:var(--indigo-tint);color:var(--indigo)}
+  .tag.real{background:var(--teal-tint);color:var(--teal)}
+
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+  .foot a{color:var(--teal);font-weight:600;text-decoration:none}
+
+  @media (max-width:720px){ body{padding:32px 14px} h1{font-size:28px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+
+  <p class="eyebrow">Flujos operativos</p>
+  <h1>Mapa de flujos</h1>
+  <p class="sub">Cómo opera el negocio de punta a punta: cómo entra un pedido, cómo se abastece el catálogo y qué pasa después de la venta. Cada flujo tiene su propia página con el diagrama, el paso a paso, quién hace qué y los casos límite. Los marcados como <span class="tag obj">Objetivo</span> son diseño a futuro: todavía no existen en el sistema.</p>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M5 8.5v3a2 2 0 0 0 2 2h5m7-5v3a2 2 0 0 1-2 2h-5m0 0v2"/></svg></div>
+
+  <div class="diagram">
+    <pre class="mermaid">
+flowchart LR
+    subgraph ENT[Entrada del pedido]
+      direction TB
+      W[Compra web]:::entrada
+      T[Compra en tienda&lt;br/&gt;efectivo]:::entrada
+      Tel[Pedido telefónico&lt;br/&gt;con reserva]:::obj
+    end
+    subgraph ABA[Abastecimiento]
+      direction TB
+      PRD[Crear producto]:::abast
+      IMP[Compra importación&lt;br/&gt;China a almacén]:::abast
+    end
+    CIC[Ciclo de vida&lt;br/&gt;del pedido de venta]:::venta
+    STK[(Stock derivado)]:::stock
+    REC[Reclamación web]:::obj
+
+    W --> CIC
+    T --> CIC
+    Tel -.-> CIC
+    PRD --> IMP
+    IMP --> STK
+    STK --> CIC
+    CIC --> STK
+    CIC -.-> REC
+
+    classDef entrada fill:#FBE7EE,stroke:#C0436B,stroke-width:1.5px,color:#18222E;
+    classDef venta fill:#E7F0FC,stroke:#2E73D9,stroke-width:1.5px,color:#18222E;
+    classDef abast fill:#F7EEE1,stroke:#CF8138,stroke-width:1.5px,color:#18222E;
+    classDef stock fill:#E1F2F0,stroke:#0E9488,stroke-width:1.5px,color:#18222E;
+    classDef obj fill:#EFEFFA,stroke:#5B63E6,stroke-width:1.5px,stroke-dasharray:4 3,color:#18222E;
+    </pre>
+  </div>
+  <div class="legend">
+    <span class="lg"><span class="sw sw-entrada"></span> Entrada del pedido</span>
+    <span class="lg"><span class="sw sw-venta"></span> Venta</span>
+    <span class="lg"><span class="sw sw-abast"></span> Abastecimiento</span>
+    <span class="lg"><span class="sw sw-stock"></span> Stock derivado</span>
+    <span class="lg"><span class="sw sw-obj"></span> Objetivo (aún no existe)</span>
+  </div>
+
+  <div class="grid">
+    <a href="flujo-venta-web.html" class="card c-blue">
+      <div class="t">1 · Compra desde la web <span class="tag real">Real</span></div>
+      <div class="d">Del catálogo público a la entrega, con Ventas cerrando el pedido.</div>
+    </a>
+    <a href="flujo-venta-tienda.html" class="card c-blue">
+      <div class="t">2 · Tienda y pago en efectivo <span class="tag real">Real</span></div>
+      <div class="d">Venta presencial: pedido, cobro en efectivo, boleta y entrega en mano.</div>
+    </a>
+    <a href="flujo-pedido-reserva.html" class="card c-rose">
+      <div class="t">3 · Pedido con reserva <span class="tag obj">Objetivo</span></div>
+      <div class="d">Pedido telefónico a futuro: reserva de stock, expiración 5–7 días, precio en vivo.</div>
+    </a>
+    <a href="flujo-crear-producto.html" class="card c-amber">
+      <div class="t">4 · Crear un producto <span class="tag real">Real</span></div>
+      <div class="d">Producto, variantes (SKU), volumen por unidad y fotos.</div>
+    </a>
+    <a href="flujo-compra-importacion.html" class="card c-amber">
+      <div class="t">5 · Compra importación <span class="tag real">Real</span></div>
+      <div class="d">De la orden de compra en China al stock en el almacén, con costo landed.</div>
+    </a>
+    <a href="flujo-ciclo-pedido.html" class="card c-blue">
+      <div class="t">6 · Ciclo de vida del pedido <span class="tag real">Real</span></div>
+      <div class="d">Pendiente → Pagado → Enviado → Entregado, con Anulado y Devolución.</div>
+    </a>
+    <a href="flujo-reclamacion.html" class="card c-rose">
+      <div class="t">7 · Reclamación web <span class="tag obj">Objetivo</span></div>
+      <div class="d">Libro de reclamaciones en línea: registro, acuse y respuesta en plazo.</div>
+    </a>
+  </div>
+
+  <p class="foot">
+    Estos flujos son la vista de proceso; para el detalle por área ve a las guías funcionales de <a href="funcional-ventas.html">Ventas</a>, <a href="funcional-compras.html">Compras</a> y <a href="funcional-almacen.html">Almacén</a>. El porqué del stock, en <a href="stock-derivado.html">Cómo se deriva el stock</a>.
+  </p>
+</div>
+
+<script src="vendor/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'base',
+    themeVariables: {
+      fontFamily: "'Inter',-apple-system,'Segoe UI',Roboto,sans-serif",
+      fontSize: '13.5px', lineColor: '#8A97A8',
+      primaryColor: '#ECEDFB', primaryBorderColor: '#5B63E6', primaryTextColor: '#18222E', tertiaryColor: '#FFFFFF'
+    },
+    flowchart: { curve: 'basis', useMaxWidth: true, htmlLabels: true, padding: 14, nodeSpacing: 40, rankSpacing: 50 }
+  });
+  mermaid.run({ querySelector: '.diagram .mermaid' });
+</script>
+</body>
+</html>

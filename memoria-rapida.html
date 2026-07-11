@@ -89,72 +89,51 @@
 
   <p class="eyebrow">Memoria rápida</p>
   <h1>Caché en memoria</h1>
-  <p class="sub">Redis mantiene en memoria los datos de alta rotación y baja criticidad —carrito de compra, sesiones y la cola de tareas—, con latencias de microsegundos. No requiere persistencia garantizada: la fuente de verdad reside en PostgreSQL.</p>
+  <p class="sub">Hoy Redis tiene un único trabajo: ser el <strong>broker y result-backend de Celery</strong> — la cola donde esperan las tareas en segundo plano. No hay carrito de compra ni sesiones guardadas aquí: las sesiones son las de Django (en <a href="base-principal.html" style="color:var(--blue)">PostgreSQL</a>), y no existe un módulo de carrito en el código.</p>
 
   <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 4 14h6l-1 7 9-11h-6l1-7Z"/></svg></div>
 
   <div class="section">
     <h2>¿Qué es?</h2>
-    <p>Redis es un almacén de pares clave-valor en memoria. Opera íntegramente en RAM, lo que le confiere latencias de microsegundos, idóneo para estados efímeros. Ante una caída se pierde ese estado temporal, pero la operación continúa, ya que la información persistente reside en PostgreSQL.</p>
+    <p>Redis es un almacén de pares clave-valor en memoria. En este proyecto (<span class="mono">config/celery.py</span>, <span class="mono">CELERY_BROKER_URL</span>/<span class="mono">CELERY_RESULT_BACKEND</span>) cumple exactamente un rol: recibir las tareas que el backend encola (emitir un comprobante, procesar una foto) y guardar su resultado hasta que algo lo consulte.</p>
   </div>
 
   <div class="section">
-    <h2>Funciones principales</h2>
-    <div class="list-item"><strong>Carrito de compra:</strong> HSET cart:{cliente_id} producto_id cantidad. Lectura instantánea mientras el cliente navega.</div>
-    <div class="list-item"><strong>Sesiones:</strong> SETEX session:{token} 3600 {usuario_id}. Expiración automática a la hora.</div>
-    <div class="list-item"><strong>Cola de tareas:</strong> LPUSH tasks {task_json}. Celery consume de esta cola para emitir comprobantes y enviar notificaciones.</div>
-    <div class="list-item"><strong>Caché de catálogo:</strong> SET producto:{id} {json} EX 1800. Durante 30 minutos se reutiliza sin consultar PostgreSQL.</div>
-    <div class="list-item"><strong>Limitación de tasa:</strong> INCR request_count:{ip}. Recuento de peticiones por IP para mitigar el abuso automatizado.</div>
-    <div class="list-item"><strong>Bloqueos distribuidos:</strong> SET lock:{recurso} "acquired" NX EX 10. Previene condiciones de carrera en operaciones concurrentes.</div>
+    <h2>Funciones principales (lo real, hoy)</h2>
+    <div class="list-item"><strong>Cola de Celery:</strong> cuando se registra un comprobante o se sube una foto, el backend encola la tarea aquí en vez de ejecutarla en el momento; el worker de Celery la toma de esta cola.</div>
+    <div class="list-item"><strong>Resultado de las tareas:</strong> Celery guarda aquí el estado/resultado de cada tarea ejecutada.</div>
+  </div>
+
+  <div class="section">
+    <h2>Lo que NO hace hoy <span class="badge" style="background:var(--amber-tint);color:var(--amber)">a diferencia de lo que suele hacer Redis</span></h2>
+    <div class="list-item">No guarda <strong>carrito de compra</strong>: no existe ese concepto en el modelo (la tienda pública no tiene checkout, ver <a href="catalogo-publico.html" style="color:var(--blue)">Catálogo público</a>).</div>
+    <div class="list-item">No guarda <strong>sesiones</strong>: la sesión Django compartida (SSO con Documentation) usa el backend de sesiones por defecto de Django, respaldado en PostgreSQL.</div>
+    <div class="list-item">No cachea el catálogo ni ninguna otra consulta: cada petición a <span class="mono">/productos</span>, <span class="mono">/reportes/…</span>, etc. va directo a Postgres.</div>
+    <div class="list-item">No se usa para limitar tasa de peticiones ni para bloqueos distribuidos: no hay throttling ni locks basados en Redis en el código.</div>
   </div>
 
   <div class="section">
     <h2>Limitaciones y restricciones</h2>
-    <div class="list-item"><strong>Capacidad en RAM:</strong> Todo el conjunto reside en memoria; si excede la RAM disponible, el servicio se degrada o falla.</div>
-    <div class="list-item"><strong>Volatilidad:</strong> Sin persistencia garantizada; ante una caída se pierde el estado en memoria (mitigable con snapshots o AOF).</div>
-    <div class="list-item"><strong>Transaccionalidad limitada:</strong> No ofrece garantías ACID completas ni rollback condicional como PostgreSQL.</div>
-    <div class="list-item"><strong>Retraso de replicación:</strong> Si una réplica no recibe el cambio antes de una caída del primario, puede perder datos.</div>
-    <div class="list-item"><strong>Expiración de claves:</strong> Omitir el TTL (EX) deja las claves de forma indefinida; exige disciplina en el código.</div>
+    <div class="list-item"><strong>Volatilidad:</strong> si Redis se reinicia sin persistencia configurada, se pierden las tareas en cola o su resultado — como hoy solo se usa para Celery, el impacto es que una tarea encolada (p. ej. una emisión pendiente) podría perderse, no datos de negocio (esos están en Postgres).</div>
+    <div class="list-item"><strong>Sin alta disponibilidad:</strong> es una única instancia (<span class="mono">redis:7-alpine</span> en Docker), sin Sentinel ni Cluster.</div>
   </div>
 
   <div class="section">
     <h2>Propósito del componente</h2>
-    <p>Almacenar estado temporal con latencia mínima, aliviar la carga de PostgreSQL (las consultas en memoria son órdenes de magnitud más rápidas), absorber picos de tráfico sin degradar el servicio y habilitar el procesamiento asíncrono mediante colas de tareas.</p>
+    <p>Desacoplar lo lento (emitir un comprobante, convertir una imagen) de la respuesta inmediata al usuario: el backend encola el trabajo aquí y responde al instante; Celery lo procesa aparte.</p>
   </div>
 
   <div class="section">
-    <h2>Stack tecnológico recomendado</h2>
+    <h2>Stack</h2>
     <div class="stack">
-      <span class="badge">Redis 7+</span>
-      <span class="badge">django-redis</span>
-      <span class="badge">Celery</span>
-      <span class="badge">RQ (alternativa)</span>
-      <span class="badge">Redis Sentinel (HA)</span>
-      <span class="badge">Redis Cluster (scaling)</span>
+      <span class="badge">Redis 7 (alpine)</span>
+      <span class="badge">Celery 5.5</span>
     </div>
-    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> Redis es el estándar de facto para caché. django-redis se integra de forma transparente con Django. Celery es el estándar para tareas asíncronas. Redis Sentinel aporta alta disponibilidad y Redis Cluster habilita el escalado horizontal cuando el volumen supera la RAM de un nodo.</p>
-  </div>
-
-  <div class="section">
-    <h2>Información técnica adicional</h2>
-    <div class="list-item"><strong>Persistencia:</strong> AOF (append-only file) registra cada operación; RDB (snapshots) vuelca el estado completo. Configurable según la tolerancia a pérdida.</div>
-    <div class="list-item"><strong>Replicación:</strong> Esquema primario-réplica; las lecturas se reparten entre réplicas y las escrituras van al primario y se propagan.</div>
-    <div class="list-item"><strong>Políticas de evicción:</strong> Al llenarse la memoria, Redis descarta claves según la política configurada (LRU, LFU, aleatoria).</div>
-    <div class="list-item"><strong>Pipelining:</strong> Agrupa múltiples comandos en una sola petición, reduciendo la latencia de red de forma notable.</div>
-    <div class="list-item"><strong>Pub/Sub:</strong> Suscripción a canales para notificaciones en tiempo real; adecuado para WebSockets.</div>
-  </div>
-
-  <div class="section">
-    <h2>Métricas importantes</h2>
-    <div class="list-item"><strong>Uso de memoria:</strong> Alertar al superar el 80% de la capacidad; acción: ampliar RAM o ajustar la evicción.</div>
-    <div class="list-item"><strong>Evicciones:</strong> Un valor mayor que cero indica memoria saturada forzando descartes; acción: ampliar RAM.</div>
-    <div class="list-item"><strong>Latencia:</strong> P99 < 1 ms. Por encima de 10 ms, indica sobrecarga.</div>
-    <div class="list-item"><strong>Retraso de replicación:</strong> El offset debe permanecer sincronizado; un retraso sostenido pone datos en riesgo.</div>
-    <div class="list-item"><strong>Tasa de aciertos:</strong> Porcentaje de peticiones servidas desde Redis; objetivo superior al 80%.</div>
+    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> es la combinación estándar y más simple para colas de tareas en Django. Si en el futuro se necesitara caché de catálogo, sesiones en Redis, o limitación de tasa, este mismo servicio podría ampliar su uso — pero hoy no lo hace.</p>
   </div>
 
   <p class="foot">
-    Redis es determinante para el rendimiento, pero no es un almacén permanente: la información crítica debe residir siempre en PostgreSQL. Tratado como caché, su pérdida supone un inconveniente temporal, no una contingencia grave.
+    Redis no es un almacén permanente: la información de negocio vive siempre en <a href="base-principal.html">PostgreSQL</a>. Qué tareas concretas pasan por aquí está detallado en <a href="tareas-automaticas.html">Tareas automáticas</a>.
   </p>
 </div></body>
 </html>

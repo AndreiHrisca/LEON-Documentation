@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introducción · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --rose:#C0436B;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --rose-tint:#FBE7EE;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+    padding:48px 24px 36px;
+  }
+  .wrap{max-width:820px;margin:0 auto}
+
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin:0 0 14px}
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 32px}
+
+  .chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--teal-tint);color:var(--teal)}
+  .chip svg{width:26px;height:26px}
+
+  .section{margin:32px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+  .section p{font-size:15px;line-height:1.7;color:var(--muted);margin:0 0 10px}
+  .section p:last-child{margin-bottom:0}
+
+  .list-item{margin:12px 0;padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.6}
+  .list-item:last-child{border-bottom:none}
+  .list-item strong{color:var(--ink)}
+
+  .roles{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:6px}
+  .role{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#FAFBFC}
+  .role .nm{font-size:13.5px;font-weight:700;margin-bottom:4px}
+  .role .d{font-size:12.5px;color:var(--muted);line-height:1.4}
+  .role.r-admin .nm{color:var(--rose)} .role.r-abast .nm{color:var(--amber)}
+  .role.r-ventas .nm{color:var(--blue)} .role.r-mkt .nm{color:var(--indigo)} .role.r-sis .nm{color:var(--teal)}
+
+  .kbd{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;color:var(--ink);
+    background:#F4F6F9;border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+  .foot a{color:var(--teal);font-weight:600;text-decoration:none}
+
+  @media (max-width:720px){ body{padding:32px 14px} h1{font-size:28px} .section{padding:16px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+
+  <p class="eyebrow">Introducción general</p>
+  <h1>La intranet, en un vistazo</h1>
+  <p class="sub">Para cualquier persona del equipo, sin importar el área. Qué es, cómo entrar y qué vas a encontrarte la primera vez.</p>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.6"/><rect x="14" y="3" width="7" height="5" rx="1.6"/><rect x="14" y="12" width="7" height="9" rx="1.6"/><rect x="3" y="16" width="7" height="5" rx="1.6"/></svg></div>
+
+  <div class="section">
+    <h2>¿Qué es la intranet?</h2>
+    <p>Es el panel de gestión interno de Importadora León (back-office): la aplicación donde el equipo administra el catálogo, el inventario, las compras a proveedores, las ventas, la facturación y el propio equipo. No es la tienda pública — esa es un sitio aparte, de solo consulta, donde un cliente ve el catálogo y contacta por WhatsApp para comprar.</p>
+    <p>Vive en <span class="kbd">intranet.importacionleon.com</span>. Solo entra el equipo, con una cuenta propia.</p>
+  </div>
+
+  <div class="section">
+    <h2>Cómo se accede</h2>
+    <div class="list-item"><strong>Con cuenta ya creada:</strong> entras con tu correo y contraseña en la pantalla de login.</div>
+    <div class="list-item"><strong>Si eres nuevo:</strong> puedes autoregistrarte eligiendo tu área de trabajo, pero tu cuenta queda <strong>bloqueada</strong> hasta que un administrador la apruebe desde Equipo. No podrás entrar antes de esa aprobación.</div>
+    <div class="list-item"><strong>Si un administrador te da de alta directamente</strong> (sin que tú te registres), te entrega una contraseña temporal que se muestra una sola vez — pídesela y cámbiala si es necesario.</div>
+  </div>
+
+  <div class="section">
+    <h2>Los roles</h2>
+    <p style="margin-bottom:14px">Lo que puedes hacer dentro de la intranet depende de tu rol. Cada persona tiene exactamente uno:</p>
+    <div class="roles">
+      <div class="role r-admin"><div class="nm">Admin</div><div class="d">Acceso total: puede escribir en todo el sistema, incluido Equipo.</div></div>
+      <div class="role r-abast"><div class="nm">Abastecimiento</div><div class="d">Catálogo, inventario, proveedores, compras, fotos de producto.</div></div>
+      <div class="role r-ventas"><div class="nm">Ventas</div><div class="d">Clientes, pedidos, envíos, comprobantes, pagos.</div></div>
+      <div class="role r-mkt"><div class="nm">Marketing</div><div class="d">Solo fotos de producto.</div></div>
+      <div class="role r-sis"><div class="nm">Sistemas</div><div class="d">Sin permisos de negocio propios; puede ver el registro de actividad.</div></div>
+    </div>
+    <p style="margin-top:14px">Todos los roles pueden <strong>consultar</strong> el catálogo, ver Reportes y navegar el resto de secciones — la restricción está en quién puede <strong>crear o editar</strong> cada tipo de dato. El detalle completo está en <a href="permisos-roles.html" style="color:var(--teal);font-weight:600;text-decoration:none">Roles y permisos</a>.</p>
+  </div>
+
+  <div class="section">
+    <h2>Tour rápido de la interfaz</h2>
+    <div class="list-item"><strong>Barra lateral (izquierda):</strong> el menú de secciones — Resumen, Catálogo, Inventario, Compras, Ventas, Facturación, Reportes, Equipo y, si tu rol lo permite, Actividad.</div>
+    <div class="list-item"><strong>Barra superior:</strong> búsqueda global (productos, clientes, pedidos, proveedores), el botón de tema claro/oscuro, y la campana de alertas (stock bajo mínimo, pedidos y comprobantes pendientes).</div>
+    <div class="list-item"><strong>Tu usuario</strong> aparece abajo de la barra lateral, con tu nombre y rol, y el botón para cerrar sesión.</div>
+  </div>
+
+  <div class="section">
+    <h2>Tema claro / oscuro</h2>
+    <p>El botón con el icono de sol/luna, junto a la campana, cambia entre tema claro y oscuro al instante. Tu preferencia se guarda en tu cuenta (no solo en tu navegador), así que te sigue si entras desde otro dispositivo. Esta misma documentación comparte ese tema y una barra de navegación superior con buscador, así que también puedes leerla en oscuro.</p>
+  </div>
+
+  <div class="section">
+    <h2>Comentar la documentación</h2>
+    <p>Cada sección de estos documentos admite comentarios del equipo: si algo no coincide con la realidad, falta o se puede explicar mejor, puedes dejar una nota anclada a esa sección concreta y reaccionar (👍 / 👎) a la de otros. Los comentarios se gestionan desde la Intranet (sección <strong>Comentarios</strong>, para administración), donde se marcan como abierto, en revisión, resuelto o descartado.</p>
+  </div>
+
+  <p class="foot">
+    Si es tu primera vez en un área en concreto, ve directo a la guía de tu departamento: <a href="funcional-ventas.html">Ventas</a>, <a href="funcional-compras.html">Compras</a>, <a href="funcional-almacen.html">Almacén</a> o <a href="funcional-administracion.html">Administración</a>. Si algún término no te suena, revisa el <a href="glosario.html">glosario</a>.
+  </p>
+</div>
+</body>
+</html>

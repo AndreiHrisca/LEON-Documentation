@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flujo · Reclamación desde la web · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#F3F5F8; --bg2:#E9EDF3;
+    --surface:#FFFFFF;
+    --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --rose:#C0436B; --slate:#51606F;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --rose-tint:#FBE7EE; --slate-tint:#EDF0F3;
+    --accent:#C0436B; --accent-tint:#FBE7EE;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:var(--sans);color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2));min-height:100vh;-webkit-font-smoothing:antialiased;padding:48px 24px 36px}
+  .wrap{max-width:860px;margin:0 auto}
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+  .back:hover{gap:10px}
+  .back svg{width:16px;height:16px}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+  h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .tag{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:6px;padding:4px 10px;white-space:nowrap}
+  .tag.obj{background:var(--indigo-tint);color:var(--indigo)}
+  .sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 24px}
+  .chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--accent-tint);color:var(--accent)}
+  .chip svg{width:26px;height:26px}
+  .objbanner{display:flex;gap:12px;align-items:flex-start;margin:0 0 20px;padding:16px 18px;border-radius:14px;background:var(--indigo-tint);border:1px solid #D6D8F5;font-size:13.5px;line-height:1.6;color:var(--ink)}
+  .objbanner svg{width:20px;height:20px;flex:none;margin-top:1px;color:var(--indigo)}
+  .objbanner strong{color:var(--indigo)}
+  .objbanner a{color:var(--indigo);font-weight:600;text-decoration:none}
+  .diagram{margin:22px 0;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 1px 2px rgba(24,34,46,.04),0 6px 18px rgba(24,34,46,.04);overflow-x:auto}
+  .diagram .mermaid{min-width:540px;display:flex;justify-content:center}
+  .diagram .mermaid svg{max-width:100%;height:auto}
+  .section{margin:32px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+  .section h2{font-size:18px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+  .section p{font-size:15px;line-height:1.7;color:var(--muted);margin:0 0 10px}
+  .list-item{margin:12px 0;padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.6;color:var(--muted)}
+  .list-item:last-child{border-bottom:none}
+  .list-item strong{color:var(--ink)}
+  .steps{counter-reset:step;margin:6px 0}
+  .step{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .step:last-child{border-bottom:none}
+  .step .n{counter-increment:step;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+  .step .n::before{content:counter(step)}
+  .step .tx h3{font-size:14.5px;font-weight:600;margin:0 0 4px}
+  .step .tx p{font-size:13.5px;color:var(--muted);line-height:1.55;margin:0}
+  .rolegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0 4px}
+  .rolecol{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#FAFBFC}
+  .rolecol h3{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:0 0 10px;display:flex;align-items:center;gap:7px}
+  .rolecol.emp h3{color:var(--blue)} .rolecol.sys h3{color:var(--teal)}
+  .rolecol h3 .dot{width:9px;height:9px;border-radius:3px} .rolecol.emp .dot{background:var(--blue)} .rolecol.sys .dot{background:var(--teal)}
+  .rolecol ul{margin:0;padding:0;list-style:none}
+  .rolecol li{font-size:13px;color:var(--muted);line-height:1.5;padding:6px 0;border-bottom:1px solid var(--line)}
+  .rolecol li:last-child{border-bottom:none}
+  @media (max-width:640px){ .rolegrid{grid-template-columns:1fr} }
+  .case{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .case:last-child{border-bottom:none}
+  .case .ic{width:30px;height:30px;border-radius:8px;background:var(--amber-tint);color:var(--amber);display:flex;align-items:center;justify-content:center;flex:none}
+  .case .ic svg{width:17px;height:17px}
+  .case .tx{font-size:13.5px;line-height:1.6;color:var(--muted)}
+  .case .tx strong{color:var(--ink)}
+  .foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.7}
+  .foot a{color:var(--teal);font-weight:600;text-decoration:none}
+  @media (max-width:720px){ body{padding:32px 14px} h1{font-size:28px} .section{padding:16px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+
+  <p class="eyebrow">Flujos · Post-venta</p>
+  <h1>Reclamación desde la web <span class="tag obj">Objetivo · diseño</span></h1>
+  <p class="sub">El libro de reclamaciones en línea que exige Indecopi: el cliente registra un reclamo o una queja desde la web, recibe un acuse con código de seguimiento, y Administración responde dentro del plazo legal.</p>
+
+  <div class="objbanner">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 2"/></svg>
+    <span><strong>Este módulo todavía no existe.</strong> Hoy solo está el texto legal del <a href="legal-libro-reclamaciones.html">Libro de reclamaciones</a>, no una función que registre y gestione reclamos. Este es el flujo objetivo: qué haría el sistema si se implementara.</span>
+  </div>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 7v4M12 14h.01"/></svg></div>
+
+  <div class="diagram">
+    <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    actor C as Cliente
+    participant W as Web pública
+    participant S as Sistema
+    participant A as Administración
+    C->>W: Rellena el formulario&lt;br/&gt;reclamo o queja
+    W->>S: Envía los datos del reclamo
+    S->>S: Registra y asigna código
+    S-->>C: Acuse con código de seguimiento
+    S->>A: Notifica el nuevo reclamo
+    A->>S: Revisa y redacta la respuesta
+    S-->>C: Respuesta dentro del plazo legal
+    Note over S,A: Indecopi exige responder&lt;br/&gt;en un plazo máximo (15 días hábiles)
+    </pre>
+  </div>
+
+  <div class="section">
+    <h2>Reclamo y queja no son lo mismo</h2>
+    <div class="list-item"><strong>Reclamo:</strong> disconformidad con el producto o servicio (un pedido llegó dañado, no era lo pedido, etc.). Es lo que obliga a una respuesta formal.</div>
+    <div class="list-item"><strong>Queja:</strong> malestar con la atención, no con el producto en sí. Se registra igual, pero su tratamiento es distinto.</div>
+    <div class="list-item">El formulario debe pedir los datos mínimos del cliente y del pedido para poder responder — un reclamo sin forma de contacto no se puede atender.</div>
+  </div>
+
+  <div class="section">
+    <h2>Paso a paso (diseño)</h2>
+    <div class="steps">
+      <div class="step"><span class="n"></span><div class="tx"><h3>El cliente rellena el formulario</h3><p>Desde la web pública: sus datos, el pedido afectado, el tipo (reclamo o queja) y el detalle.</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>El sistema registra y da acuse</h3><p>Guarda el reclamo con un <strong>código de seguimiento</strong> y envía al cliente un acuse inmediato con ese código.</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>Administración es notificada</h3><p>El reclamo entra en una bandeja de gestión y arranca el reloj del plazo legal de respuesta.</p></div></div>
+      <div class="step"><span class="n"></span><div class="tx"><h3>Se responde dentro del plazo</h3><p>Administración revisa, resuelve y el sistema envía la respuesta al cliente antes de que venza el plazo (Indecopi: 15 días hábiles).</p></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Quién haría qué</h2>
+    <div class="rolegrid">
+      <div class="rolecol emp">
+        <h3><span class="dot"></span> Administración</h3>
+        <ul>
+          <li>Recibe la notificación del reclamo</li>
+          <li>Investiga con Ventas o Almacén si hace falta</li>
+          <li>Redacta y envía la respuesta</li>
+          <li>Vigila que no venza el plazo</li>
+        </ul>
+      </div>
+      <div class="rolecol sys">
+        <h3><span class="dot"></span> El sistema</h3>
+        <ul>
+          <li>Registra el reclamo y le asigna código</li>
+          <li>Manda el acuse inmediato al cliente</li>
+          <li>Notifica a Administración y controla el plazo</li>
+          <li>Entrega la respuesta y archiva el caso</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Casos límite</h2>
+    <div class="case"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div><div class="tx"><strong>Reclamo sin datos de contacto:</strong> el formulario debe exigir un medio para responder; sin él, no se puede cumplir el plazo ni cerrar el caso.</div></div>
+    <div class="case"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div><div class="tx"><strong>El plazo está por vencer:</strong> el sistema debería alertar a Administración antes del límite para no incumplir con Indecopi.</div></div>
+    <div class="case"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div><div class="tx"><strong>El reclamo deriva en devolución:</strong> si procede devolver el producto, enlazaría con la rama <em>Devolución</em> del <a href="flujo-ciclo-pedido.html" style="color:var(--amber);font-weight:600">ciclo del pedido</a> — también objetivo de diseño.</div></div>
+  </div>
+
+  <p class="foot">
+    Base legal en <a href="legal-libro-reclamaciones.html">Libro de reclamaciones</a>. El post-venta se conecta con el <a href="flujo-ciclo-pedido.html">ciclo de vida del pedido</a>.
+  </p>
+</div>
+
+<script src="vendor/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: false, theme: 'base',
+    themeVariables: { fontFamily: "'Inter',-apple-system,'Segoe UI',Roboto,sans-serif", fontSize: '13.5px', lineColor: '#8A97A8', primaryColor: '#E7F0FC', primaryBorderColor: '#2E73D9', primaryTextColor: '#18222E', secondaryColor: '#E1F2F0', tertiaryColor: '#FFFFFF', actorBkg: '#E7F0FC', actorBorder: '#2E73D9', actorTextColor: '#18222E', signalColor: '#647183', signalTextColor: '#18222E', noteBkgColor: '#F7EEE1', noteBorderColor: '#CF8138', noteTextColor: '#18222E' }
+  });
+  mermaid.run({ querySelector: '.diagram .mermaid' });
+</script>
+</body>
+</html>

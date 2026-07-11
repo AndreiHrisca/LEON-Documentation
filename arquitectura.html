@@ -133,8 +133,8 @@
       <a href="catalogo-publico.html" class="node c-indigo" id="web" style="animation-delay:.05s;text-decoration:none;color:inherit">
         <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.6 2.6 2.6 15.4 0 18"/><path d="M12 3c-2.6 2.6-2.6 15.4 0 18"/></svg></div>
         <h3>Catálogo público</h3>
-        <p>Donde los clientes consultan productos y compran.</p>
-        <span class="tag">Web pública clientes</span>
+        <p>Donde los clientes consultan productos y contactan por WhatsApp.</p>
+        <span class="tag">Web pública, solo lectura</span>
       </a>
       <a href="panel-gestion.html" class="node c-indigo" id="admin" style="animation-delay:.12s;text-decoration:none;color:inherit">
         <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.6"/><rect x="14" y="3" width="7" height="5" rx="1.6"/><rect x="14" y="12" width="7" height="9" rx="1.6"/><rect x="3" y="16" width="7" height="5" rx="1.6"/></svg></div>
@@ -160,7 +160,7 @@
       <a href="servicios-externos.html" class="node side c-amber" id="ext" style="animation-delay:.28s;text-decoration:none;color:inherit">
         <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M7.8 7.7 10.6 16M16.2 7.7 13.4 16M8.4 6h7.2"/></svg></div>
         <h3>Servicios externos</h3>
-        <p>SUNAT, pasarela de pagos y courier de envíos.</p>
+        <p>SUNAT (simulado hoy). Pagos y envíos son registro manual, sin API externa.</p>
         <span class="tag">Integraciones externas</span>
       </a>
     </div>
@@ -180,18 +180,24 @@
       </a>
       <a href="almacenamiento.html" class="node sm c-blue" id="storage" style="animation-delay:.52s;text-decoration:none;color:inherit">
         <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m20 16-5-5L6 20"/></svg></div>
-        <h3>Almacenamiento</h3>
-        <p>Imágenes de producto y documentos.</p>
-        <span class="tag">Archivos</span>
+        <h3>Fotos de producto</h3>
+        <p>Base separada (leon_fotos): imágenes y sus tamaños (WebP).</p>
+        <span class="tag">PostgreSQL · leon_fotos</span>
+      </a>
+      <a href="servicios-externos.html" class="node sm c-blue" id="facturas" style="animation-delay:.58s;text-decoration:none;color:inherit">
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg></div>
+        <h3>Documentos SUNAT</h3>
+        <p>Base separada (leon_facturas): XML/CDR de cada comprobante.</p>
+        <span class="tag">PostgreSQL · leon_facturas</span>
       </a>
     </div>
 
     <div class="tier workers">
-      <a href="tareas-automaticas.html" class="node sm c-blue" id="workers" style="animation-delay:.58s;text-decoration:none;color:inherit">
+      <a href="tareas-automaticas.html" class="node sm c-blue" id="workers" style="animation-delay:.64s;text-decoration:none;color:inherit">
         <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.4-5.9"/><path d="M20.5 3.5v4h-4"/></svg></div>
         <h3>Tareas automáticas</h3>
-        <p>Emisión de comprobantes y avisos en segundo plano.</p>
-        <span class="tag">Celery</span>
+        <p>Emisión de comprobantes (simulada) y conversión de fotos a WebP. Sin tareas periódicas.</p>
+        <span class="tag">Celery, bajo demanda</span>
       </a>
     </div>
   </div>
@@ -215,6 +221,7 @@
     {from:'api',to:'db',tier:'data',both:true},
     {from:'api',to:'redis',tier:'data',both:true},
     {from:'api',to:'storage',tier:'data',both:true},
+    {from:'api',to:'facturas',tier:'data',both:true},
     {from:'api',to:'ext',tier:'ext',both:false},
     {from:'redis',to:'workers',tier:'data',both:false}
   ];

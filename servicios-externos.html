@@ -89,77 +89,39 @@
 
   <p class="eyebrow">Servicios externos</p>
   <h1>Conexiones con terceros</h1>
-  <p class="sub">Integraciones con servicios externos para las funciones que no se resuelven internamente: facturación electrónica legal, procesamiento de pagos y logística de envíos.</p>
+  <p class="sub">De las tres integraciones que necesitaría un negocio así, hoy hay <strong>una simulada</strong> (SUNAT) y <strong>ninguna real</strong>. Pagos y envíos se registran a mano en la intranet, sin llamar a ninguna API externa.</p>
 
   <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M7.8 7.7 10.6 16M16.2 7.7 13.4 16M8.4 6h7.2"/></svg></div>
 
   <div class="section">
-    <h2>¿Qué es?</h2>
-    <p>APIs de terceros que el backend consume. No son propiedad de la empresa, pero resultan esenciales para cumplir obligaciones legales y operativas. Evolucionan de forma independiente y requieren credenciales (claves de API, certificados digitales).</p>
+    <h2>SUNAT (comprobantes electrónicos) — <span style="color:var(--amber)">simulado</span></h2>
+    <p>Al registrar un comprobante, el backend encola la tarea <span class="mono" style="font-family:var(--mono);color:var(--blue)">emitir_comprobante_sunat</span> (Celery). Esa tarea construye un JSON tipo UBL con el detalle del pedido, pero <strong>no llama a ningún servicio de SUNAT real</strong>: genera un XML/CDR de relleno, marca los eventos generado→enviado→aceptado en secuencia, y da por buena la emisión siempre. Es un <em>stub</em> declarado explícitamente así en el propio código (comentario <span class="mono" style="font-family:var(--mono);color:var(--blue)">TODO: enviar a SUNAT y recibir el CDR — cliente real, p. ej. greenter/SUNAT SOAP</span>). Hoy ninguna boleta o factura emitida desde este sistema es legalmente válida.</p>
   </div>
 
   <div class="section">
-    <h2>Servicios incluidos</h2>
-    <div class="list-item"><strong>SUNAT (facturación):</strong> API de comprobantes electrónicos, obligatoria en Perú para toda venta. Devuelve el XML y el CDR de respuesta.</div>
-    <div class="list-item"><strong>Pasarela de pagos:</strong> Procesa tarjetas de crédito y débito y devuelve la confirmación o el rechazo, asumiendo el cumplimiento PCI.</div>
-    <div class="list-item"><strong>Courier (Olva):</strong> Genera guías de envío, rastrea paquetes y estima costos; sincroniza el estado con la base de datos.</div>
-    <div class="list-item"><strong>Correo transaccional (SendGrid o AWS SES):</strong> Envía confirmaciones de compra, comprobantes y avisos de envío.</div>
+    <h2>Pagos — sin pasarela</h2>
+    <p>No hay ninguna pasarela de pago conectada (ni tarjetas, ni Yape/Plin por API). El modelo <span class="mono" style="font-family:var(--mono);color:var(--blue)">Pago</span> registra método, monto y estado, pero es <strong>registro manual</strong>: alguien del equipo anota que un cliente pagó (con su comprobante/voucher como referencia) y, aparte, confirma el pago desde Facturación. No hay token de tarjeta, no hay webhook de confirmación, no hay integración PCI que gestionar porque no se procesa ninguna tarjeta.</p>
   </div>
 
   <div class="section">
-    <h2>Funciones principales</h2>
-    <div class="list-item"><strong>SUNAT:</strong> Se envía el detalle del pedido y se recibe el comprobante validado con su serie y correlativo.</div>
-    <div class="list-item"><strong>Pasarela de pagos:</strong> Se envía el monto y el token de la tarjeta y se recibe el resultado y el identificador de transacción para auditoría.</div>
-    <div class="list-item"><strong>Courier:</strong> Se registra el envío con la dirección y se recibe el número de seguimiento; los webhooks notifican los cambios de estado.</div>
-    <div class="list-item"><strong>Correo:</strong> Se envía la plantilla y el destinatario y se recibe el identificador del mensaje; puede fallar por rebote o filtrado.</div>
+    <h2>Envíos — sin courier conectado</h2>
+    <p><span class="mono" style="font-family:var(--mono);color:var(--blue)">envio_cliente.courier</span> y <span class="mono" style="font-family:var(--mono);color:var(--blue)">tracking</span> son texto libre: quien despacha escribe "Olva Courier" y el código a mano. No hay API de ninguna empresa de courier, no se generan guías automáticamente, no hay webhooks de cambio de estado.</p>
   </div>
 
   <div class="section">
-    <h2>Limitaciones y restricciones</h2>
-    <div class="list-item"><strong>Disponibilidad:</strong> Si SUNAT cae, no es posible facturar; si la pasarela cae, no es posible cobrar. Son puntos críticos de fallo.</div>
-    <div class="list-item"><strong>Costos:</strong> Cada transacción de pago conlleva una comisión; SUNAT y el courier facturan por uso.</div>
-    <div class="list-item"><strong>Límites de tasa:</strong> Cada servicio impone cuotas de peticiones por intervalo que conviene respetar.</div>
-    <div class="list-item"><strong>Cambios de API:</strong> Una modificación del proveedor puede romper la integración y exige una actualización ágil.</div>
-    <div class="list-item"><strong>Datos sensibles:</strong> No se almacenan los datos completos de la tarjeta (solo el token); su custodia se delega en el proveedor.</div>
+    <h2>Correo — solo un caso, vía SMTP simple</h2>
+    <p>El único correo que el sistema envía es el aviso de "tu cuenta ha sido aprobada" (equipo), usando <span class="mono" style="font-family:var(--mono);color:var(--blue)">send_mail</span> de Django contra el SMTP configurado por variables de entorno (con fallback a la consola si no hay SMTP). No hay confirmaciones de compra, avisos de envío, ni SendGrid/SES — ni falta un servicio dedicado para ese único caso.</p>
   </div>
 
   <div class="section">
-    <h2>Propósito del componente</h2>
-    <p>Externalizar funciones complejas y reguladas. Integrar una pasarela de pagos resulta más eficiente que construir una propia, y el uso de SUNAT es obligatorio para operar legalmente. En conjunto, reducen la carga operativa de la empresa.</p>
-  </div>
-
-  <div class="section">
-    <h2>Stack tecnológico recomendado</h2>
-    <div class="stack">
-      <span class="badge">Pasarela de pagos</span>
-      <span class="badge">SUNAT SOL</span>
-      <span class="badge">Olva API</span>
-      <span class="badge">SendGrid API</span>
-      <span class="badge">Webhooks</span>
-      <span class="badge">Reintentos</span>
-    </div>
-    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> Estos servicios no se construyen, se consumen; el valor está en integrarlos correctamente: gestión de fallos, reintentos y webhooks para los estados asíncronos.</p>
-  </div>
-
-  <div class="section">
-    <h2>Información técnica adicional</h2>
-    <div class="list-item"><strong>Autenticación:</strong> Cada servicio emplea sus propias claves de API, almacenadas en variables de entorno y nunca en el código.</div>
-    <div class="list-item"><strong>Idempotencia:</strong> Las llamadas deben ser idempotentes para que un reintento no duplique la acción (por ejemplo, no emitir el comprobante dos veces).</div>
-    <div class="list-item"><strong>Webhooks:</strong> SUNAT y el courier notifican eventos; deben implementarse receptores que validen la autenticidad de cada notificación.</div>
-    <div class="list-item"><strong>Gestión de errores:</strong> Cada servicio falla de forma distinta (códigos específicos, rechazos por formato); requiere un tratamiento granular.</div>
-    <div class="list-item"><strong>Plan de contingencia:</strong> Ante la caída de la pasarela, ofrecer transferencia bancaria; ante la del courier, gestión manual.</div>
-  </div>
-
-  <div class="section">
-    <h2>Métricas importantes</h2>
-    <div class="list-item"><strong>Tasa de éxito:</strong> Porcentaje de pagos aprobados; objetivo superior al 98%; por debajo del 95% indica un problema grave.</div>
-    <div class="list-item"><strong>Latencia de terceros:</strong> Tiempo de respuesta; por encima de 5 s, mostrar "procesando" y esperar el callback.</div>
-    <div class="list-item"><strong>Disponibilidad:</strong> Monitorizar el tiempo operativo de cada servicio en un panel visible para el equipo.</div>
-    <div class="list-item"><strong>Costos:</strong> Consolidados mensualmente; la comisión de pagos debería mantenerse por debajo del 3% de los ingresos.</div>
+    <h2>Qué implicaría conectar cada una de verdad</h2>
+    <div class="list-item"><strong>SUNAT real:</strong> un cliente (p. ej. greenter, o el SDK de un OSE/PSE) que firme el XML con certificado digital y llame al servicio SOAP/REST de SUNAT, sustituyendo el contenido de <span class="mono" style="font-family:var(--mono);color:var(--blue)">emitir_comprobante_sunat</span>.</div>
+    <div class="list-item"><strong>Pasarela de pagos:</strong> requiere cumplimiento PCI (o delegarlo en el proveedor vía tokenización), credenciales de comercio, y un webhook que reciba la confirmación asíncrona.</div>
+    <div class="list-item"><strong>Courier:</strong> credenciales de API del courier elegido, generación de guía al confirmar el envío, y un webhook o polling para actualizar <span class="mono" style="font-family:var(--mono);color:var(--blue)">estado</span> automáticamente.</div>
   </div>
 
   <p class="foot">
-    Los servicios externos son socios críticos: no se controla su disponibilidad, pero se depende de ellos. Conviene prever planes de contingencia para cuando fallen y monitorizarlos con el mismo rigor que los componentes propios.
+    Esta es la brecha más importante entre "lo que parece un ERP completo" y "lo que hay construido": el flujo de venta funciona de punta a punta dentro del sistema, pero la parte que toca al mundo exterior (facturar de verdad, cobrar de verdad, despachar con seguimiento real) todavía es manual o simulada. Detalle de la tarea SUNAT en <a href="tareas-automaticas.html">Tareas automáticas</a>.
   </p>
 </div></body>
 </html>

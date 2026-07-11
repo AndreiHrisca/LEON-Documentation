@@ -1,0 +1,136 @@
+/* ════════════════════════════════════════════════════════════════════════
+   guias.css — Estilos compartidos de la sección "Guías" (cómo se hace en la
+   intranet, paso a paso). Una sola fuente para las 3 guías + la plantilla,
+   así no se duplica ni se desincroniza el diseño entre páginas.
+
+   · Cada guía enlaza este archivo con <link rel="stylesheet" href="assets/guias.css">
+     y solo define su color de acento en un <style> inline:
+        :root{ --accent:var(--blue); --accent-tint:var(--blue-tint) }
+   · Los tokens CLAROS viven aquí, en :root. El tema OSCURO lo aplica
+     docs-ui.css (inyectado por nginx) sobrescribiendo esos tokens con mayor
+     especificidad (:root[data-theme="oscuro"]), igual que en el resto de la
+     documentación. Por eso aquí NO se hardcodean colores de fondo claros:
+     todo sale de variables, para que el modo oscuro funcione solo.
+   ════════════════════════════════════════════════════════════════════════ */
+
+:root{
+  --bg1:#F3F5F8; --bg2:#E9EDF3;
+  --surface:#FFFFFF;
+  --ink:#18222E; --muted:#647183; --line:#E4E9F0;
+  --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --rose:#C0436B; --slate:#51606F;
+  --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --rose-tint:#FBE7EE; --slate-tint:#EDF0F3;
+  --accent:var(--blue); --accent-tint:var(--blue-tint);
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:var(--sans);color:var(--ink);
+  background:linear-gradient(160deg,var(--bg1),var(--bg2));
+  min-height:100vh;-webkit-font-smoothing:antialiased;
+  padding:48px 24px 36px;
+}
+.wrap{max-width:820px;margin:0 auto}
+
+/* ── Cabecera ──────────────────────────────────────────────────────────── */
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--teal);text-decoration:none;margin-bottom:24px;transition:gap .2s ease}
+.back:hover{gap:10px}
+.back svg{width:16px;height:16px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+h1{font-size:34px;font-weight:700;letter-spacing:-.02em;margin:0 0 12px;line-height:1.12}
+.sub{font-size:16px;color:var(--muted);max-width:70ch;line-height:1.6;margin:0 0 24px}
+.chip{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--accent-tint);color:var(--accent)}
+.chip svg{width:26px;height:26px}
+
+/* ── "¿Quieres entender por qué funciona así?" (enlace al flujo) ────────── */
+.porque{display:flex;gap:12px;align-items:center;margin:0 0 26px;padding:14px 16px;border-radius:12px;
+  background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);font-size:13.5px;line-height:1.55;color:var(--muted)}
+.porque svg{width:18px;height:18px;flex:none;color:var(--accent)}
+.porque a{font-weight:600;text-decoration:none;color:var(--accent)}
+.porque a:hover{text-decoration:underline}
+
+/* ── Quién / Cuándo ────────────────────────────────────────────────────── */
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 8px}
+.meta .m{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface)}
+.meta .m .k{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+.meta .m .v{font-size:14px;line-height:1.5;color:var(--ink)}
+@media (max-width:560px){ .meta{grid-template-columns:1fr} }
+
+/* ── Bloque de sección genérico ────────────────────────────────────────── */
+.section{margin:26px 0;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+.section h2{font-size:18px;font-weight:600;margin:0 0 6px;color:var(--ink);display:flex;align-items:center;gap:9px}
+.section h2 .hnum{width:24px;height:24px;border-radius:7px;background:var(--accent-tint);color:var(--accent);font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.section > p{font-size:14.5px;line-height:1.7;color:var(--muted);margin:8px 0 0}
+.section a{color:var(--accent);font-weight:500;text-decoration:none}
+.section a:hover{text-decoration:underline}
+
+/* ── "Antes de empezar" (requisitos) ───────────────────────────────────── */
+.reqs{list-style:none;margin:14px 0 0;padding:0}
+.reqs li{position:relative;padding:9px 0 9px 30px;font-size:14px;line-height:1.55;color:var(--muted);border-bottom:1px solid var(--line)}
+.reqs li:last-child{border-bottom:none}
+.reqs li::before{content:"";position:absolute;left:4px;top:14px;width:14px;height:14px;border-radius:5px;
+  background:var(--accent-tint);border:1.5px solid var(--accent)}
+.reqs li strong{color:var(--ink);font-weight:600}
+
+/* ── Pasos numerados ───────────────────────────────────────────────────── */
+.steps{counter-reset:step;margin:8px 0 0}
+.step{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+.step:last-child{border-bottom:none}
+.step .n{counter-increment:step;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.step .n::before{content:counter(step)}
+.step .tx{min-width:0}
+.step .tx h3{font-size:15px;font-weight:600;margin:0 0 4px;color:var(--ink)}
+.step .tx p{font-size:13.5px;color:var(--muted);line-height:1.6;margin:0 0 6px}
+.step .tx p:last-child{margin-bottom:0}
+.step .tx strong{color:var(--ink);font-weight:600}
+.step .tx .lit{font-weight:600;color:var(--accent)}          /* nombre literal de un botón/campo */
+.pill-mono{font-family:var(--mono);font-size:.86em;background:var(--slate-tint);color:var(--ink);padding:1px 6px;border-radius:5px;white-space:nowrap}
+
+/* ── Placeholder de captura (para completar a mano) ─────────────────────── */
+.captura{margin:14px 0 4px;border:1.5px dashed var(--line);border-radius:12px;background:var(--bg2);overflow:hidden}
+.captura[data-pendiente="true"] .ph{display:flex;flex-direction:column;align-items:center;gap:8px;padding:24px 18px;text-align:center;color:var(--muted)}
+.captura .ph svg{width:26px;height:26px;opacity:.7}
+.captura .ph .lab{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.captura figcaption{font-size:12.5px;line-height:1.5;color:var(--muted);padding:12px 16px;border-top:1px dashed var(--line);background:var(--surface)}
+.captura figcaption strong{color:var(--ink)}
+
+/* ── "Cómo saber que salió bien" ───────────────────────────────────────── */
+.exito{display:flex;gap:12px;align-items:flex-start;margin:8px 0 0;padding:16px 18px;border-radius:12px;
+  background:var(--teal-tint);border:1px solid var(--teal);color:var(--ink);font-size:14px;line-height:1.6}
+.exito svg{width:19px;height:19px;flex:none;margin-top:1px;color:var(--teal)}
+.exito ul{margin:8px 0 0;padding-left:18px}
+.exito li{margin:4px 0}
+.exito strong{font-weight:600}
+
+/* ── "Si te sale mal" (lo más importante) ──────────────────────────────── */
+.section.malo{border-color:var(--amber);border-top:3px solid var(--amber)}
+.fix{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+.fix:last-child{border-bottom:none}
+.fix .ic{width:32px;height:32px;border-radius:9px;background:var(--amber-tint);color:var(--amber);display:flex;align-items:center;justify-content:center;flex:none}
+.fix .ic svg{width:18px;height:18px}
+.fix .tx{min-width:0}
+.fix .tx h3{font-size:14.5px;font-weight:600;margin:0 0 6px;color:var(--ink)}
+.fix .tx .causa,.fix .tx .salida{font-size:13.5px;line-height:1.6;color:var(--muted);margin:0}
+.fix .tx .salida{margin-top:5px}
+.fix .tx .lbl{font-weight:700;color:var(--ink)}
+.fix .tx strong{color:var(--ink);font-weight:600}
+
+/* ── Avisos en línea ───────────────────────────────────────────────────── */
+.callout{display:flex;gap:12px;align-items:flex-start;margin:14px 0 0;padding:14px 16px;border-radius:12px;font-size:13.5px;line-height:1.6;color:var(--ink)}
+.callout svg{width:17px;height:17px;flex:none;margin-top:1px}
+.callout a{font-weight:600;text-decoration:none}
+.callout.info{background:var(--blue-tint);border:1px solid var(--blue)}
+.callout.info svg,.callout.info a{color:var(--blue)}
+.callout.aviso{background:var(--amber-tint);border:1px solid var(--amber)}
+.callout.aviso svg,.callout.aviso a{color:var(--amber)}
+.callout.ojo{background:var(--rose-tint);border:1px solid var(--rose)}
+.callout.ojo svg,.callout.ojo a{color:var(--rose)}
+
+/* ── Pie ───────────────────────────────────────────────────────────────── */
+.foot{font-size:13px;color:var(--muted);margin-top:40px;padding-top:24px;border-top:1px solid var(--line);line-height:1.8}
+.foot a{color:var(--teal);font-weight:600;text-decoration:none}
+.foot a:hover{text-decoration:underline}
+
+@media (max-width:720px){ body{padding:32px 14px} h1{font-size:27px} .section{padding:18px} }

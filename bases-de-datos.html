@@ -12,8 +12,8 @@
     --bg1:#F3F5F8; --bg2:#E9EDF3;
     --surface:#FFFFFF;
     --ink:#18222E; --muted:#647183; --line:#E4E9F0;
-    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138;
-    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1;
+    --indigo:#5B63E6; --teal:#0E9488; --blue:#2E73D9; --amber:#CF8138; --slate:#51606F;
+    --indigo-tint:#ECEDFB; --teal-tint:#E1F2F0; --blue-tint:#E7F0FC; --amber-tint:#F7EEE1; --slate-tint:#EDF0F3;
     --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
     --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
   }
@@ -133,7 +133,12 @@
     <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
     Modelo vigente y canónico. Cualquier otra página que muestre tablas se subordina a esta.
   </p>
-  <p class="sub">Cómo se traduce la operación —importar, almacenar, vender y facturar— a tablas. El producto es el concepto comercial; la <strong>variante</strong> (con su código SKU) es lo que de verdad se compra, se vende y se cuenta en el almacén. El stock no se escribe a mano: se calcula sumando los movimientos.</p>
+  <p class="sub">Cómo se traduce la operación —importar, almacenar, vender y facturar— a tablas. El producto es el concepto comercial; la <strong>variante</strong> (con su código SKU) es lo que de verdad se compra, se vende y se cuenta en el almacén. El stock no se escribe a mano: se calcula sumando los movimientos (detalle en <a href="stock-derivado.html" style="color:var(--teal);font-weight:600">Cómo se deriva el stock</a>).</p>
+
+  <div style="display:flex;gap:12px;align-items:flex-start;margin:22px 0 8px;padding:14px 16px;background:var(--blue-tint);border:1px solid #C9DCF5;border-radius:12px;font-size:14px;line-height:1.6;color:var(--ink)">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+    <span><strong>Son 3 bases de datos Postgres separadas</strong>, no una: <span class="ref">leon_principal</span> (todo lo de este documento salvo lo indicado), <span class="ref">leon_fotos</span> (imágenes de producto) y <span class="ref">leon_facturas</span> (documento SUNAT firmado). No hay llaves foráneas entre ellas — el vínculo es lógico, por <span class="ref">variante_id</span>/<span class="ref">sku</span> o <span class="ref">comprobante_id</span>, resuelto en el código, no en la base.</span>
+  </div>
 
   <div class="map">
     <svg viewBox="0 0 1020 300" xmlns="http://www.w3.org/2000/svg">
@@ -234,12 +239,26 @@
     </div>
 
     <div class="ent" style="--c:var(--indigo)">
-      <div class="ent-h"><span class="name">imagen_producto</span><span class="why">Las fotos. El archivo en sí vive en el almacenamiento de archivos.</span></div>
+      <div class="ent-h"><span class="name">imagen_producto</span><span class="why">Las fotos de una variante. Vive en <span class="ref">leon_fotos</span> (otra base): sin FK real a <span class="ref">variante</span>, el vínculo es por <span class="ref">variante_id</span>/<span class="ref">sku</span>.</span></div>
       <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
         <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">30</span></td><td class="desc">Número interno de la imagen.</td></tr>
-        <tr><td class="campo"><span class="f">variante_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">12</span></td><td class="desc">De qué versión del producto es la foto. Apunta a <span class="ref">variante</span>.</td></tr>
-        <tr><td class="campo"><span class="f">url</span></td><td class="ej"><span class="v">/fotos/aud-neg.jpg</span></td><td class="desc">Dónde está guardada la foto.</td></tr>
-        <tr><td class="campo"><span class="f">orden</span></td><td class="ej"><span class="v dim">1</span></td><td class="desc">En qué posición aparece. La número 1 es la foto principal.</td></tr>
+        <tr><td class="campo"><span class="f">variante_id</span></td><td class="ej"><span class="v dim">12</span></td><td class="desc">De qué versión del producto es la foto. Referencia lógica a <span class="ref">variante</span> (bases distintas, sin FK).</td></tr>
+        <tr><td class="campo"><span class="f">sku</span></td><td class="ej"><span class="v">AUD-NEG-001</span></td><td class="desc">Copia del SKU, para no depender de un join entre bases al mostrarla.</td></tr>
+        <tr><td class="campo"><span class="f">orden</span></td><td class="ej"><span class="v dim">1</span></td><td class="desc">En qué posición aparece.</td></tr>
+        <tr><td class="campo"><span class="f">es_principal</span></td><td class="ej"><span class="v">Sí</span></td><td class="desc">Calculada por Postgres (<span class="v dim">orden = 1</span>), no se edita directamente.</td></tr>
+        <tr><td class="campo"><span class="f">alt</span></td><td class="ej"><span class="v">Audífonos, vista frontal</span></td><td class="desc">Texto alternativo de la imagen.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--indigo)">
+      <div class="ent-h"><span class="name">imagen_render</span><span class="why">El archivo real de cada tamaño (miniatura/media/original). El binario se guarda en Postgres o, en modo CDN, solo la URL.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">61</span></td><td class="desc">Número interno del render.</td></tr>
+        <tr><td class="campo"><span class="f">imagen_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">30</span></td><td class="desc">De qué imagen es este tamaño. Apunta a <span class="ref">imagen_producto</span>.</td></tr>
+        <tr><td class="campo"><span class="f">tamano</span></td><td class="ej"><span class="v">media</span></td><td class="desc">miniatura, media u original.</td></tr>
+        <tr><td class="campo"><span class="f">mime / ancho / alto / bytes</span></td><td class="ej"><span class="v">image/webp · 800×600</span></td><td class="desc">Metadatos del archivo ya procesado (siempre WebP).</td></tr>
+        <tr><td class="campo"><span class="f">contenido</span></td><td class="ej"><span class="v dim">binario</span></td><td class="desc">El archivo en sí, guardado en Postgres (modo autónomo, el que se usa hoy).</td></tr>
+        <tr><td class="campo"><span class="f">url</span></td><td class="ej"><span class="v dim">null</span></td><td class="desc">Solo se usa en modo CDN/S3 (no activo hoy); si está vacía, se sirve <span class="ref">contenido</span>.</td></tr>
       </tbody></table>
     </div>
   </div>
@@ -377,27 +396,15 @@
     </div>
 
     <div class="ent" style="--c:var(--blue)">
-      <div class="ent-h"><span class="name">cotizacion</span><span class="why">La propuesta de precio a un mayorista antes de que confirme la compra.</span><span class="later">Fase posterior</span></div>
-      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
-        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">7</span></td><td class="desc">Número interno de la cotización.</td></tr>
-        <tr><td class="campo"><span class="f">cliente_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">40</span></td><td class="desc">A quién se le cotiza. Apunta a <span class="ref">cliente</span>.</td></tr>
-        <tr><td class="campo"><span class="f">fecha / validez</span></td><td class="ej"><span class="v">Vence en 15 días</span></td><td class="desc">Cuándo se hizo y hasta cuándo es válido el precio.</td></tr>
-        <tr><td class="campo"><span class="f">estado</span></td><td class="ej"><span class="v">Enviada</span></td><td class="desc">Si está enviada, aceptada o rechazada.</td></tr>
-      </tbody></table>
-    </div>
-
-    <div class="ent" style="--c:var(--blue)">
-      <div class="ent-h"><span class="name">pedido</span><span class="why">Una venta confirmada. Al confirmarse, descuenta el stock como salida.</span></div>
+      <div class="ent-h"><span class="name">pedido</span><span class="why">Una venta. Al confirmarse, descuenta el stock como salida. El total <strong>no es una columna</strong>: se calcula sumando sus líneas (igual que el stock).</span></div>
       <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
         <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">88</span></td><td class="desc">Número interno del pedido.</td></tr>
         <tr><td class="campo"><span class="f">cliente_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">40</span></td><td class="desc">Quién compra. Apunta a <span class="ref">cliente</span>.</td></tr>
-        <tr><td class="campo"><span class="f">cotizacion_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">7</span></td><td class="desc">De qué cotización salió, si vino de una. Apunta a <span class="ref">cotizacion</span>.</td></tr>
-        <tr><td class="campo"><span class="f">direccion_envio_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">15</span></td><td class="desc">A qué dirección se entrega. Apunta a <span class="ref">direccion_envio</span>.</td></tr>
-        <tr><td class="campo"><span class="f">canal</span></td><td class="ej"><span class="v">WhatsApp</span></td><td class="desc">Por dónde llegó la venta (WhatsApp, Instagram, tienda, presencial).</td></tr>
+        <tr><td class="campo"><span class="f">canal</span></td><td class="ej"><span class="v">WhatsApp</span></td><td class="desc">Por dónde llegó la venta (WhatsApp, Instagram, presencial, correo, web).</td></tr>
         <tr><td class="campo"><span class="f">fecha</span></td><td class="ej"><span class="v dim">16/06/2026</span></td><td class="desc">Cuándo se hizo el pedido.</td></tr>
-        <tr><td class="campo"><span class="f">estado</span></td><td class="ej"><span class="v">Pagado</span></td><td class="desc">En qué punto va (pendiente, pagado, enviado, entregado).</td></tr>
-        <tr><td class="campo"><span class="f">total</span></td><td class="ej"><span class="v">S/ 450</span></td><td class="desc">El monto total de la venta.</td></tr>
+        <tr><td class="campo"><span class="f">estado</span></td><td class="ej"><span class="v">Pagado</span></td><td class="desc">Pendiente, pagado, enviado, entregado o anulado.</td></tr>
         <tr><td class="campo"><span class="f">notas</span></td><td class="ej"><span class="v dim">Entregar después de las 3pm</span></td><td class="desc">Instrucciones especiales del cliente.</td></tr>
+        <tr><td class="campo"><span class="f">creado_en</span></td><td class="ej"><span class="v dim">16/06/2026 10:32</span></td><td class="desc">Cuándo se registró en el sistema.</td></tr>
       </tbody></table>
     </div>
 
@@ -413,26 +420,16 @@
     </div>
 
     <div class="ent" style="--c:var(--blue)">
-      <div class="ent-h"><span class="name">direccion_envio</span><span class="why">Dónde se entrega el pedido.</span></div>
-      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
-        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">15</span></td><td class="desc">Número interno de la dirección.</td></tr>
-        <tr><td class="campo"><span class="f">cliente_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">40</span></td><td class="desc">De quién es. Apunta a <span class="ref">cliente</span>.</td></tr>
-        <tr><td class="campo"><span class="f">direccion / distrito</span></td><td class="ej"><span class="v">Av. Larco 500, Miraflores</span></td><td class="desc">La dirección de entrega.</td></tr>
-        <tr><td class="campo"><span class="f">referencia</span></td><td class="ej"><span class="v">Frente al parque</span></td><td class="desc">Una pista para ubicarla más fácil.</td></tr>
-      </tbody></table>
-    </div>
-
-    <div class="ent" style="--c:var(--blue)">
-      <div class="ent-h"><span class="name">envio_cliente</span><span class="why">El despacho del pedido y su seguimiento.</span></div>
+      <div class="ent-h"><span class="name">envio_cliente</span><span class="why">El despacho del pedido y su seguimiento. <span class="ref">courier</span>/<span class="ref">tracking</span> son texto libre: no hay integración real con ninguna empresa de courier (ver <a href="servicios-externos.html" class="ref">Servicios externos</a>).</span></div>
       <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
         <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">22</span></td><td class="desc">Número interno del envío.</td></tr>
-        <tr><td class="campo"><span class="f">pedido_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">88</span></td><td class="desc">Qué pedido se envía. Apunta a <span class="ref">pedido</span>.</td></tr>
-        <tr><td class="campo"><span class="f">courier</span></td><td class="ej"><span class="v">Olva Courier</span></td><td class="desc">Con qué empresa se envía.</td></tr>
-        <tr><td class="campo"><span class="f">tracking</span></td><td class="ej"><span class="v dim">OLV-99812</span></td><td class="desc">El código para rastrear el paquete.</td></tr>
+        <tr><td class="campo"><span class="f">pedido_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">88</span></td><td class="desc">Qué pedido se envía. Apunta a <span class="ref">pedido</span> (uno a uno).</td></tr>
+        <tr><td class="campo"><span class="f">courier</span></td><td class="ej"><span class="v">Olva Courier</span></td><td class="desc">Con qué empresa se envía. Texto libre, escrito a mano.</td></tr>
+        <tr><td class="campo"><span class="f">tracking</span></td><td class="ej"><span class="v dim">OLV-99812</span></td><td class="desc">El código para rastrear el paquete, si lo hay. Texto libre, no se consulta ninguna API.</td></tr>
+        <tr><td class="campo"><span class="f">direccion</span></td><td class="ej"><span class="v">Av. Larco 500, Miraflores</span></td><td class="desc">La dirección de entrega de este envío en concreto.</td></tr>
         <tr><td class="campo"><span class="f">costo_envio</span></td><td class="ej"><span class="v">S/ 15</span></td><td class="desc">Lo que cuesta el despacho.</td></tr>
-        <tr><td class="campo"><span class="f">estado</span></td><td class="ej"><span class="v">Entregado</span></td><td class="desc">En qué punto va el envío.</td></tr>
-        <tr><td class="campo"><span class="f">fecha_estimada</span></td><td class="ej"><span class="v dim">18/06/2026</span></td><td class="desc">Cuándo se prometió entregar.</td></tr>
-        <tr><td class="campo"><span class="f">fecha_entrega</span></td><td class="ej"><span class="v dim">18/06/2026</span></td><td class="desc">Cuándo se entregó de verdad.</td></tr>
+        <tr><td class="campo"><span class="f">estado</span></td><td class="ej"><span class="v">Entregado</span></td><td class="desc">Preparando, en camino, entregado o anulado.</td></tr>
+        <tr><td class="campo"><span class="f">fecha_estimada / fecha_entrega</span></td><td class="ej"><span class="v dim">18/06/2026</span></td><td class="desc">Cuándo se prometió entregar y cuándo se entregó de verdad.</td></tr>
       </tbody></table>
     </div>
   </div>
@@ -467,17 +464,15 @@
     <div class="domain-head"><i style="background:var(--teal)"></i><h2>Facturación y pagos</h2><span class="note">documentos legales</span></div>
 
     <div class="ent" style="--c:var(--teal)">
-      <div class="ent-h"><span class="name">comprobante</span><span class="why">La boleta o factura legal. Se guarda de forma permanente en la base principal, nunca en la memoria rápida.</span></div>
+      <div class="ent-h"><span class="name">comprobante</span><span class="why">La boleta o factura, con lo que se muestra en la intranet. El XML/CDR firmado <strong>no está aquí</strong>: vive en <span class="ref">leon_facturas</span> (ver <span class="ref">factura_documento</span> más abajo).</span></div>
       <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
         <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">60</span></td><td class="desc">Número interno del comprobante.</td></tr>
         <tr><td class="campo"><span class="f">pedido_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">88</span></td><td class="desc">De qué venta es. Apunta a <span class="ref">pedido</span>.</td></tr>
         <tr><td class="campo"><span class="f">tipo</span></td><td class="ej"><span class="v">Boleta</span></td><td class="desc">Factura para empresas, boleta para personas.</td></tr>
         <tr><td class="campo"><span class="f">serie / correlativo</span></td><td class="ej"><span class="v dim">B001-000123</span></td><td class="desc">El número oficial que exige SUNAT.</td></tr>
         <tr><td class="campo"><span class="f">fecha_emision</span></td><td class="ej"><span class="v dim">16/06/2026</span></td><td class="desc">La fecha legal del comprobante. Puede diferir de la del pedido.</td></tr>
-        <tr><td class="campo"><span class="f">igv</span></td><td class="ej"><span class="v">S/ 68.64</span></td><td class="desc">El impuesto (18%) que va desglosado en el documento.</td></tr>
-        <tr><td class="campo"><span class="f">total</span></td><td class="ej"><span class="v">S/ 450</span></td><td class="desc">El monto total con IGV incluido. Se congela tal como salió en el XML.</td></tr>
-        <tr><td class="campo"><span class="f">estado_sunat</span></td><td class="ej"><span class="v">Aceptado</span></td><td class="desc">Si SUNAT lo aceptó, lo rechazó o está pendiente.</td></tr>
-        <tr><td class="campo"><span class="f">xml / cdr</span></td><td class="ej"><span class="v">archivo legal</span></td><td class="desc">Los archivos oficiales que devuelve SUNAT.</td></tr>
+        <tr><td class="campo"><span class="f">igv / total</span></td><td class="ej"><span class="v">S/ 68.64 · S/ 450</span></td><td class="desc">El impuesto (18%) y el monto total con IGV incluido.</td></tr>
+        <tr><td class="campo"><span class="f">estado_sunat</span></td><td class="ej"><span class="v">Aceptado</span></td><td class="desc">Pendiente, aceptado o rechazado — hoy siempre simulado (ver <a href="servicios-externos.html" class="ref">Servicios externos</a>).</td></tr>
       </tbody></table>
     </div>
 
@@ -520,6 +515,50 @@
         <tr><td class="campo"><span class="f">rol</span></td><td class="ej"><span class="v">Abastecimiento</span></td><td class="desc">Qué puede hacer en el sistema (abastecimiento, ventas, marketing, sistemas, admin).</td></tr>
         <tr><td class="campo"><span class="f">activo</span></td><td class="ej"><span class="v">Sí</span></td><td class="desc">Si su acceso está habilitado. Se apaga sola al crear la cuenta hasta que se aprueba (ver <span class="ref">aprobado</span>).</td></tr>
         <tr><td class="campo"><span class="f">aprobado</span></td><td class="ej"><span class="v">Sí</span></td><td class="desc">Si un admin ya revisó la cuenta. Las que crea un admin desde Equipo nacen aprobadas; las que llegan por autoregistro (<span class="ref">/auth/registro</span>) nacen en <span class="v">No</span> y quedan bloqueadas hasta que un admin las aprueba.</td></tr>
+        <tr><td class="campo"><span class="f">tema</span></td><td class="ej"><span class="v">claro</span></td><td class="desc">Preferencia de tema claro/oscuro de la intranet. Sigue a la persona entre dispositivos.</td></tr>
+        <tr><td class="campo"><span class="f">creado_en</span></td><td class="ej"><span class="v dim">01/01/2026</span></td><td class="desc">Cuándo se creó la cuenta.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ===================== DOCUMENTOS SUNAT ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--slate)"></i><h2>Documentos SUNAT</h2><span class="note">base leon_facturas</span></div>
+
+    <div class="ent" style="--c:var(--slate)">
+      <div class="ent-h"><span class="name">factura_documento</span><span class="why">El comprobante electrónico completo. Vínculo lógico con <span class="ref">comprobante</span> por <span class="ref">comprobante_id</span>, sin FK real (otra base).</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">60</span></td><td class="desc">Número interno del documento.</td></tr>
+        <tr><td class="campo"><span class="f">comprobante_id</span></td><td class="ej"><span class="v dim">60</span></td><td class="desc">Referencia lógica a <span class="ref">comprobante</span> (leon_principal).</td></tr>
+        <tr><td class="campo"><span class="f">documento</span></td><td class="ej"><span class="v dim">JSON</span></td><td class="desc">El comprobante completo en JSON, estilo UBL simplificado.</td></tr>
+        <tr><td class="campo"><span class="f">xml_firmado / cdr_xml</span></td><td class="ej"><span class="v dim">stub</span></td><td class="desc">Hoy son un <strong>simulacro</strong>: no hay firma digital real ni CDR devuelto por SUNAT (ver <a href="servicios-externos.html" class="ref">Servicios externos</a>).</td></tr>
+        <tr><td class="campo"><span class="f">estado_sunat</span></td><td class="ej"><span class="v">aceptado</span></td><td class="desc">Se marca "aceptado" automáticamente; no hay validación real.</td></tr>
+      </tbody></table>
+    </div>
+
+    <div class="ent" style="--c:var(--slate)">
+      <div class="ent-h"><span class="name">factura_evento</span><span class="why">La bitácora de cada documento: generado → enviado → aceptado (o rechazado).</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">200</span></td><td class="desc">Número interno del evento.</td></tr>
+        <tr><td class="campo"><span class="f">factura_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">60</span></td><td class="desc">A qué documento pertenece. Apunta a <span class="ref">factura_documento</span>.</td></tr>
+        <tr><td class="campo"><span class="f">evento</span></td><td class="ej"><span class="v">aceptado</span></td><td class="desc">generado, enviado, aceptado, rechazado o anulado.</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- ===================== AUDITORÍA ===================== -->
+  <div class="domain">
+    <div class="domain-head"><i style="background:var(--slate)"></i><h2>Auditoría</h2><span class="note">quién hizo qué</span></div>
+
+    <div class="ent" style="--c:var(--slate)">
+      <div class="ent-h"><span class="name">registro_actividad</span><span class="why">Un registro por cada acción relevante. Solo lectura desde la intranet — ver <a href="auditoria-actividad.html" class="ref">Registro de actividad</a>.</span></div>
+      <table class="ftable"><thead><tr><th class="c-campo">Campo</th><th class="c-ej">Ejemplo</th><th class="c-desc">Descripción</th></tr></thead><tbody>
+        <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">900</span></td><td class="desc">Número interno del registro.</td></tr>
+        <tr><td class="campo"><span class="f">usuario_id</span></td><td class="ej"><span class="v dim">1</span></td><td class="desc">Quién hizo la acción. Referencia a <span class="ref">usuario</span> sin FK forzada (se aplica antes de que exista <span class="v dim">auth_user</span>).</td></tr>
+        <tr><td class="campo"><span class="f">accion</span></td><td class="ej"><span class="v">crear</span></td><td class="desc">crear, editar, eliminar, activar, desactivar, login o logout.</td></tr>
+        <tr><td class="campo"><span class="f">modelo_afectado / objeto_repr</span></td><td class="ej"><span class="v">Producto · "Cuaderno A4"</span></td><td class="desc">Qué tipo de dato y cuál en concreto.</td></tr>
+        <tr><td class="campo"><span class="f">descripcion</span></td><td class="ej"><span class="v">Andrei ha creado el producto…</span></td><td class="desc">La frase legible que se muestra en pantalla.</td></tr>
+        <tr><td class="campo"><span class="f">timestamp</span></td><td class="ej"><span class="v dim">16/06/2026 10:32</span></td><td class="desc">Cuándo ocurrió. Indexado para consultar rápido por fecha.</td></tr>
       </tbody></table>
     </div>
   </div>
@@ -531,7 +570,7 @@
   </div>
 
   <p class="foot">
-    Para el piloto (30–50 SKU) basta con catálogo, inventario, compras, cliente, pedido, comprobante y pago. Cotización y listas de precios pueden esperar. Tres ideas sostienen todo el modelo: el código SKU vive en la <strong>variante</strong>, el stock se <strong>calcula</strong> sumando los movimientos, y los comprobantes se guardan <strong>permanentemente</strong> en la base principal.
+    Las listas de precios por tipo de cliente siguen marcadas "Fase posterior": todavía no existen, hoy el precio es el mismo para todos. Tres ideas sostienen el modelo: el código SKU vive en la <strong>variante</strong>, el stock se <strong>calcula</strong> sumando los movimientos (nunca es una columna), y son <strong>3 bases separadas</strong> (principal, fotos, facturas) sin FK entre ellas.
   </p>
 </div>
 </body>

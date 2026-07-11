@@ -89,72 +89,52 @@
 
   <p class="eyebrow">Tareas automáticas</p>
   <h1>Procesamiento en segundo plano</h1>
-  <p class="sub">Cola de tareas (Celery) que procesa operaciones de larga duración sin bloquear al usuario: notificaciones, emisión de comprobantes, generación de reportes y sincronización con terceros.</p>
+  <p class="sub">Celery, con Redis como cola. Hoy existen exactamente <strong>2 tareas</strong>, ambas encoladas bajo demanda (nunca programadas): no hay Celery Beat ni ninguna tarea que corra "cada noche" o "cada hora".</p>
 
   <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.4-5.9"/><path d="M20.5 3.5v4h-4"/></svg></div>
 
   <div class="section">
     <h2>¿Qué es?</h2>
-    <p>Celery es una cola de tareas distribuida. El backend encola los trabajos en Redis y unos workers (procesos Python independientes) los ejecutan en segundo plano, sin que el usuario tenga que esperar. La petición responde de inmediato mientras la operación pesada se procesa aparte.</p>
+    <p>Celery es una cola de tareas distribuida. El backend encola los trabajos en Redis y un worker (proceso Python aparte, contenedor <span class="mono" style="font-family:var(--mono);color:var(--blue)">leon-celery</span>) los ejecuta sin bloquear la respuesta al usuario.</p>
   </div>
 
   <div class="section">
-    <h2>Funciones principales</h2>
-    <div class="list-item"><strong>Notificaciones:</strong> Al confirmarse un pedido se encola el aviso al cliente; el worker lo ejecuta y la notificación llega en segundos.</div>
-    <div class="list-item"><strong>Emisión de comprobantes:</strong> Una tarea invoca a SUNAT, genera el PDF y lo deposita en el almacenamiento; el usuario ve "generando…" y luego el enlace de descarga.</div>
-    <div class="list-item"><strong>Sincronización de stock:</strong> Cada pocos minutos, una tarea concilia el inventario con sistemas externos.</div>
-    <div class="list-item"><strong>Reportes programados:</strong> Una tarea genera el reporte de ventas diario y lo envía por correo a la gerencia.</div>
-    <div class="list-item"><strong>Mantenimiento de datos:</strong> Depuración de carritos abandonados y sesiones caducadas, en horario nocturno.</div>
-    <div class="list-item"><strong>Reintento de webhooks:</strong> Si la llamada al courier falla, se reintenta automáticamente con espera creciente (1, 5 y 15 minutos).</div>
+    <h2>Las 2 tareas reales</h2>
+    <div class="list-item"><strong>emitir_comprobante_sunat(comprobante_id):</strong> se dispara al registrar un comprobante. Construye un JSON tipo UBL, y hoy <strong>simula</strong> el envío/aceptación de SUNAT (crea eventos generado→enviado→aceptado con datos de relleno) — es un stub declarado en el propio código, sin integración real. Ver <a href="servicios-externos.html">Servicios externos</a>.</div>
+    <div class="list-item"><strong>procesar_imagen(render_id):</strong> se dispara al subir una foto de producto. Esta sí es <strong>real</strong>: abre la imagen con Pillow, la redimensiona si hace falta y la convierte a WebP calidad 80, sobrescribiendo el render.</div>
+  </div>
+
+  <div class="section">
+    <h2>Lo que NO existe</h2>
+    <div class="list-item">Sin Celery Beat ni ninguna tarea periódica/programada (nada "cada noche", "cada hora" o con cron).</div>
+    <div class="list-item">Sin notificaciones al cliente (correo/SMS de confirmación de pedido o envío) en segundo plano — la única notificación por correo del sistema es el aviso de cuenta aprobada en Equipo, y es síncrona, no una tarea de Celery.</div>
+    <div class="list-item">Sin generación de PDF, sin sincronización de stock con sistemas externos, sin reintento de webhooks (no hay webhooks entrantes que atender).</div>
+    <div class="list-item">Sin Flower, Sentry ni APScheduler instalados — no están en <span class="mono" style="font-family:var(--mono);color:var(--blue)">requirements.txt</span>.</div>
   </div>
 
   <div class="section">
     <h2>Limitaciones y restricciones</h2>
-    <div class="list-item"><strong>Consistencia eventual:</strong> La tarea no termina de inmediato; si el usuario recarga antes de completarse, puede ver un estado anterior.</div>
-    <div class="list-item"><strong>Fallo silencioso:</strong> Si un worker cae durante una tarea, esta puede perderse sin aviso; exige monitorización.</div>
-    <div class="list-item"><strong>Duplicación:</strong> Procesar dos veces la misma tarea podría emitir dos comprobantes; requiere idempotencia.</div>
-    <div class="list-item"><strong>Escalado de workers:</strong> Ante muchos pedidos simultáneos, la cola crece y se necesitan más workers.</div>
-    <div class="list-item"><strong>Diagnóstico complejo:</strong> Depurar un error en segundo plano es más difícil que en una petición síncrona.</div>
+    <div class="list-item"><strong>Reintentos:</strong> ambas tareas usan <span class="mono" style="font-family:var(--mono);color:var(--blue)">max_retries=3</span>, <span class="mono" style="font-family:var(--mono);color:var(--blue)">default_retry_delay=30</span> — si fallan, reintentan hasta 3 veces cada 30s.</div>
+    <div class="list-item"><strong>Sin panel de monitoreo de colas:</strong> para ver el estado de una tarea hay que mirar los logs del contenedor <span class="mono" style="font-family:var(--mono);color:var(--blue)">leon-celery</span>, no hay un dashboard tipo Flower.</div>
+    <div class="list-item"><strong>Tiempo límite:</strong> <span class="mono" style="font-family:var(--mono);color:var(--blue)">CELERY_TASK_TIME_LIMIT=600</span> (10 min) global, por si alguna tarea se cuelga.</div>
   </div>
 
   <div class="section">
     <h2>Propósito del componente</h2>
-    <p>Ejecutar operaciones largas sin bloquear al usuario, ofreciendo respuesta inmediata; escalar de forma independiente del API; y aislar la lógica, ya que un worker es un proceso separado que puede reiniciarse sin afectar al backend.</p>
+    <p>Que subir una foto o registrar un comprobante no obligue al usuario a esperar a que termine el procesado pesado (conversión de imagen) o simulado (SUNAT).</p>
   </div>
 
   <div class="section">
-    <h2>Stack tecnológico recomendado</h2>
+    <h2>Stack</h2>
     <div class="stack">
-      <span class="badge">Celery</span>
-      <span class="badge">Redis (broker)</span>
-      <span class="badge">Flower (monitoring)</span>
-      <span class="badge">Django Celery</span>
-      <span class="badge">APScheduler (scheduling)</span>
-      <span class="badge">Sentry (error tracking)</span>
+      <span class="badge">Celery 5.5</span>
+      <span class="badge">Redis (broker + result backend)</span>
+      <span class="badge">Pillow (procesar_imagen)</span>
     </div>
-    <p style="margin-top:16px;font-size:13px;color:var(--muted)"><strong>Por qué:</strong> Celery es el estándar en Django. Redis actúa como broker de baja latencia. Flower visualiza el estado de las tareas. APScheduler gestiona las tareas recurrentes (cron). Sentry notifica los errores en segundo plano.</p>
-  </div>
-
-  <div class="section">
-    <h2>Información técnica adicional</h2>
-    <div class="list-item"><strong>Reintentos:</strong> Ante un fallo, la tarea se reintenta automáticamente; se configuran max_retries y retry_backoff.</div>
-    <div class="list-item"><strong>Tiempos límite:</strong> Una tarea no debe exceder cierta duración; si se bloquea, el worker termina el proceso.</div>
-    <div class="list-item"><strong>Limitación de tasa:</strong> Acota cuántas tareas del mismo tipo se ejecutan a la vez para no saturar SUNAT.</div>
-    <div class="list-item"><strong>Idempotencia:</strong> La tarea debe producir el mismo resultado si se ejecuta dos veces; es clave para la fiabilidad.</div>
-    <div class="list-item"><strong>Seguimiento de estado:</strong> El usuario puede ver el progreso: "Procesando…" → "Completado" → "Con error".</div>
-  </div>
-
-  <div class="section">
-    <h2>Métricas importantes</h2>
-    <div class="list-item"><strong>Profundidad de cola:</strong> Tareas en espera de ejecución; por encima de 1000, añadir workers.</div>
-    <div class="list-item"><strong>Tasa de éxito:</strong> Porcentaje de tareas completadas frente a fallidas; objetivo superior al 99%.</div>
-    <div class="list-item"><strong>Tiempo de ejecución (P95):</strong> Notificación < 1 s, comprobante < 5 s, reporte < 30 s.</div>
-    <div class="list-item"><strong>Disponibilidad de workers:</strong> Porcentaje de tiempo operativos; alertar por debajo del 95%.</div>
-    <div class="list-item"><strong>Tasa de error:</strong> Porcentaje de tareas fallidas; por encima del 1% indica un defecto o una integración rota.</div>
   </div>
 
   <p class="foot">
-    El procesamiento asíncrono mejora notablemente la experiencia de usuario, pero exige disciplina: toda tarea debe ser idempotente, con reintentos y monitorización. Sin ello, el riesgo es la corrupción de datos y la insatisfacción del cliente.
+    El detalle de qué hace cada tarea al implementar SUNAT de verdad está pendiente — hoy es, deliberadamente, un simulacro. Ver <a href="servicios-externos.html">Servicios externos</a> para el detalle completo de esa limitación.
   </p>
 </div></body>
 </html>
