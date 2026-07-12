@@ -54,6 +54,11 @@
       { t: 'Administración', u: 'funcional-administracion.html', d: 'Facturación, equipo y usuarios, actividad.' },
       { t: 'Reportes y analítica', u: 'reportes-analitica.html', d: 'Ventas, inventario, compras y rentabilidad.' },
     ]},
+    { id: 'guias', label: 'Guías', color: 'amber', items: [
+      { t: 'Registrar una venta y emitir el comprobante', u: 'guia-registrar-venta.html', d: 'Crear el pedido, cobrar, emitir boleta o factura y entregar.' },
+      { t: 'Dar de alta un producto', u: 'guia-dar-alta-producto.html', d: 'Producto, variantes (SKU), volumen, fotos y publicarlo.' },
+      { t: 'Recibir mercancía de una importación', u: 'guia-recibir-mercancia.html', d: 'Localizar la OC, registrar la recepción y comprobar stock y costo.' },
+    ]},
     { id: 'flujos', label: 'Flujos', color: 'rose', items: [
       { t: 'Mapa de flujos', u: 'flujos.html', d: 'Visión de conjunto: venta, abastecimiento y post-venta.' },
       { t: '1 · Compra desde la web', u: 'flujo-venta-web.html', d: 'Del catálogo público a la entrega.' },

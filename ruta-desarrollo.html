@@ -367,9 +367,17 @@
           title: 'Videos cortos por flujo',
           description: 'Grabaciones de pantalla de 2-3 min por tarea frecuente.' },
 
-        { id: 'd-diagramas', parent: 'docs-root', status: 'planned',
+        { id: 'd-diagramas', parent: 'docs-root', status: 'done', completed_at: '2026-07',
           title: 'Diagramas de flujo por proceso',
-          description: 'Compra, venta y recepción de mercancía, un diagrama por proceso.' }
+          description: 'Sección "Flujos operativos": un diagrama por proceso (venta web y en tienda, compra de importación, ciclo del pedido, crear producto y recepción de mercancía), mostrando qué hace el empleado y qué hace el sistema en cada paso, con sus casos límite.',
+          url: 'flujos.html',
+          note: 'Los marcados como "Objetivo" (pedido con reserva, reclamación web) son diseño a futuro, aún no implementados.' },
+
+        { id: 'd-guias', parent: 'd-diagramas', status: 'done', completed_at: '2026-07',
+          title: 'Guías paso a paso',
+          description: 'Cómo operar la intranet, tarea por tarea y con la pantalla delante: registrar una venta y emitir el comprobante, dar de alta un producto y recibir mercancía de importación. Cada guía incluye una sección "Si te sale mal" y enlaza a su flujo operativo para el porqué.',
+          url: 'guia-registrar-venta.html',
+          note: 'Sección propia en el índice, antes de "Flujos operativos". Las tres guías comparten una plantilla reutilizable y una hoja de estilos; quedan capturas de pantalla y algunas verificaciones pendientes por completar.' }
       ]
     },
     {

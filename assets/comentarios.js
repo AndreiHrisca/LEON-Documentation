@@ -248,7 +248,7 @@
   }
 
   // ── formularios ─────────────────────────────────────────────────────
-  function formCuerpo({ initial, onEnviar, enviarLabel, onCancelar }) {
+  function formCuerpo({ initial, onEnviar, enviarLabel, onCancelar, autofocus }) {
     const ta = el('textarea', { maxlength: BODY_MAX, placeholder: 'Escribe tu comentario…' });
     if (initial) ta.value = initial;
     const contador = el('span', { class: 'dc-count-chars' });
@@ -268,7 +268,10 @@
     const row = el('div', { class: 'dc-form-row' }, contador, onCancelar ? el('button', { class: 'dc-btn ghost', type: 'button', text: 'Cancelar', onclick: onCancelar }) : null, enviar);
     const form = el('div', { class: 'dc-form' }, ta, row);
     refrescar();
-    setTimeout(() => ta.focus(), 30);
+    // Solo enfocamos formularios que abre el usuario (responder/editar). El
+    // composer que se pinta solo al cargar NO se enfoca: hacerlo arrastraría el
+    // scroll de la página hasta el final (el bloque de comentarios va abajo).
+    if (autofocus) setTimeout(() => ta.focus(), 30);
     return form;
   }
 
@@ -277,6 +280,7 @@
     if (existente) { existente.remove(); return; }
     const form = formCuerpo({
       enviarLabel: 'Responder',
+      autofocus: true,
       onCancelar: () => form.remove(),
       onEnviar: async (texto) => {
         await api('docs/' + state.docSlug + '/comments/', { method: 'POST', body: JSON.stringify({ body: texto, parent: c.id }) });
@@ -293,7 +297,7 @@
     if (!body || card.querySelector(':scope > .dc-edit-form')) return;
     body.style.display = 'none';
     const form = formCuerpo({
-      initial: c.body, enviarLabel: 'Guardar',
+      initial: c.body, enviarLabel: 'Guardar', autofocus: true,
       onCancelar: () => { form.remove(); body.style.display = ''; },
       onEnviar: async (texto) => {
         await api('comments/' + c.id + '/', { method: 'PATCH', body: JSON.stringify({ body: texto }) });
