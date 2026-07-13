@@ -283,11 +283,14 @@
         <tr><td class="campo"><span class="f">id</span><div class="badges"><span class="k pk">PK</span></div></td><td class="ej"><span class="v dim">500</span></td><td class="desc">Número interno del movimiento.</td></tr>
         <tr><td class="campo"><span class="f">variante_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">12</span></td><td class="desc">Qué versión del producto se movió. Apunta a <span class="ref">variante</span>.</td></tr>
         <tr><td class="campo"><span class="f">almacen_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">1</span></td><td class="desc">En qué zona ocurrió. Apunta a <span class="ref">almacen</span>.</td></tr>
-        <tr><td class="campo"><span class="f">tipo</span></td><td class="ej"><span class="v">Entrada</span></td><td class="desc">Si suma (entrada/compra), resta (salida/venta) o corrige (ajuste/merma).</td></tr>
-        <tr><td class="campo"><span class="f">cantidad</span></td><td class="ej"><span class="v">50</span></td><td class="desc">Cuántas unidades entran o salen.</td></tr>
-        <tr><td class="campo"><span class="f">referencia</span></td><td class="ej"><span class="v">Compra #8</span></td><td class="desc">De dónde viene el movimiento (una compra, una venta, un conteo).</td></tr>
+        <tr><td class="campo"><span class="f">tipo</span></td><td class="ej"><span class="v">Entrada</span></td><td class="desc">Si suma (entrada/compra), resta (salida/venta), corrige (ajuste/merma) o <strong>reserva</strong>. Una <strong>reserva</strong> aparta stock para un pedido a futuro: <strong>no altera el stock físico</strong>, solo baja el disponible para venta.</td></tr>
+        <tr><td class="campo"><span class="f">cantidad</span></td><td class="ej"><span class="v">50</span></td><td class="desc">Cuántas unidades entran o salen. En una reserva es una magnitud positiva (lo apartado).</td></tr>
+        <tr><td class="campo"><span class="f">reserva_estado</span></td><td class="ej"><span class="v">Activa</span></td><td class="desc">Solo en movimientos de tipo <em>reserva</em> (vacío en el resto): <strong>activa</strong> (aparta stock), <strong>consumida</strong> (el pedido se pagó y pasó a venta) o <strong>liberada</strong> (expiró, se anuló o se reeditaron líneas). Solo las <em>activas</em> restan del disponible.</td></tr>
+        <tr><td class="campo"><span class="f">linea_pedido_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">140</span></td><td class="desc">Si el movimiento nace de una línea de pedido (reserva o venta), a cuál. Apunta a <span class="ref">linea_pedido</span>.</td></tr>
+        <tr><td class="campo"><span class="f">referencia</span></td><td class="ej"><span class="v">Compra #8</span></td><td class="desc">De dónde viene el movimiento (una compra, una venta, un conteo, una reserva).</td></tr>
         <tr><td class="campo"><span class="f">fecha</span></td><td class="ej"><span class="v dim">15/06/2026</span></td><td class="desc">Cuándo ocurrió.</td></tr>
       </tbody></table>
+      <p style="font-size:13px;color:var(--muted);margin:10px 2px 0;line-height:1.6">Con reservas, el stock se lee en tres cifras: <strong>físico</strong> = suma de movimientos no-reserva; <strong>reservado</strong> = suma de reservas activas; <strong>disponible</strong> = físico − reservado. Solo se puede vender/reservar hasta el disponible.</p>
     </div>
   </div>
 
@@ -402,7 +405,10 @@
         <tr><td class="campo"><span class="f">cliente_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">40</span></td><td class="desc">Quién compra. Apunta a <span class="ref">cliente</span>.</td></tr>
         <tr><td class="campo"><span class="f">canal</span></td><td class="ej"><span class="v">WhatsApp</span></td><td class="desc">Por dónde llegó la venta (WhatsApp, Instagram, presencial, correo, web).</td></tr>
         <tr><td class="campo"><span class="f">fecha</span></td><td class="ej"><span class="v dim">16/06/2026</span></td><td class="desc">Cuándo se hizo el pedido.</td></tr>
-        <tr><td class="campo"><span class="f">estado</span></td><td class="ej"><span class="v">Pagado</span></td><td class="desc">Pendiente, pagado, enviado, entregado o anulado.</td></tr>
+        <tr><td class="campo"><span class="f">estado</span></td><td class="ej"><span class="v">Pagado</span></td><td class="desc">Pendiente, pagado, enviado, entregado, anulado o <strong>expirado</strong> (reserva vencida sin pago).</td></tr>
+        <tr><td class="campo"><span class="f">es_reserva</span></td><td class="ej"><span class="v">Sí</span></td><td class="desc"><strong>Pedido a futuro</strong>: al crearse aparta el stock (reserva) en vez de dejarlo libre. Solo se puede editar mientras está pendiente.</td></tr>
+        <tr><td class="campo"><span class="f">fecha_expiracion</span></td><td class="ej"><span class="v dim">23/06/2026 12:00</span></td><td class="desc">Solo en pedidos a futuro: hasta cuándo se mantiene la reserva. Por defecto 7 días, máximo 7. Si no se paga antes, el sistema libera el stock y marca el pedido Expirado.</td></tr>
+        <tr><td class="campo"><span class="f">tipo_comprobante</span></td><td class="ej"><span class="v">Factura</span></td><td class="desc">Comprobante <strong>declarado</strong> (Boleta, Factura o Ninguno). Por defecto según el documento del cliente (RUC→Factura, DNI→Boleta); Factura exige RUC. Es solo intención: <strong>no emite nada</strong> (la emisión es otra fase).</td></tr>
         <tr><td class="campo"><span class="f">notas</span></td><td class="ej"><span class="v dim">Entregar después de las 3pm</span></td><td class="desc">Instrucciones especiales del cliente.</td></tr>
         <tr><td class="campo"><span class="f">creado_en</span></td><td class="ej"><span class="v dim">16/06/2026 10:32</span></td><td class="desc">Cuándo se registró en el sistema.</td></tr>
       </tbody></table>
@@ -416,6 +422,8 @@
         <tr><td class="campo"><span class="f">variante_id</span><div class="badges"><span class="k fk">FK</span></div></td><td class="ej"><span class="v dim">12</span></td><td class="desc">Qué versión del producto se vendió. Apunta a <span class="ref">variante</span>.</td></tr>
         <tr><td class="campo"><span class="f">cantidad</span></td><td class="ej"><span class="v">3</span></td><td class="desc">Cuántas unidades.</td></tr>
         <tr><td class="campo"><span class="f">precio_unitario</span></td><td class="ej"><span class="v">S/ 60</span></td><td class="desc">El precio al que se vendió en ese momento. Se guarda aunque el precio cambie después.</td></tr>
+        <tr><td class="campo"><span class="f">precio_lista_original</span></td><td class="ej"><span class="v dim">S/ 75</span></td><td class="desc">El precio de lista de la variante cuando se creó la línea. Sirve para auditar el descuento si el empleado bajó el precio.</td></tr>
+        <tr><td class="campo"><span class="f">precio_modificado</span></td><td class="ej"><span class="v">Sí</span></td><td class="desc">Marca si el precio unitario se cambió a mano respecto al de lista (un descuento), no un precio arbitrario.</td></tr>
       </tbody></table>
     </div>
 

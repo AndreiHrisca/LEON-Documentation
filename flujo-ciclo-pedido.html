@@ -100,18 +100,26 @@
 stateDiagram-v2
     direction LR
     [*] --> Pendiente
-    Pendiente --> Pagado: Confirmar — descuenta stock
+    Pendiente --> Pagado: Confirmar — descuenta stock / consume reserva
     Pendiente --> Anulado: Anular
+    Pendiente --> Expirado: Reserva vence (automático)
     Pagado --> Enviado: Marcar enviado
     Enviado --> Entregado: Confirmar entrega
     Entregado --> [*]
     Anulado --> [*]
+    Expirado --> [*]
     Entregado --> Devolucion: Devolución
     Devolucion --> [*]
 
     note right of Pendiente
       Único estado donde
-      se editan las líneas
+      se editan las líneas.
+      Si es reserva, aparta
+      stock hasta el pago
+    end note
+    note right of Expirado
+      Solo desde una reserva
+      no pagada a tiempo
     end note
     note right of Devolucion
       Objetivo · no existe hoy
@@ -121,24 +129,25 @@ stateDiagram-v2
     classDef term fill:#EDF0F3,stroke:#51606F,stroke-width:1.5px,color:#18222E
     classDef obj fill:#EFEFFA,stroke:#5B63E6,stroke-width:1.5px,stroke-dasharray:4 3,color:#18222E
     class Pendiente,Pagado,Enviado,Entregado real
-    class Anulado term
+    class Anulado,Expirado term
     class Devolucion obj
     </pre>
   </div>
   <div class="legend">
     <span class="lg"><span class="sw sw-real"></span> Estado del camino normal</span>
-    <span class="lg"><span class="sw sw-term"></span> Rama terminal (Anulado)</span>
+    <span class="lg"><span class="sw sw-term"></span> Rama terminal (Anulado, Expirado)</span>
     <span class="lg"><span class="sw sw-obj"></span> Objetivo (Devolución, aún no existe)</span>
   </div>
 
   <div class="section">
     <h2>Cada estado, explicado</h2>
     <div class="estados">
-      <div class="estado e-pend"><span class="bull"></span><div class="tx"><h3>Pendiente</h3><p>Recién creado. Aún no ha tocado el stock. Es el <strong>único estado en el que se pueden editar las líneas</strong> (añadir, quitar o cambiar cantidades) y también el único desde el que se puede anular.</p></div></div>
+      <div class="estado e-pend"><span class="bull"></span><div class="tx"><h3>Pendiente</h3><p>Recién creado. Aún no ha tocado el stock físico. Es el <strong>único estado en el que se pueden editar las líneas</strong> (añadir, quitar o cambiar cantidades) y también el único desde el que se puede anular. Si es un <strong>pedido a futuro</strong>, aquí el stock ya queda <strong>reservado</strong> (apartado, no descontado) hasta que se pague o expire.</p></div></div>
       <div class="estado e-pag"><span class="bull"></span><div class="tx"><h3>Pagado</h3><p>Al <strong>confirmar</strong>, el sistema verifica y descuenta el stock del almacén elegido y el pedido pasa a Pagado. A partir de aquí las líneas ya no se editan.</p></div></div>
       <div class="estado e-env"><span class="bull"></span><div class="tx"><h3>Enviado</h3><p>La mercancía salió a despacho. Ventas marca el pedido (y su envío) como enviado.</p></div></div>
       <div class="estado e-ent"><span class="bull"></span><div class="tx"><h3>Entregado</h3><p>El cliente recibió el pedido. Es el cierre normal del ciclo.</p></div></div>
-      <div class="estado e-anu"><span class="bull"></span><div class="tx"><h3>Anulado <span class="tag term">Rama terminal</span></h3><p>Se anula un pedido <strong>mientras sigue Pendiente</strong> (sin haber descontado stock). Cierra el pedido sin venta.</p></div></div>
+      <div class="estado e-anu"><span class="bull"></span><div class="tx"><h3>Anulado <span class="tag term">Rama terminal</span></h3><p>Se anula un pedido <strong>mientras sigue Pendiente</strong> (sin haber descontado stock). Cierra el pedido sin venta. Si era una reserva, se libera el stock apartado.</p></div></div>
+      <div class="estado e-anu"><span class="bull"></span><div class="tx"><h3>Expirado <span class="tag term">Rama terminal</span></h3><p>Solo aplica a los <strong>pedidos a futuro</strong>. Si la reserva no se paga antes de su fecha de expiración, el sistema, <strong>de forma automática cada hora</strong>, libera el stock reservado y cierra el pedido como Expirado. Un pedido Expirado no vuelve a Pendiente ni a Pagado: hay que crear uno nuevo.</p></div></div>
       <div class="estado e-dev"><span class="bull"></span><div class="tx"><h3>Devolución <span class="tag obj">Objetivo</span></h3><p>Rama de diseño para cuando un pedido ya entregado se devuelve: reingresaría el stock y generaría una nota de crédito. <strong>Todavía no existe</strong> como estado en el sistema.</p></div></div>
     </div>
   </div>
@@ -158,8 +167,10 @@ stateDiagram-v2
       <div class="rolecol sys">
         <h3><span class="dot"></span> El sistema</h3>
         <ul>
-          <li>Verifica el stock antes de dejar confirmar</li>
-          <li>Descuenta el stock y pone el pedido en Pagado</li>
+          <li>Verifica el disponible antes de dejar reservar o confirmar</li>
+          <li>Reserva el stock (lo aparta) en los pedidos a futuro</li>
+          <li>Descuenta el stock / consume la reserva y pone el pedido en Pagado</li>
+          <li>Libera las reservas vencidas y marca Expirado (cada hora)</li>
           <li>Bloquea la edición de líneas tras confirmar</li>
           <li>Audita cada cambio de estado en Actividad</li>
         </ul>
@@ -176,7 +187,7 @@ stateDiagram-v2
 
   <div class="callout indigo">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-    <span>En el diagrama, los estados sólidos (<strong>Pendiente, Pagado, Enviado, Entregado, Anulado</strong>) son reales hoy. <strong>Devolución</strong> va punteado porque es un objetivo de diseño, no una función existente.</span>
+    <span>En el diagrama, los estados sólidos (<strong>Pendiente, Pagado, Enviado, Entregado, Anulado, Expirado</strong>) son reales hoy. <strong>Devolución</strong> va punteado porque es un objetivo de diseño, no una función existente.</span>
   </div>
 
   <p class="foot">

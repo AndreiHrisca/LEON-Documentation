@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Crear un pedido nuevo · Importadora León</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/guias.css">
+<style>:root{ --accent:var(--blue); --accent-tint:var(--blue-tint) }</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    Índice de la documentación
+  </a>
+
+  <!-- ── 1 · TÍTULO Y PARA QUÉ SIRVE ─────────────────────────────────── -->
+  <p class="eyebrow">Guías · Ventas</p>
+  <h1>Crear un pedido nuevo</h1>
+  <p class="sub">Cómo llenar la ventana <span class="lit">Nuevo pedido</span> sin equivocarte: qué es cada columna, cuándo apartar stock para un cliente que aún no paga, y cuándo sale boleta y cuándo factura. Al terminar tendrás el pedido guardado y listo para cobrar.</p>
+
+  <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 3-3 3 3 5-6"/></svg></div>
+
+  <!-- ── Enlace al flujo (contexto del negocio) ──────────────────────── -->
+  <div class="porque">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    <span>¿Quieres entender <strong>por qué</strong> un pedido pasa por esos estados? Míralo en el flujo <a href="flujo-ciclo-pedido.html">Ciclo de vida del pedido</a>.</span>
+  </div>
+
+  <!-- ── 2 · QUIÉN LO HACE Y CUÁNDO ──────────────────────────────────── -->
+  <div class="meta">
+    <div class="m"><div class="k">Quién lo hace</div><div class="v">Ventas · Administración</div></div>
+    <div class="m"><div class="k">Cuándo</div><div class="v">Cuando un cliente pide productos, por teléfono, WhatsApp o en tienda</div></div>
+  </div>
+
+  <!-- ── 3 · ANTES DE EMPEZAR ────────────────────────────────────────── -->
+  <div class="section">
+    <h2><span class="hnum">✓</span> Antes de empezar</h2>
+    <ul class="reqs">
+      <li><strong>El cliente debe existir</strong> — si es nuevo, créalo primero en la pestaña <span class="lit">Clientes</span> (necesitas su nombre y su documento: DNI o RUC).</li>
+      <li><strong>Sabe qué quiere el cliente</strong> — qué productos y cuántas unidades de cada uno.</li>
+      <li><strong>Permiso de Ventas</strong> — si no ves el botón <span class="lit">Nuevo pedido</span>, pídele acceso a Administración.</li>
+    </ul>
+  </div>
+
+  <!-- ── Diccionario rápido: las tres columnas ───────────────────────── -->
+  <div class="section">
+    <h2><span class="hnum">i</span> Las tres columnas de una línea</h2>
+    <p style="font-size:15px;line-height:1.7;color:var(--muted);margin:0 0 12px">Cada producto que añades es una <strong>línea</strong>. Una línea tiene tres números; no los confundas:</p>
+    <ul class="reqs">
+      <li><strong>Cantidad</strong> — cuántas unidades se lleva el cliente de ese producto. Ej.: <em>3</em>.</li>
+      <li><strong>P. unit. (precio unitario)</strong> — cuánto cuesta <em>una</em> unidad. Ej.: <em>S/ 60.00</em>. Viene puesto con el precio de lista; puedes bajarlo si le haces un descuento.</li>
+      <li><strong>Subtotal</strong> — lo que suma esa línea: cantidad × precio unitario. Lo calcula solo. Ej.: 3 × S/ 60.00 = <em>S/ 180.00</em>.</li>
+    </ul>
+    <p style="font-size:15px;line-height:1.7;color:var(--muted);margin:12px 0 0">Abajo del todo, el <strong>Total</strong> es la suma de todos los subtotales más el envío. Todos los importes se escriben con dos decimales y punto (<em>60.00</em>, no <em>60</em> ni <em>60,00</em>).</p>
+  </div>
+
+  <!-- ── 4 · PASOS ───────────────────────────────────────────────────── -->
+  <div class="section">
+    <h2><span class="hnum">1</span> Paso a paso</h2>
+    <div class="steps">
+
+      <div class="step"><span class="n"></span><div class="tx">
+        <h3>Abre la ventana de pedido</h3>
+        <p>En <span class="lit">Ventas</span>, pulsa <span class="lit">Nuevo pedido</span> (arriba a la derecha).</p>
+      </div></div>
+
+      <div class="step"><span class="n"></span><div class="tx">
+        <h3>Elige el cliente</h3>
+        <p>Selecciónalo en <span class="lit">Cliente</span>. Debajo verás su documento completo (por ejemplo <span class="lit">RUC 20512345678</span>). El estado del pedido arranca en <span class="lit">Pendiente</span>: es normal, todavía no has cobrado.</p>
+      </div></div>
+
+      <div class="step"><span class="n"></span><div class="tx">
+        <h3>Revisa el comprobante</h3>
+        <p>El campo <span class="lit">Comprobante</span> se rellena solo: <strong>Factura</strong> si el cliente tiene RUC, <strong>Boleta</strong> si tiene DNI. Puedes cambiarlo a <strong>Ninguno</strong>. La <strong>Factura</strong> solo se puede elegir si el cliente tiene RUC (si no, aparece bloqueada y te dice por qué). Aquí solo <em>declaras</em> qué comprobante saldrá; no se emite todavía.</p>
+      </div></div>
+
+      <div class="step"><span class="n"></span><div class="tx">
+        <h3>Añade los productos</h3>
+        <p>Escribe en <span class="lit">Añadir producto</span> el nombre o el código (SKU) y elígelo de la lista que aparece. Se agrega como una línea con cantidad 1. Ajusta la <span class="lit">Cant.</span> y, si hace falta, el <span class="lit">P. unit.</span> Si añades el mismo producto otra vez, <strong>suma la cantidad</strong> a la línea que ya está, no la duplica.</p>
+      </div></div>
+
+      <div class="step"><span class="n"></span><div class="tx">
+        <h3>Vigila el stock disponible</h3>
+        <p>Debajo de cada producto ves <span class="lit">Stock N</span>. Si pides más de lo que hay <strong>disponible</strong>, la fila se pinta en rojo y avisa <span class="lit">Solo N disponibles</span>, y el botón de crear se bloquea hasta que lo corrijas. «Disponible» es lo que puedes vender de verdad: el stock físico menos lo que ya está apartado para otros clientes.</p>
+      </div></div>
+
+      <div class="step"><span class="n"></span><div class="tx">
+        <h3>¿Es un pedido a futuro? Reserva el stock</h3>
+        <p>Si el cliente aparta mercadería para más adelante (aún no paga), activa <span class="lit">Pedido a futuro (reservar stock)</span>. Elige el almacén y la fecha de <span class="lit">Expira el</span> (por defecto 7 días, máximo 7). El stock queda <strong>apartado</strong> para ese cliente: no lo descuenta, pero tampoco deja que otro lo venda. Si no se paga antes de esa fecha, se <strong>libera solo</strong>. Ver más abajo «¿Qué es reservar stock?».</p>
+      </div></div>
+
+      <div class="step"><span class="n"></span><div class="tx">
+        <h3>Completa la entrega</h3>
+        <p>Elige el <span class="lit">Courier</span>, escribe el <span class="lit">Costo de envío</span> (con dos decimales) y la <span class="lit">Dirección de envío</span> (puedes usar la dirección fiscal del cliente o escribir otra).</p>
+      </div></div>
+
+      <div class="step"><span class="n"></span><div class="tx">
+        <h3>Revisa el desglose y crea</h3>
+        <p>Abajo verás <span class="lit">Subtotal líneas</span>, <span class="lit">Envío</span>, <span class="lit">Total</span> y el <span class="lit">IGV incluido</span>. Comprueba que el total cuadra y pulsa <span class="lit">Crear pedido</span>.</p>
+      </div></div>
+
+    </div>
+  </div>
+
+  <!-- ── ¿Qué es reservar stock? ─────────────────────────────────────── -->
+  <div class="section">
+    <h2><span class="hnum">i</span> ¿Qué es reservar stock y qué pasa si no paga?</h2>
+    <p style="font-size:15px;line-height:1.7;color:var(--muted);margin:0 0 10px">Reservar es <strong>apartar</strong> unidades para un cliente que todavía no pagó. Imagina que apartas 3 cajas en el almacén con su nombre: siguen físicamente ahí (el stock físico no baja), pero ya nadie más las puede vender (el disponible sí baja).</p>
+    <ul class="reqs">
+      <li><strong>Si paga a tiempo</strong> — al cobrar el pedido, esas unidades reservadas se convierten en venta real y salen del almacén.</li>
+      <li><strong>Si NO paga antes de la fecha</strong> — el sistema, solo, libera la reserva y marca el pedido como <span class="lit">Expirado</span>. Las unidades vuelven a estar disponibles para otros. Un pedido Expirado no se puede reactivar: si el cliente reaparece, se crea uno nuevo.</li>
+    </ul>
+  </div>
+
+  <!-- ── ¿Qué es el IGV incluido? ────────────────────────────────────── -->
+  <div class="section">
+    <h2><span class="hnum">i</span> ¿Qué es el «IGV incluido»?</h2>
+    <p style="font-size:15px;line-height:1.7;color:var(--muted);margin:0">El IGV es el impuesto (18 %) que ya viene <strong>dentro</strong> de los precios que escribes. No se suma aparte: el total es lo que paga el cliente. La línea <span class="lit">IGV (18 %) incluido</span> solo te muestra, de ese total, cuánto es impuesto — es informativa, para tu control. No cambia lo que cobra el cliente.</p>
+  </div>
+
+  <!-- ── 5 · CÓMO SABER QUE SALIÓ BIEN ───────────────────────────────── -->
+  <div class="section">
+    <h2><span class="hnum">2</span> Cómo saber que salió bien</h2>
+    <div class="exito">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+      <div>
+        <strong>El pedido queda guardado:</strong>
+        <ul>
+          <li>Aparece un aviso con el número (<em>Pedido #NN creado</em>) y se abre su ficha.</li>
+          <li>En la lista de <span class="lit">Pedidos</span> figura con estado <span class="lit">Pendiente</span>.</li>
+          <li>Si lo reservaste, lleva la etiqueta <span class="lit">Reserva</span> y su fecha de expiración (en rojo si faltan menos de 48 horas).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 6 · SI TE SALE MAL ──────────────────────────────────────────── -->
+  <div class="section malo">
+    <h2><span class="hnum">!</span> Si te sale mal</h2>
+
+    <div class="fix">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+      <div class="tx">
+        <h3>El botón «Crear pedido» está apagado</h3>
+        <p class="causa"><span class="lbl">Por qué pasa:</span> alguna línea pide más unidades de las que hay disponibles (fila en rojo con <span class="lit">Solo N disponibles</span>), o no has añadido ninguna línea.</p>
+        <p class="salida"><span class="lbl">Cómo salir:</span> baja la cantidad de esa línea hasta el disponible que indica, o quita la línea. El botón se reactiva solo.</p>
+      </div>
+    </div>
+
+    <div class="fix">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+      <div class="tx">
+        <h3>Sale un aviso rojo al crear («no hay disponible suficiente»)</h3>
+        <p class="causa"><span class="lbl">Por qué pasa:</span> entre que llenaste el pedido y le diste a crear, otra persona vendió o reservó ese stock. El sistema siempre comprueba el stock real en el último momento.</p>
+        <p class="salida"><span class="lbl">Cómo salir:</span> el pedido <strong>no se pierde</strong>: la ventana sigue abierta con tus líneas. Ajusta la cantidad a lo que el aviso dice que hay y vuelve a crear.</p>
+      </div>
+    </div>
+
+    <div class="fix">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+      <div class="tx">
+        <h3>No me deja elegir «Factura»</h3>
+        <p class="causa"><span class="lbl">Por qué pasa:</span> el cliente está registrado con DNI, no con RUC. La factura exige RUC.</p>
+        <p class="salida"><span class="lbl">Cómo salir:</span> usa <strong>Boleta</strong>, o edita el cliente en <span class="lit">Clientes</span> para ponerle su RUC si de verdad es una empresa.</p>
+      </div>
+    </div>
+
+    <div class="fix">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+      <div class="tx">
+        <h3>Reservé un pedido y ahora aparece «Expirado»</h3>
+        <p class="causa"><span class="lbl">Por qué pasa:</span> pasó la fecha de expiración sin que se cobrara, así que el sistema liberó el stock automáticamente.</p>
+        <p class="salida"><span class="lbl">Cómo salir:</span> un pedido Expirado no se reactiva. Si el cliente aún quiere la mercadería, crea un pedido nuevo (comprobando que haya stock disponible).</p>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="foot">
+    Términos técnicos en el <a href="glosario.html">glosario</a>.
+    Relacionado: <a href="flujo-ciclo-pedido.html">Ciclo de vida del pedido</a> y <a href="guia-registrar-venta.html">Registrar una venta y emitir el comprobante</a>.
+  </p>
+</div>
+</body>
+</html>
